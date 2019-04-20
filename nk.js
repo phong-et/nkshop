@@ -5,9 +5,9 @@ let rp = require('request-promise'),
   log = console.log,
   headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0',
-  },
-  dirProduct = 'products/',
-  dirReview = 'reviews/'
+  }
+const DIR_PRODUCTS = 'products/'
+const DIR_REVIEWS = 'reviews/'
 
 function appendFile(fileName, content) {
   return new Promise((resolve, reject) => {
@@ -38,8 +38,12 @@ async function fetchDirectories(url) {}
 ///////////////////////// WRITE FILE /////////////////////////////
 function writeProduct(productId, content) {
   return new Promise((resolve, reject) => {
-    let dir = dirProduct + productId,
+    let dir = DIR_PRODUCTS + productId,
       fileName = dir + '/' + productId + '.json'
+
+    if (!fs.existsSync(DIR_PRODUCTS)) {
+      fs.mkdirSync(DIR_PRODUCTS)
+    }
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir)
     }
@@ -53,7 +57,7 @@ function writeProduct(productId, content) {
 }
 function writeReviews(productId, content) {
   return new Promise((resolve, reject) => {
-    let dir = dirProduct + productId + '/' + dirReview,
+    let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS,
       fileName = dir + productId + '.json'
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir)
@@ -68,7 +72,7 @@ function writeReviews(productId, content) {
 }
 function writeReview(productId, reviewId, content) {
   return new Promise((resolve, reject) => {
-    let dir = dirProduct + productId + '/' + dirReview,
+    let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS,
       fileName = dir + reviewId + '.json'
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir)
@@ -104,7 +108,7 @@ async function fetchImagesOfProduct(nkJson) {
   try {
     nkJson.photos.forEach(e => {
       let productId = nkJson.id,
-        dir = dirProduct + productId + '/',
+        dir = DIR_PRODUCTS + productId + '/',
         url = e.data.dimensions.original.url,
         fileName = dir + url.substring(url.lastIndexOf('/') + 1)
       downloadImage(fileName, url, () => {})
@@ -116,7 +120,7 @@ async function fetchImagesOfProduct(nkJson) {
 async function fetchImagesOfReview(nkJson, productId) {
   try {
     nkJson.data.review.photos.forEach(e => {
-      ;(dir = dirProduct + productId + '/' + dirReview),
+      ;(dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS),
         (url = e.data.dimensions.original.url),
         (fileName = dir + url.substring(url.lastIndexOf('/') + 1))
       downloadImage(fileName, url, () => {})
