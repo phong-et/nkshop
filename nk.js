@@ -11,7 +11,7 @@ const DIR_REVIEWS = 'reviews/'
 
 function appendFile(fileName, content) {
   return new Promise((resolve, reject) => {
-    fs.appendFile(fileName, content, function(err) {
+    fs.appendFile(fileName, content, function (err) {
       if (err) reject(err)
       var statusText = 'write file > ' + fileName + ' success'
       log(statusText)
@@ -33,7 +33,7 @@ async function fetchProductList(url, params) {
 }
 // Test 0
 
-async function fetchDirectories(url) {}
+async function fetchDirectories(url) { }
 
 ///////////////////////// WRITE FILE /////////////////////////////
 function writeProduct(productId, content) {
@@ -47,7 +47,7 @@ function writeProduct(productId, content) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir)
     }
-    fs.writeFile(fileName, content, function(err) {
+    fs.writeFile(fileName, content, function (err) {
       if (err) reject(err)
       var statusText = 'write file > ' + fileName + ' success'
       //log(statusText)
@@ -62,7 +62,7 @@ function writeReviews(productId, content) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir)
     }
-    fs.writeFile(fileName, content, function(err) {
+    fs.writeFile(fileName, content, function (err) {
       if (err) reject(err)
       var statusText = 'write file > ' + fileName + ' success'
       //log(statusText)
@@ -77,7 +77,7 @@ function writeReview(productId, reviewId, content) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir)
     }
-    fs.writeFile(fileName, content, function(err) {
+    fs.writeFile(fileName, content, function (err) {
       if (err) reject(err)
       var statusText = 'write file > ' + fileName + ' success'
       //log(statusText)
@@ -111,7 +111,7 @@ async function fetchImagesOfProduct(nkJson) {
         dir = DIR_PRODUCTS + productId + '/',
         url = e.data.dimensions.original.url,
         fileName = dir + url.substring(url.lastIndexOf('/') + 1)
-      downloadImage(fileName, url, () => {})
+      downloadImage(fileName, url, () => { })
     })
   } catch (error) {
     log(error)
@@ -120,12 +120,15 @@ async function fetchImagesOfProduct(nkJson) {
 async function fetchImagesOfReview(nkJson, productId) {
   try {
     nkJson.data.review.photos.forEach(e => {
-      ;(dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS),
-        (url = e.data.dimensions.original.url),
-        (fileName = dir + url.substring(url.lastIndexOf('/') + 1))
-      downloadImage(fileName, url, () => {})
+      let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS
+      let url = e.data.dimensions.original.url
+      let encodeUrl = url.substring(0, url.lastIndexOf('review-of-') + 1) + encodeURIComponent(url.substring(url.lastIndexOf('review-of-') + 1, url.length))
+      log(encodeUrl);
+      let fileName = dir + url.substring(url.lastIndexOf('/') + 1)
+      downloadImage(fileName, encodeUrl, () => { })
     })
   } catch (error) {
+    log('fetchImagesOfReview:')
     log(error)
   }
 }
@@ -168,6 +171,7 @@ async function fetchReviewListOfProduct(url, productId, reviewPerPageNumber) {
     log('reviewIds.length = %s', reviewIds.length)
     return reviewIds
   } catch (error) {
+    log('fetchReviewListOfProduct:')
     log(error.message)
   }
 }
@@ -183,6 +187,7 @@ async function fetchReviewOfProduct(url, reviewId, productId) {
     writeReview(productId, reviewId, json)
     await fetchImagesOfReview(JSON.parse(json), productId)
   } catch (error) {
+    log('fetchReviewOfProduct:')
     log(error.message)
   }
 }
@@ -206,6 +211,7 @@ async function fetchReviewsOfProduct(url, productId, reviewIds) {
       await fetchReviewOfProduct(url, reviewIds[i], productId)
     }
   } catch (error) {
+    log('fetchReviewsOfProduct:')
     log(error.message)
   }
 }
@@ -222,4 +228,3 @@ async function fetchProducts(url, productIds) {
     log(error.message)
   }
 }
-fetchProducts(cfg.productUrl, cfg.nkProductIds)
