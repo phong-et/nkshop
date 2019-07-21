@@ -1,10 +1,11 @@
 let rp = require('request-promise'),
   request = require('request'),
+  cheerio = require('cheerio'),
   fs = require('fs'),
   cfg = require('./nk.cfg.js'),
   log = console.log,
   headers = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36',
   }
 const DIR_PRODUCTS = 'products/'
 const DIR_REVIEWS = 'reviews/'
@@ -248,64 +249,78 @@ async function fetchProducts(url, productIds) {
     log(error.message)
   }
 }
-
-var isUsedCookie = false,
-  jar
-async function fetchProductsByCity(productUrl, cityCode, minPrice, minReviewCount) {
+//http://prntscr.com/ohw6xv
+function getJschlAnswer(jsContent) {
+  var jschl_answer;
   try {
-    var qs = {
-      cityCode: encodeURI(cityCode),
-      mode: 'directory',
-      offset: '0',
-      orderBy: 'byPriceDesc'
-    }
-    var options = {
-      url: productUrl,
-      headers: headers,
-      qs: qs
-    }
-    request(options, (error, response, body) => {
-      if (!error && response.statusCode == 200) {
-        var json = JSON.parse(body);
-        log(json)
-      }
-      else {
-        log(response.headers)
-        log(response.statusCode)
-        if (!isUsedCookie) {
-          jar = request.jar()
-          var arrayCookie = ['__cfduid=dfea12d33ef91eeba002fbdec124e2cc01561876504; cf_clearance=19ae0c872ccde7e6768229e5fb65261b126fa86a-1561876508-604800-150; 06cb36fc0e9a783099b7974a96a6d0c0=40euic29k024onc4u8qb8f4n31; base_language_id=2; __utma=159633447.272160313.1561876512.1561876512.1561876512.1; __utmc=159633447; __utmz=159633447.1561876512.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)']
-          arrayCookie.forEach((cookies) => {
-            cookies.split(';').forEach((cookie) => {
-              jar.setCookie(request.cookie(cookie.trim()), productUrl)
-            })
-          })
-          isUsedCookie = true;
-          options['jar'] = jar
-          log(options)
-          request(options, (e, r, body) => {
-            log(r.headers)
-            log(r.statusCode)
-            log(body)
-          })
-        }
-      }
-    });
+    jsContent = jsContent.substring(jsContent.indexOf('var s,t,o,p,b,r,e,a,k,i,n,g,f'), jsContent.indexOf('f.action += location.hash;'));
+    jsContent = jsContent.replace(/t = document/g, 't = \'' + cfg.nkDomain + '\'  //')
+    jsContent = jsContent.replace(/t.innerHTML/g, '//t.innerHTML')
+    jsContent = jsContent.replace(/t = t.firstChild.href/g, '//t = t.firstChild.href')
+    jsContent = jsContent.replace(/t = t.substr/g, '//t = t.substr')
+    jsContent = jsContent.replace(/a = document.getElementById/g, 'a = {value:0}  //')
+    jsContent = jsContent.replace(/f = document.getElementById/g, '//f = document.getElementById')
+    jsContent += 'exports.jschl_answer = a.value'
+    log(jsContent)
+    var _eval = require('eval')
+    jschl_answer = _eval(jsContent);
+    log('jschl_answer=%s', jschl_answer.jschl_answer)
   } catch (error) {
+    log(error)
+  }
+  return jschl_answer
+}
+async function requestChkJschl(body, arrCookie) {
+  try {
+    const $ = cheerio.load(body);
+    let form = {
+      s: encodeURIComponent($('input[name=s]').val()),
+      jschl_vc: encodeURIComponent($('input[name=jschl_vc]').val()),
+      pass: encodeURIComponent($('input[name=pass]').val()),
+      jschl_answer: getJschlAnswer($('script').eq(0).html()).jschl_answer
+    }
+    request = request.defaults({ jar: true })
+    var jar = request.jar()
+    arrCookie.forEach((cookies) => {
+      cookies.split(';').forEach((cookie) => {
+        jar.setCookie(request.cookie(cookie.trim()), cfg.cookiesUrl)
+      })
+    })
+    var options = {
+      url: cfg.chk_jschlUrl,
+      headers: headers,
+      qs: form,
+      jar:jar
+    }
+
+    await delay(5000)
+    log(options)
+    request(options, function (error, response, body) {
+      log(response.headers)
+      log(response.statusCode)
+    })
+    //log(json)
+  } catch (error) {
+    log('requestChkJschl:')
     log(error.message)
   }
 }
 
-// Recursive load all pages
 function fetchProductsSGByPriceDescOnePage(page, callback) {
   let offset = page == 1 ? 0 : page * 20
   log(`offset = ${offset} || page = ${page}`);
   request(cfg.productUrl + '?cityCode=' + cfg.cities[0] + '&mode=directory&offset=' + offset + '&orderBy=byPriceDesc', function (error, response, body) {
     //log('error:', error);
-    //log('statusCode:', response && response.statusCode);
-    //log('headers:', response && response.headers);
+    log('statusCode:', response && response.statusCode);
+    log('headers:', response && response.headers);
     //console.log('body:', body);
-    callback(body);
+    writeProduct('fetchProductsSGByPriceDescOnePage' + new Date().getTime(), body)
+    if (response && response.statusCode === 503) {
+      requestChkJschl(body, response.headers['set-cookie'])
+    }
+    else {
+      callback(body);
+    }
   })
 }
 // Test OnePage
@@ -313,6 +328,7 @@ function fetchProductsSGByPriceDescOnePage(page, callback) {
 //   writeProductsCity('P1', 'SGBPD/', data)
 // })
 
+/////////////////////// Recursive load all pages ///////////////////////
 let page = 2,
   nkProducts = []
 function fetchProductsSGByPriceDescAllPage(i) {
@@ -341,9 +357,39 @@ function fetchProductsSGByPriceDescAllPage(i) {
     log(error)
   }
 }
-fetchProductsSGByPriceDescAllPage(2)
+//fetchProductsSGByPriceDescOnePage(1,()=> {})
+fetchProductsSGByPriceDescAllPage(1)
 
+function filterProductByPriceAndReport(price, ratingCount) {
+  filteredProducts = []
+  try {
+    log('filterProductByPriceAndReport')
+    const fs = require('fs')
+    let products = JSON.parse(fs.readFileSync(__dirname + '/products/SGBPD/P_ALL_000_100_Page.json', 'utf-8'))
+    log(`products,.length = ${products.length}`)
+    products.map(product => {
+      let productPrice = parseInt(product.price),
+        productRatingCount = parseInt(product.ratingCount)
+      if (productPrice >= price && productRatingCount >= ratingCount) {
+        log(`price = ${productPrice} || ratingCount = ${productRatingCount}`)
+        filteredProducts.push(product.id)
+      }
+    });
+    log(`filteredProducts.length = ${filteredProducts.length}`)
+    log(filteredProducts)
+  } catch (error) {
+    log(error)
+  }
+  return filteredProducts;
+}
+//filterProductByPriceAndReport(1000, 5)
+// fetchProducts(cfg.productUrl,
+// [
+// id
+// ]
+// )
 
 module.exports = {
-  downloadImage: downloadImage
+  downloadImage: downloadImage,
+  filterProductByPriceAndReport: filterProductByPriceAndReport
 }
