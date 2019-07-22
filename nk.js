@@ -358,31 +358,7 @@ function fetchProductsSGByPriceDescAllPage(i) {
   }
 }
 //fetchProductsSGByPriceDescOnePage(1,()=> {})
-fetchProductsSGByPriceDescAllPage(1)
-
-function filterProductByPriceAndReport(price, ratingCount) {
-  filteredProducts = []
-  try {
-    log('filterProductByPriceAndReport')
-    const fs = require('fs')
-    let products = JSON.parse(fs.readFileSync(__dirname + '/products/SGBPD/P_ALL_000_100_Page.json', 'utf-8'))
-    log(`products,.length = ${products.length}`)
-    products.map(product => {
-      let productPrice = parseInt(product.price),
-        productRatingCount = parseInt(product.ratingCount)
-      if (productPrice >= price && productRatingCount >= ratingCount) {
-        log(`price = ${productPrice} || ratingCount = ${productRatingCount}`)
-        filteredProducts.push(product.id)
-      }
-    });
-    log(`filteredProducts.length = ${filteredProducts.length}`)
-    log(filteredProducts)
-  } catch (error) {
-    log(error)
-  }
-  return filteredProducts;
-}
-//filterProductByPriceAndReport(1000, 5)
+//fetchProductsSGByPriceDescAllPage(1)
 // fetchProducts(cfg.productUrl,
 // [
 // id
