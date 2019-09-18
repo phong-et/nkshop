@@ -18,31 +18,31 @@ const productSchema = new Schema({
     lng: String,
     districtId: String,
     cityId: String,
-    cover : {
-        baseName : String,
-        dimensions : {
-            small : {
-                file : String,
-                width : Number,
-                height : Number,
-                url : String
+    cover: {
+        baseName: String,
+        dimensions: {
+            small: {
+                file: String,
+                width: Number,
+                height: Number,
+                url: String
             },
-            original : {
-                file : String,
-                width : Number,
-                height : Number,
-                url : String
+            original: {
+                file: String,
+                width: Number,
+                height: Number,
+                url: String
             },
-            thumbnail : {
-                file : String,
-                width : Number,
-                height : Number,
-                url : String
+            thumbnail: {
+                file: String,
+                width: Number,
+                height: Number,
+                url: String
             }
         }
     },
     ratingScore: String,
-    ratingCount: String,
+    ratingCount: Number,
     ratingAvg: String,
     photoCount: String,
     timestamp: String,
@@ -51,7 +51,25 @@ const productSchema = new Schema({
     slug: String
 });
 const productModel = mongoose.model('product', productSchema);
-productModel.find({'$where':'parseInt(this.price) >= 100$'}, 'id name price',(err, data) => {
+productModel.find({'$where':'parseInt(this.price) == 1000'}, 'id name price',(err, data) => {
     console.log(data);
     mongoose.connection.close();
 });
+
+// productModel.find({ $and: [{ ratingCount: { $gte: 3 } }, { $where: () => parseInt(this.price) >= 1000 }] }, 'id name price ratingCount', (err, data) => {
+//     //console.log(err)
+//     console.log(data.length);
+//     console.log(data);
+//     mongoose.connection.close();
+// });
+
+productModel.find({ $where: function () { return this.price >= 4000 && this.ratingCount >=3} }, 'id name price ratingCount', (err, data) => {
+    console.log(data.length);
+    console.log(data);
+    mongoose.connection.close();
+});
+// productModel.findOne({}, 'id name price ratingCount').sort({id:-1}).exec((err, data) => {
+//     console.log(data.length);
+//     console.log(data);
+//     mongoose.connection.close();
+// });
