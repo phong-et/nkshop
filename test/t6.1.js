@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 const productSchema = new Schema({
     _id: ObjectId,
-    id: String,
+    id: Number,
     name: String,
     price: Number,
     locationId: String,
@@ -51,12 +51,17 @@ const productSchema = new Schema({
     slug: String
 });
 const productModel = db.model('product', productSchema);
-productModel.find({
-    $and: [
-        { '$where': 'this.price >= 1000' },
-        { ratingCount: "5" }
-    ]
-}, 'id name price', (err, data) => {
+// productModel.find({
+//     $and: [
+//         { '$where': 'this.price >= 1000' },
+//         { ratingCount: "5" }
+//     ]
+// }, 'id name price', (err, data) => {
+//     console.log(data);
+//     db.connection.close();
+// });
+productModel.find({}, 'id name price ratingCount').sort({id:1}).exec((err, data) => {
+    console.log(data.length);
     console.log(data);
-    db.connection.close();
+    mongoose.connection.close();
 });
