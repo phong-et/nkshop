@@ -116,7 +116,7 @@ async function fetchProduct(url, productId) {
     let json = await rp(options)
     writeProduct(productId, json)
     let nkJson = JSON.parse(json)
-    await fetchImagesOfProduct(nkJson)
+    fetchImagesOfProduct(nkJson)
     let reviewIds = await fetchReviewListOfProduct(cfg.reviewUrl, productId, nkJson.ratingCount)
     await fetchReviewsOfProduct(cfg.reviewUrl, productId, reviewIds)
   } catch (error) {
@@ -162,6 +162,7 @@ function downloadImage(fileName, url, callback) {
           .pipe(fs.createWriteStream(fileName))
           .on('close', callback)
       } catch (error) {
+        log('downloadImage %s error fs.createWriteStream :%s', fileName, error.message)
         log(error)
       }
     })
@@ -290,7 +291,7 @@ async function requestChkJschl(body, arrCookie) {
       url: cfg.chk_jschlUrl,
       headers: headers,
       qs: form,
-      jar:jar
+      jar: jar
     }
 
     await delay(5000)
@@ -306,15 +307,15 @@ async function requestChkJschl(body, arrCookie) {
   }
 }
 
-function fetchProductsSGByPriceDescOnePage(page, callback) {
-  let offset = page == 1 ? 0 : page * 20
-  log(`offset = ${offset} || page = ${page}`);
+function fetchProductsSGByPriceDescOnePage(pageNumber, callback) {
+  let offset = pageNumber == 1 ? 0 : pageNumber * 20
+  log(`offset = ${offset} || pageNumber = ${pageNumber}`);
   request(cfg.productUrl + '?cityCode=' + cfg.cities[0] + '&mode=directory&offset=' + offset + '&orderBy=byPriceDesc', function (error, response, body) {
     //log('error:', error);
     log('statusCode:', response && response.statusCode);
     log('headers:', response && response.headers);
     //console.log('body:', body);
-    writeProduct('fetchProductsSGByPriceDescOnePage' + new Date().getTime(), body)
+    //writeProduct('fetchProductsSGByPriceDescOnePage' + new Date().getTime(), body)
     if (response && response.statusCode === 503) {
       requestChkJschl(body, response.headers['set-cookie'])
     }
@@ -329,26 +330,26 @@ function fetchProductsSGByPriceDescOnePage(page, callback) {
 // })
 
 /////////////////////// Recursive load all pages ///////////////////////
-let page = 2,
-  nkProducts = []
-function fetchProductsSGByPriceDescAllPage(i) {
+let nkProducts = []
+function fetchProductsSGByPriceDescAllPage(fromPage, toPage) {
   try {
-    fetchProductsSGByPriceDescOnePage(i, (data) => {
+    fetchProductsSGByPriceDescOnePage(fromPage, (data) => {
       //log(data);
       nkProducts = nkProducts.concat(JSON.parse(data))
-      writeProductsCity('P' + i, 'SGBPD/', data)
-      i = i + 1
-      if (i <= page) {
+      writeProductsCity('P' + fromPage, 'SGBPD/', data)
+      fromPage = fromPage + 1
+      log('fromPage=%s toPage=%s', fromPage, toPage)
+      if (fromPage <= toPage) {
         setTimeout(() => {
-          fetchProductsSGByPriceDescAllPage(i)
+          fetchProductsSGByPriceDescAllPage(fromPage, toPage)
         }, 1000)
       }
       else {
-        log('ProductIds is leaded')
+        log('ProductIds is loaded')
         log(nkProducts.length);
         var nkProductIds = nkProducts.map(product => product.id)
         log(nkProductIds);
-        fetchProducts(cfg.productUrl, nkProductIds)
+        //fetchProducts(cfg.productUrl, nkProductIds)
         writeProductsCity('P_ALL', 'SGBPD/', JSON.stringify(nkProducts))
       }
     })
@@ -357,15 +358,11 @@ function fetchProductsSGByPriceDescAllPage(i) {
     log(error)
   }
 }
-//fetchProductsSGByPriceDescOnePage(1,()=> {})
-//fetchProductsSGByPriceDescAllPage(1)
-// fetchProducts(cfg.productUrl,
-// [
-// id
-// ]
-// )
+// fetchProductsSGByPriceDescOnePage(1,()=> {})
+// fetchProductsSGByPriceDescAllPage(251,500)
 
 module.exports = {
   downloadImage: downloadImage,
-  filterProductByPriceAndReport: filterProductByPriceAndReport
+  fetchProducts: fetchProducts,
+  fetchProductsSGByPriceDescAllPage:fetchProductsSGByPriceDescAllPage
 }
