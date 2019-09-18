@@ -10,3 +10,7 @@ server/NKSHOP-204503-d0f45f50664e\.json
 server/\.env
 
 server/package-lock\.json
+
+cookies_scenario\.txt
+
+nks\.js
