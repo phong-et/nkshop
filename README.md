@@ -21,6 +21,8 @@
         ``` 
 
 # Server GraphQL
+ - Don't use Sequelize. Because It's a promise-based ORM(Object Relational Mapping). Examples of ORMs are nHibernate, Entity Framework, Dapper and more...
+ - Mongodb is a ODM (Object Document Mapper) so we can't apply ORM tool to Mongodb
 
 # Knowledge
 
