@@ -332,6 +332,7 @@ function fetchProductsSGByPriceDescOnePage(pageNumber, callback) {
 /////////////////////// Recursive load all pages ///////////////////////
 let nkProducts = []
 function fetchProductsSGByPriceDescAllPage(fromPage, toPage) {
+  var startPage = fromPage
   try {
     fetchProductsSGByPriceDescOnePage(fromPage, (data) => {
       //log(data);
@@ -350,7 +351,7 @@ function fetchProductsSGByPriceDescAllPage(fromPage, toPage) {
         var nkProductIds = nkProducts.map(product => product.id)
         log(nkProductIds);
         //fetchProducts(cfg.productUrl, nkProductIds)
-        writeProductsCity('P_ALL', 'SGBPD/', JSON.stringify(nkProducts))
+        writeProductsCity('P_ALL_' + startPage + '_' + toPage, 'SGBPD/', JSON.stringify(nkProducts))
       }
     })
   } catch (error) {
