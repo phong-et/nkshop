@@ -9,15 +9,21 @@ const productSchema = new Schema({
     name: String,
     price: Number,
     locationId: String,
-    status: String,
+    status: Number,
     expirationDate: Date,
-    userId: String,
-    lastUpdateStamp: String,
-    meta: String,
+    userId: Number,
+    lastUpdateStamp: Number,
+    meta:{
+        locId: Number, 
+        address: String,
+        onLeave: Boolean, 
+        leaveNotice: String, 
+        notificationTime: Number
+    },
     lat: String,
     lng: String,
-    districtId: String,
-    cityId: String,
+    districtId: Number,
+    cityId: Number,
     cover: {
         baseName: String,
         dimensions: {
@@ -41,12 +47,12 @@ const productSchema = new Schema({
             }
         }
     },
-    ratingScore: String,
+    ratingScore: Number,
     ratingCount: Number,
-    ratingAvg: String,
-    photoCount: String,
-    timestamp: String,
-    viewCount: String,
+    ratingAvg: Number,
+    photoCount: Number,
+    timestamp: Number,
+    viewCount: Number,
     address: String,
     slug: String
 });
@@ -57,11 +63,31 @@ const productModel = db.model('product', productSchema);
 //         { ratingCount: "5" }
 //     ]
 // }, 'id name price', (err, data) => {
-//     console.log(data);
-//     db.connection.close();
-// });
-productModel.find({}, 'id name price ratingCount').sort({id:1}).exec((err, data) => {
-    console.log(data.length);
-    console.log(data);
-    mongoose.connection.close();
-});
+//     console.log(data)
+//     db.connection.close()
+// })
+
+productModel.findOne({}).sort({id:-1}).exec((err, data) => {
+    console.log(data.length)
+    console.log(data)
+    mongoose.connection.close()
+})
+
+// productModel.find({ $where: function () { return this.price >= 1200 && this.ratingCount >=7} }, 'id name price ratingCount', (err, data) => {
+//     console.log(data.length)
+//     console.log(data)
+//     db.connection.close()
+// })
+
+productModel.find({ $where: function () { return this.price >= 2000 && this.ratingCount >=10} }, 'id name price ratingCount lastUpdateStamp').sort({lastUpdateStamp:-1}).exec((err, data) => {
+    console.log('data.length=%s', data.length)
+    // data.forEach(e => {
+    //     var e1 = {...e}
+    //     e1.lastUpdateStamp = new Date(e.lastUpdateStamp).toString()
+    //     console.log(e1)
+    // })
+    data.forEach(e => {
+        console.log(e.id)
+    })
+    db.connection.close()
+})
