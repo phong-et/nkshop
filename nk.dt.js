@@ -15,7 +15,8 @@ function filterProductByPriceAndRatingCount(price, ratingCount, sourceJSONFileNa
       }
     });
     log(`filteredProducts.length = ${filteredProducts.length}`)
-    log(filteredProducts)
+    var filteredProductIds = filteredProducts.map(id => parseInt(id)).sort((a,b) => a-b)
+    log(filteredProductIds)
   } catch (error) {
     log(error)
   }
@@ -47,9 +48,12 @@ function exportProductsToRobo3TFormat(destinationJSONFileName, products, current
     product.districtId = parseInt(product.districtId)
     product.cityId = parseInt(product.cityId)
     product.status = parseInt(product.status)
+    product.photoCount = parseInt(product.photoCount)
     product.ratingCount = parseInt(product.ratingCount)
     product.ratingScore = parseFloat(product.ratingScore)
     product.ratingAvg = parseFloat(product.ratingAvg)
+    product.meta = JSON.parse(product.meta)
+    product.meta.locId = parseInt(product.meta.locId)
     exportProductToRobo3TFormat(destinationJSONFileName, product, currentIndexProduct, () => {
       currentIndexProduct = currentIndexProduct + 1
       var limitNumber = limitedIndexProduct || products.length
@@ -89,8 +93,8 @@ function checkDuplicateData(sourceJSONFileName) {
 }
 
 
-var sourceJSONFileName = '/products/SGBPD/P_ALL_1_500.json',
+var sourceJSONFileName = '/products/SGBPD/P_ALL_15_15.json',
   destinationJSONFileName = '/products/SGBPD/_Robo3T.json'
-//filterProductByPriceAndRatingCount(1000, 5, sourceJSONFileName)
-exportToRobo3TFormat(sourceJSONFileName, destinationJSONFileName)
+filterProductByPriceAndRatingCount(1000, 5, sourceJSONFileName)
+//exportToRobo3TFormat(sourceJSONFileName, destinationJSONFileName)
 //checkDuplicateData(sourceJSONFileName)
