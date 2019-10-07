@@ -38,6 +38,7 @@ async function fetchDirectories(url) { }
 
 ///////////////////////// WRITE FILE /////////////////////////////
 function writeProduct(productId, content) {
+  content = JSON.stringify(content)
   return new Promise((resolve, reject) => {
     let dir = DIR_PRODUCTS + productId,
       fileName = dir + '/' + productId + '.json'
@@ -108,26 +109,31 @@ function writeReview(productId, reviewId, content) {
 }
 ///////////////////////// FETCH Product /////////////////////////
 async function fetchJsonOfProduct(url, productId) {
-  var options = {
-    url: url + '/' + productId,
-    headers: headers,
+  try {
+    var options = {
+      url: url + '/' + productId,
+      headers: headers,
+    }
+    return JSON.parse(await rp(options))
+  } catch (error) {
+    throw error
   }
-  return await rp(options)
 }
-async function fetchProduct(url, productId) {
+async function fetchProduct(url, productId, jsonProduct) {
   try {
     // var options = {
     //   url: url + '/' + productId,
     //   headers: headers,
     // }
     // let json = await rp(options)
-    let json = await fetchJsonOfProduct(url, productId)
-    writeProduct(productId, json)
-    let nkJson = JSON.parse(json)
-    fetchImagesOfProduct(nkJson)
-    let reviewIds = await fetchReviewListOfProduct(cfg.reviewUrl, productId, nkJson.ratingCount)
+    if (jsonProduct === undefined)
+      jsonProduct = await fetchJsonOfProduct(url, productId)
+    writeProduct(productId, jsonProduct)
+    fetchImagesOfProduct(jsonProduct)
+    let reviewIds = await fetchReviewListOfProduct(cfg.reviewUrl, productId, jsonProduct.ratingCount)
     await fetchReviewsOfProduct(cfg.reviewUrl, productId, reviewIds)
   } catch (error) {
+    log('error at fetchProduct')
     log(error.message)
   }
 }
@@ -163,20 +169,28 @@ async function fetchImagesOfReview(nkJson, productId) {
 }
 
 function downloadImage(fileName, url, callback) {
-  try {
-    request.head(url, () => {
+  request.head(url, (error, response, body) => {
+    if (error) log('downloadImage.request.head:' + error)
+    else {
       try {
-        request(url)
-          .pipe(fs.createWriteStream(fileName))
-          .on('close', callback)
+        request(url, (error, response, body) => {
+          try {
+            if(error) log('downloadImage.request.head.request:' + error)
+          } catch (error) {
+            log('downloadImage.request.head.request.catch:' + error)
+          }
+        })
+        .pipe(fs.createWriteStream(fileName)
+          .on("error",(err) => log('downloadImage.request.head.request.fs.createWriteStream' + err))
+        )
+        .on("error",(err) => log('downloadImage.request.head.request.pipe' + err))
+        .on('close', callback)
       } catch (error) {
         log('downloadImage %s error fs.createWriteStream :%s', fileName, error.message)
         log(error)
       }
-    })
-  } catch (error) {
-    log('downloadImage %s error :%s', fileName, error.message)
-  }
+    }
+  })
 }
 
 async function fetchReviewListOfProduct(url, productId, reviewPerPageNumber) {
@@ -229,7 +243,7 @@ async function delay(ms) {
   })
 }
 function wait(label, i, val) {
-  var seconds = Array(1111, 2222, 3333, 4444)
+  var seconds = Array(1000, 2000, 1500, 500)
   second = seconds[Math.floor(Math.random() * seconds.length)]
   log('%sId[%s] = %s, wait : ', label, i, val, second)
   return second
@@ -260,13 +274,26 @@ async function fetchProducts(url, productIds) {
 }
 async function fetchProductsByIdRange(url, fromProductId, toProductId, condition) {
   try {
-    for (let i = fromProductId; i < toProductId; i++) {
+    for (let i = fromProductId; i <= toProductId; i++) {
       await delay(wait('product', i, i))
       if (condition) {
-        await fetchJsonOfProduct(url, i)
-      }
-      else {
-        fetchProduct(url, i)
+        var jsonProduct = await fetchJsonOfProduct(url, i)
+        try {
+          if (Boolean(jsonProduct.price) && Boolean(jsonProduct.ratingCount)) {
+            log(`Product[${i}] price:${jsonProduct.price} || ratingCount:${jsonProduct.ratingCount}`)
+            var price = parseInt(jsonProduct.price)
+            var ratingCount = parseInt(jsonProduct.ratingCount)
+            log(`price:${price} || ratingCount:${jsonProduct.ratingCount}`)
+            if (price >= condition.price)
+              await fetchProduct(url, i, jsonProduct)
+            else
+              log('price low')
+          } else {
+            log('JSON Product failed')
+          }
+        } catch (error) {
+          log(error)
+        }
       }
     }
   } catch (error) {
