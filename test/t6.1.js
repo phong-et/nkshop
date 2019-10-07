@@ -4,7 +4,7 @@ const db = require('../api/db')
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 const productSchema = new Schema({
-    _id: ObjectId,
+    //_id: ObjectId,
     id: Number,
     name: String,
     price: Number,
@@ -12,7 +12,7 @@ const productSchema = new Schema({
     status: Number,
     expirationDate: Date,
     userId: Number,
-    lastUpdateStamp: Number,
+    lastUpdateStamp: String,
     meta:{
         locId: Number, 
         address: String,
@@ -56,7 +56,7 @@ const productSchema = new Schema({
     address: String,
     slug: String
 });
-const productModel = db.model('product', productSchema);
+const productModel = db.model('products', productSchema);
 // productModel.find({
 //     $and: [
 //         { '$where': 'this.price >= 1000' },
@@ -67,11 +67,11 @@ const productModel = db.model('product', productSchema);
 //     db.connection.close()
 // })
 
-productModel.findOne({}).sort({id:1}).exec((err, data) => {
-    console.log(data.length)
-    console.log(data)
-    mongoose.connection.close()
-})
+// Get latest or oldest productId
+// productModel.findOne({}).sort({id:1}).exec((err, data) => {
+//     console.log(data)
+//     mongoose.connection.close()
+// })
 
 // productModel.find({ $where: function () { return this.price >= 1200 && this.ratingCount >=7} }, 'id name price ratingCount', (err, data) => {
 //     console.log(data.length)
@@ -79,6 +79,8 @@ productModel.findOne({}).sort({id:1}).exec((err, data) => {
 //     db.connection.close()
 // })
 
+// attribute force type is matched
+// ex lastUpdateStamp is Number can not render to String again
 productModel.find({ $where: function () { return this.price >= 2000 && this.ratingCount >=10} }, 'id name price ratingCount lastUpdateStamp').sort({lastUpdateStamp:-1}).exec((err, data) => {
     console.log('data.length=%s', data.length)
     // data.forEach(e => {
@@ -87,7 +89,8 @@ productModel.find({ $where: function () { return this.price >= 2000 && this.rati
     //     console.log(e1)
     // })
     data.forEach(e => {
-        console.log(e.id)
+        e.lastUpdateStamp = new Date(e.lastUpdateStamp*1000).toLocaleDateString()
+        console.log(e)
     })
     db.connection.close()
 })
