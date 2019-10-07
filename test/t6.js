@@ -51,10 +51,10 @@ const productSchema = new Schema({
     slug: String
 });
 const productModel = mongoose.model('product', productSchema);
-productModel.find({'$where':'parseInt(this.price) == 1000'}, 'id name price',(err, data) => {
-    console.log(data);
-    mongoose.connection.close();
-});
+// productModel.find({'$where':'parseInt(this.price) == 1000'}, 'id name price',(err, data) => {
+//     console.log(data);
+//     mongoose.connection.close();
+// });
 
 // productModel.find({ $and: [{ ratingCount: { $gte: 3 } }, { $where: () => parseInt(this.price) >= 1000 }] }, 'id name price ratingCount', (err, data) => {
 //     //console.log(err)
@@ -63,9 +63,9 @@ productModel.find({'$where':'parseInt(this.price) == 1000'}, 'id name price',(er
 //     mongoose.connection.close();
 // });
 
-productModel.find({ $where: function () { return this.price >= 4000 && this.ratingCount >=3} }, 'id name price ratingCount', (err, data) => {
+productModel.find({ $where: function () { return this.price >= 2000 && this.ratingCount >=10} }, 'id name price ratingCount', (err, data) => {
     console.log(data.length);
-    console.log(data);
+    console.log(data).id;
     mongoose.connection.close();
 });
 // productModel.findOne({}, 'id name price ratingCount').sort({id:-1}).exec((err, data) => {

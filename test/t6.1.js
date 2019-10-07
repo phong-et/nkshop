@@ -67,7 +67,7 @@ const productModel = db.model('product', productSchema);
 //     db.connection.close()
 // })
 
-productModel.findOne({}).sort({id:-1}).exec((err, data) => {
+productModel.findOne({}).sort({id:1}).exec((err, data) => {
     console.log(data.length)
     console.log(data)
     mongoose.connection.close()

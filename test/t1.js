@@ -4,9 +4,10 @@ let rp = require('request-promise'),
   log = console.log,
   headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36',
-  }
+  },
+  nk = require('./nk')
 request = request.defaults({jar: true})
-fetchProductsByCity(cfg.productUrl, cfg.cities[0], 1000, 5)
+
 async function fetchProductsByCity(productUrl, cityCode, minPrice, minReviewCount) {
     try {
         var qs = {
@@ -38,3 +39,4 @@ async function fetchProductsByCity(productUrl, cityCode, minPrice, minReviewCoun
         log(error.message)
     }
 }
+fetchProductsByCity(cfg.productUrl, cfg.cities[0], 1000, 5)
