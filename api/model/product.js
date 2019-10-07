@@ -1,7 +1,5 @@
-var cfg = require('../nk.cfg.js')
-const mongoose = require('mongoose');
-const db = require('../api/db')
-const Schema = mongoose.Schema;
+const db = require('../db')
+const Schema = db.Schema;
 const ObjectId = Schema.ObjectId;
 const productSchema = new Schema({
     _id: ObjectId,
@@ -12,7 +10,7 @@ const productSchema = new Schema({
     status: Number,
     expirationDate: Date,
     userId: Number,
-    lastUpdateStamp: Number,
+    lastUpdateStamp: String,
     meta: {
         locId: Number,
         address: String,
@@ -56,11 +54,22 @@ const productSchema = new Schema({
     address: String,
     slug: String
 });
-const productModel = db.model('product', productSchema);
-async function findProductByPriceAndRatingCount(price, ratingCount, callback) {
-    return await productModel.find({ $where: function () { return this.price >= 1200 && this.ratingCount >= 17 } }, 'id name price ratingCount lastUpdateStamp').sort({ lastUpdateStamp: -1 }).exec((err, data) => {
-        console.log('data.length=%s', data.length)
-        console.log(data)
-        db.connection.close()
-    })
+const productModel = db.model('products', productSchema);
+function findProductByPriceAndRatingCount(price, ratingCount) {
+    var query = {
+        '$where': 'this.price >= ' + price + ' && this.ratingCount >= ' + ratingCount
+    }
+    return productModel.find(
+        query,
+        'id name price ratingCount lastUpdateStamp')
+        .sort({ lastUpdateStamp: -1 })
+        .exec((err, data) => {
+            console.log('data.length=%s', data.length)
+            data.forEach(e => {
+                e.lastUpdateStamp = new Date(e.lastUpdateStamp * 1000).toLocaleDateString()
+            })
+            console.log(data)
+            db.connection.close()
+        })
 }
+findProductByPriceAndRatingCount(1000, 5)
