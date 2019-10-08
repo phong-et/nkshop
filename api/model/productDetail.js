@@ -1,7 +1,8 @@
 const db = require('../db')
 const log = console.log
-const Schema = db.Schema;
-const ObjectId = Schema.ObjectId;
+const common = require('./common')
+const Schema = db.Schema
+const ObjectId = Schema.ObjectId
 const productSchema = new Schema({
   _id: ObjectId,
   id: Number,
@@ -74,75 +75,9 @@ const productSchema = new Schema({
   },
   slug: String
 })
-// function convertStringToNumber(obj) {
-//   for (var prop in obj) {
-//     if (Object.prototype.hasOwnProperty.call(obj, prop)) {
-//       switch (prop) {
-//         case "id":
-//         case "price":
-//         case "status":
-//         case "lastUpdateStamp":
-//         case "locId":
-//         case "districtId":
-//         case "cityId":
-//         case "width":
-//         case "height":
-//         case "locId":
-//         case "ratingScore":
-//         case "ratingCount":
-//         case "ratingAvg":
-//         case "photoCount":
-//         case "timestamp":
-//         case "viewCount":
-
-//         case "entityId":
-//         case "userId":
-//         case "stamp":
-//           obj[prop] = parseInt(obj[prop])
-//           break;
-//       }
-//     }
-//   }
-// }
-
-function convertStringToNumber(obj) {
-  for (var prop in obj) {
-    if (typeof obj[prop] === 'object')
-      convertStringToNumber(obj[prop])
-    else if(typeof obj[prop] instanceof Array)
-      obj[prop].forEach(element => {
-        convertStringToNumber(element)
-      })
-    else
-      switch (prop) {
-        case "id":
-        case "price":
-        case "status":
-        case "lastUpdateStamp":
-        case "locId":
-        case "districtId":
-        case "cityId":
-        case "width":
-        case "height":
-        case "locId":
-        case "ratingScore":
-        case "ratingCount":
-        case "ratingAvg":
-        case "photoCount":
-        case "timestamp":
-        case "viewCount":
-
-        case "entityId":
-        case "userId":
-        case "stamp":
-          obj[prop] = parseInt(obj[prop])
-          break;
-      }
-  }
-}
 function insert(jsonProductDetail) {
   var ProductDetail = db.model('ProductDetail', productSchema, 'product_details');
-  convertStringToNumber(jsonProductDetail)
+  common.convertStringToNumber(jsonProductDetail)
   productDetail = new ProductDetail(jsonProductDetail)
   productDetail.save(function (err, productDetail) {
     if (err) return console.error(err);

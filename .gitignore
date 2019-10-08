@@ -14,3 +14,5 @@ server/package-lock\.json
 cookies_scenario\.txt
 
 nks\.js
+
+test/t8.js
