@@ -1,8 +1,10 @@
 const db = require('../db')
-const Schema = db.Schema;
-const ObjectId = Schema.ObjectId;
+const Schema = db.Schema
+const log = console.log
+const autoIncrement = require('mongoose-sequence')(db);
+const common = require('./common')
 const productSchema = new Schema({
-    _id: ObjectId,
+    _id: Number,
     id: Number,
     name: String,
     price: Number,
@@ -54,8 +56,9 @@ const productSchema = new Schema({
     address: String,
     slug: String
 });
-const productModel = db.model('products', productSchema);
-function findProductByPriceAndRatingCount(price, ratingCount) {
+productSchema.plugin(autoIncrement, {inc_field:'_id'})
+const Product = db.model('product', productSchema, 'product_new');
+function findProductByPRC(price, ratingCount) {
     var query = {
         '$where': 'this.price >= ' + price + ' && this.ratingCount >= ' + ratingCount
     }
@@ -72,4 +75,16 @@ function findProductByPriceAndRatingCount(price, ratingCount) {
             db.connection.close()
         })
 }
-findProductByPriceAndRatingCount(1000, 5)
+function insert(jsonProduct) {
+    common.convertStringToNumber(jsonProduct)
+    product = new Product(jsonProduct)
+    product.save(function (err, product) {
+      if (err) return console.error(err);
+      log(product.name + " saved to product collection.");
+      db.connection.close()
+    });
+  }
+module.exports = {
+    findProductByPRC:findProductByPRC,
+    insert:insert
+}

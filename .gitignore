@@ -16,3 +16,7 @@ cookies_scenario\.txt
 nks\.js
 
 test/t8.js
+
+test/t9.js
+
+api/model/_product.js

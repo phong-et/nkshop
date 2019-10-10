@@ -1,10 +1,10 @@
 const db = require('../db')
-const log = console.log
-const common = require('./common')
 const Schema = db.Schema
-const ObjectId = Schema.ObjectId
-const productSchema = new Schema({
-  _id: ObjectId,
+const log = console.log
+const autoIncrement = require('mongoose-sequence')(db);
+const common = require('./common')
+const productDetailSchema = new Schema({
+  _id: Number,
   id: Number,
   name: String,
   price: Number,
@@ -75,8 +75,9 @@ const productSchema = new Schema({
   },
   slug: String
 })
+productDetailSchema.plugin(autoIncrement, {inc_field:'_id'})
+const ProductDetail = db.model('ProductDetail', productDetailSchema, 'product_details');
 function insert(jsonProductDetail) {
-  var ProductDetail = db.model('ProductDetail', productSchema, 'product_details');
   common.convertStringToNumber(jsonProductDetail)
   productDetail = new ProductDetail(jsonProductDetail)
   productDetail.save(function (err, productDetail) {
