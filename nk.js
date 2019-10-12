@@ -237,12 +237,22 @@ async function fetchReviewListOfProductSaveDb(url, productId, reviewPerPageNumbe
     }
     let json = await rp(options)
     let arrReview = JSON.parse(json)
-    //log(options)
-    //log(arrReview)
-    arrReview.forEach(review => {
+    // FOREACH can not apply async await
+    // arrReview.forEach( async review => {
+    //   review.survey = JSON.parse(review.survey)
+    //   review.productId = productId
+    //   let reviewDetail = await fetchReviewOfProduct(url, review.id, productId)
+    //   review.photos = [];
+    //   review.photos = review.photos.concat(reviewDetail.data.review.photos)
+    //   //log(review.photos)
+    // })
+
+    await Promise.all(arrReview.map( async review => {
       review.survey = JSON.parse(review.survey)
       review.productId = productId
-    })
+      let reviewDetail = await fetchReviewOfProduct(url, review.id, productId)
+      review.photos = reviewDetail.data.review.photos
+    }))
     log('arrReview.length = %s', arrReview.length)
     return arrReview
   } catch (error) {
@@ -259,6 +269,7 @@ async function fetchReviewOfProduct(url, reviewId, productId) {
     let json = await rp(options)
     writeReview(productId, reviewId, json)
     await fetchImagesOfReview(JSON.parse(json), productId)
+    return JSON.parse(json)
   } catch (error) {
     log('fetchReviewOfProduct:')
     log(error.message)

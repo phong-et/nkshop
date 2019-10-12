@@ -1,12 +1,12 @@
-const fs = require('fs')
+
 const db = require('../db')
 const dbURL = require('../../nk.cfg').dbUrl
 const Schema = db.Schema
 const log = console.log
-const autoIncrement = require('mongoose-sequence')(db);
 const common = require('./common')
 const COLLECTION_NAME = 'reviews'
 const reviewSchema = new Schema({
+    photos:[],
     productId: Number,
     title: String,
     entityId: Number,
