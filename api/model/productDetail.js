@@ -3,6 +3,7 @@ const Schema = db.Schema
 const log = console.log
 const autoIncrement = require('mongoose-sequence')(db);
 const common = require('./common')
+const COLLECTION_NAME = 'product_details'
 const productDetailSchema = new Schema({
   _id: Number,
   id: Number,
@@ -76,7 +77,7 @@ const productDetailSchema = new Schema({
   slug: String
 })
 productDetailSchema.plugin(autoIncrement, {inc_field:'_id'})
-const ProductDetail = db.model('ProductDetail', productDetailSchema, 'product_details');
+const ProductDetail = db.model('ProductDetail', productDetailSchema, COLLECTION_NAME);
 function insert(jsonProductDetail) {
   common.convertStringToNumber(jsonProductDetail)
   productDetail = new ProductDetail(jsonProductDetail)

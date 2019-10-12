@@ -175,16 +175,16 @@ function downloadImage(fileName, url, callback) {
       try {
         request(url, (error, response, body) => {
           try {
-            if(error) log('downloadImage.request.head.request:' + error)
+            if (error) log('downloadImage.request.head.request:' + error)
           } catch (error) {
             log('downloadImage.request.head.request.catch:' + error)
           }
         })
-        .pipe(fs.createWriteStream(fileName)
-          .on("error",(err) => log('downloadImage.request.head.request.fs.createWriteStream' + err))
-        )
-        .on("error",(err) => log('downloadImage.request.head.request.pipe' + err))
-        .on('close', callback)
+          .pipe(fs.createWriteStream(fileName)
+            .on("error", (err) => log('downloadImage.request.head.request.fs.createWriteStream' + err))
+          )
+          .on("error", (err) => log('downloadImage.request.head.request.pipe' + err))
+          .on('close', callback)
       } catch (error) {
         log('downloadImage %s error fs.createWriteStream :%s', fileName, error.message)
         log(error)
@@ -300,7 +300,35 @@ async function fetchProductsByIdRange(url, fromProductId, toProductId, condition
     log(error.message)
   }
 }
+let Product = require('./api/model/product')
+async function fetchProductsByIdRangeSaveDb(url, fromProductId, toProductId) {
+  try {
+    for (let i = fromProductId; i <= toProductId; i++) {
+      await delay(wait('product', i, i))
+      if (condition) {
+        var products = await fetchJsonOfProduct(url, i)
+        try {
+          if (products.length > 0) {
+            Product.insertMany(products)
+            log(`Product[${i}] price:${products.price} || ratingCount:${products.ratingCount}`)
+            var price = parseInt(products.price)
+            var ratingCount = parseInt(products.ratingCount)
+            log(`price:${price} || ratingCount:${ratingCount}`)
+            await fetchProduct(url, i, products)
+          }
+          else
+            log('Product is null')
+        } catch (error) {
+          log(error)
+        }
+      }
+    }
+  } catch (error) {
+    log(error.message)
+  }
+}
 
+// save file to disk
 function fetchProductsSGByPriceDescOnePage(pageNumber, callback) {
   let offset = pageNumber == 1 ? 0 : pageNumber * 20
   log(`offset = ${offset} || pageNumber = ${pageNumber}`);
@@ -357,11 +385,53 @@ function fetchProductsSGByPriceDescAllPage(fromPage, toPage) {
 // fetchProductsSGByPriceDescOnePage(1,()=> {})
 // fetchProductsSGByPriceDescAllPage(251,500)
 
+// save to db version 
+async function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback){
+  let offset = currentPage == 1 ? 0 : currentPage * 20
+  log(`offset = ${offset} || currentPage = ${currentPage}`)
+
+  /////////////// Request-native (success) ///////////////
+  var url = cfg.productUrl + '?cityCode=' + cityId + '&mode=directory&offset=' + offset + '&orderBy=' + orderBy
+  log(url)
+  request(url, function (error, response, body) {
+    if(error) log(error);
+    log('statusCode:', response && response.statusCode);
+    //log('headers:', response && response.headers);
+    //log('body:', body);
+    //writeProduct('fetchProductsSGByPriceDescOnePage' + new Date().getTime(), body)
+    if (response && response.statusCode === 503) {
+      callback(503)
+    }
+    else {
+      callback(body);
+    }
+  })
+  /////////////// Request promise (failed) ///////////////
+  // var options = {
+  //   url: cfg.productUrl,
+  //   //headers: headers,
+  //   qs: {
+  //     cityCode: cityId,
+  //     mode: 'directory',
+  //     offset: offset,
+  //     orderBy: orderBy
+  //   }
+  // }
+  // log(options)
+  // let products = await rp(options)
+  // .catch(function (err) {
+  //   console.log(err)
+  // })
+  // log(products)
+  // return products
+}
 module.exports = {
   downloadImage: downloadImage,
   fetchProducts: fetchProducts,
   fetchProductsSGByPriceDescAllPage: fetchProductsSGByPriceDescAllPage,
   fetchProductsByIdRange: fetchProductsByIdRange,
+  fetchProductsByIdRangeSaveDb: fetchProductsByIdRangeSaveDb,
+  fetchProductByCTOnePage:fetchProductByCTOnePage
   //fetchJsonOfProduct: fetchJsonOfProduct
   // requestChkJschl: requestChkJschl,
   // fetchProductsSGByPriceDescOnePage: fetchProductsSGByPriceDescOnePage

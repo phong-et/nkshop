@@ -4,6 +4,7 @@ const Schema = db.Schema
 const log = console.log
 const autoIncrement = require('mongoose-sequence')(db);
 const common = require('./common')
+const COLLECTION_NAME = 'products'
 const productSchema = new Schema({
     _id: Number,
     id: Number,
@@ -58,7 +59,7 @@ const productSchema = new Schema({
     slug: String
 });
 productSchema.plugin(autoIncrement, { inc_field: '_id' })
-const Product = db.model('product', productSchema, 'product_new');
+const Product = db.model('product', productSchema, COLLECTION_NAME);
 function findProductByPRC(price, ratingCount) {
     var query = {
         '$where': 'this.price >= ' + price + ' && this.ratingCount >= ' + ratingCount
@@ -68,11 +69,12 @@ function findProductByPRC(price, ratingCount) {
         'id name price ratingCount lastUpdateStamp')
         .sort({ lastUpdateStamp: -1 })
         .exec((err, data) => {
-            console.log('data.length=%s', data.length)
+            if (err) log(err)
+            log('data.length=%s', data.length)
             data.forEach(e => {
                 e.lastUpdateStamp = new Date(e.lastUpdateStamp * 1000).toLocaleDateString()
             })
-            console.log(data)
+            log(data)
             db.connection.close()
         })
 }
@@ -83,19 +85,20 @@ async function insert(jsonProduct) {
         let product = new Product(jsonProduct)
         await product.save()
         await db.connection.close()
-        log(savedProduct.name + " saved to %s collection.", product.collection.name);
+        log("Saved to %s collection.", product.collection.name);
     } catch (error) {
         log(error)
     }
 }
 // can not apply auto increment id
-function insertMany(jsonProducts) {
+function insertMany(jsonProducts, callback) {
     try {
         db.connect(dbURL, { useNewUrlParser: true });
         Product.insertMany(jsonProducts, function (err) {
-            if (err) return console.error(err);
-            log("saved all to %s collection.", Product.collection.name);
+            if (err) return error(err);
+            log("Saved all to %s collection.", Product.collection.name);
             db.connection.close()
+            callback()
         });
     } catch (error) {
         log(error)
