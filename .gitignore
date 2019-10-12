@@ -26,3 +26,5 @@ test/t10.js
 api/model/ids.json
 
 test/t12.js
+
+.vscode/launch.json
