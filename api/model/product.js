@@ -1,3 +1,4 @@
+const fs = require('fs')
 const db = require('../db')
 const dbURL = require('../../nk.cfg').dbUrl
 const Schema = db.Schema
@@ -64,6 +65,7 @@ function findProductByPRC(price, ratingCount) {
     var query = {
         '$where': 'this.price >= ' + price + ' && this.ratingCount >= ' + ratingCount
     }
+    db.connect(dbURL, { useNewUrlParser: true });
     return productModel.find(
         query,
         'id name price ratingCount lastUpdateStamp')
@@ -104,8 +106,33 @@ function insertMany(jsonProducts, callback) {
         log(error)
     }
 }
+function saveAllProductIdToFile(fileName) {
+    db.connect(dbURL, { useNewUrlParser: true });
+    products =  Product.find(
+        {},
+        'id')
+        .sort({ id: -1 })
+        .exec((err, products) => {
+            if (err) log(err)
+            log('data.length=%s', products.length)
+            let pathFileName = './' + fileName + '.json'
+            let arrProductId = []
+            products.forEach(product =>{
+                arrProductId.push(product.id)
+            })
+            fs.writeFile(pathFileName, '[' +arrProductId.toString() + ']', function (err) {
+                if (err) reject(err)
+                var statusText = 'write file > ' + fileName + ' success'
+                log(statusText)
+            })
+            db.connection.close()
+        })
+}
 module.exports = {
     findProductByPRC: findProductByPRC,
     insert: insert,
-    insertMany: insertMany
+    insertMany: insertMany,
+    saveAllProductIdToFile: saveAllProductIdToFile
 }
+
+saveAllProductIdToFile('ids');

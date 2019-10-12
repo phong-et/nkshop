@@ -1,4 +1,5 @@
 const db = require('../db')
+const dbURL = require('../../nk.cfg').dbUrl
 const Schema = db.Schema
 const log = console.log
 const autoIncrement = require('mongoose-sequence')(db);
@@ -29,8 +30,8 @@ const productDetailSchema = new Schema({
         file: String,
         width: Number,
         height: Number
-      }, 
-      original:{
+      },
+      original: {
         file: String,
         width: Number,
         height: Number
@@ -76,17 +77,20 @@ const productDetailSchema = new Schema({
   },
   slug: String
 })
-productDetailSchema.plugin(autoIncrement, {inc_field:'_id'})
+productDetailSchema.plugin(autoIncrement, { inc_field: '_id' })
 const ProductDetail = db.model('ProductDetail', productDetailSchema, COLLECTION_NAME);
-function insert(jsonProductDetail) {
-  common.convertStringToNumber(jsonProductDetail)
-  productDetail = new ProductDetail(jsonProductDetail)
-  productDetail.save(function (err, productDetail) {
-    if (err) return console.error(err);
-    log(productDetail.name + " saved to product_details collection.");
-    db.connection.close()
-  });
+async function insert(jsonProductDetail) {
+  try {
+    db.connect(dbURL, { useNewUrlParser: true });
+    common.convertStringToNumber(jsonProductDetail)
+    productDetail = new ProductDetail(jsonProductDetail)
+    productDetail = await productDetail.save()
+    await db.connection.close()
+    log(productDetail.id + " saved to %s collection.", COLLECTION_NAME)
+  } catch (error) {
+    log(error)
+  }
 }
 module.exports = {
-  insert:insert
+  insert: insert
 }

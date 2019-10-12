@@ -300,28 +300,19 @@ async function fetchProductsByIdRange(url, fromProductId, toProductId, condition
     log(error.message)
   }
 }
-let Product = require('./api/model/product')
-async function fetchProductsByIdRangeSaveDb(url, fromProductId, toProductId) {
+let ProductDetail = require('./api/model/productDetail')
+async function fetchProductDetailByListId(url, productIdList) {
   try {
-    for (let i = fromProductId; i <= toProductId; i++) {
-      await delay(wait('product', i, i))
-      if (condition) {
-        var products = await fetchJsonOfProduct(url, i)
-        try {
-          if (products.length > 0) {
-            Product.insertMany(products)
-            log(`Product[${i}] price:${products.price} || ratingCount:${products.ratingCount}`)
-            var price = parseInt(products.price)
-            var ratingCount = parseInt(products.ratingCount)
-            log(`price:${price} || ratingCount:${ratingCount}`)
-            await fetchProduct(url, i, products)
-          }
-          else
-            log('Product is null')
-        } catch (error) {
-          log(error)
-        }
+    for (let i = 0; i < productIdList.length; i++) {
+      await delay(wait('product', i, productIdList[i]))
+      var jsonProduct = await fetchJsonOfProduct(url, productIdList[i])
+      if (jsonProduct) {
+        log(`price:${jsonProduct.price} || ratingCount:${jsonProduct.ratingCount}`)
+        await ProductDetail.insert(jsonProduct)       
+        await fetchProduct(url, productIdList[i], jsonProduct)
       }
+      else
+        log('Product is null')
     }
   } catch (error) {
     log(error.message)
@@ -430,7 +421,7 @@ module.exports = {
   fetchProducts: fetchProducts,
   fetchProductsSGByPriceDescAllPage: fetchProductsSGByPriceDescAllPage,
   fetchProductsByIdRange: fetchProductsByIdRange,
-  fetchProductsByIdRangeSaveDb: fetchProductsByIdRangeSaveDb,
+  fetchProductDetailByListId: fetchProductDetailByListId,
   fetchProductByCTOnePage:fetchProductByCTOnePage
   //fetchJsonOfProduct: fetchJsonOfProduct
   // requestChkJschl: requestChkJschl,
