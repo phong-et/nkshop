@@ -1,4 +1,5 @@
 const db = require('../db')
+const dbURL = require('../../nk.cfg').dbUrl
 const Schema = db.Schema
 const log = console.log
 const autoIncrement = require('mongoose-sequence')(db);
@@ -56,7 +57,7 @@ const productSchema = new Schema({
     address: String,
     slug: String
 });
-productSchema.plugin(autoIncrement, {inc_field:'_id'})
+productSchema.plugin(autoIncrement, { inc_field: '_id' })
 const Product = db.model('product', productSchema, 'product_new');
 function findProductByPRC(price, ratingCount) {
     var query = {
@@ -75,16 +76,33 @@ function findProductByPRC(price, ratingCount) {
             db.connection.close()
         })
 }
-function insert(jsonProduct) {
-    common.convertStringToNumber(jsonProduct)
-    product = new Product(jsonProduct)
-    product.save(function (err, product) {
-      if (err) return console.error(err);
-      log(product.name + " saved to product collection.");
-      db.connection.close()
-    });
-  }
+async function insert(jsonProduct) {
+    try {
+        db.connect(dbURL, { useNewUrlParser: true });
+        common.convertStringToNumber(jsonProduct)
+        let product = new Product(jsonProduct)
+        await product.save()
+        await db.connection.close()
+        log(savedProduct.name + " saved to %s collection.", product.collection.name);
+    } catch (error) {
+        log(error)
+    }
+}
+// can not apply auto increment id
+function insertMany(jsonProducts) {
+    try {
+        db.connect(dbURL, { useNewUrlParser: true });
+        Product.insertMany(jsonProducts, function (err) {
+            if (err) return console.error(err);
+            log("saved all to %s collection.", Product.collection.name);
+            db.connection.close()
+        });
+    } catch (error) {
+        log(error)
+    }
+}
 module.exports = {
-    findProductByPRC:findProductByPRC,
-    insert:insert
+    findProductByPRC: findProductByPRC,
+    insert: insert,
+    insertMany: insertMany
 }

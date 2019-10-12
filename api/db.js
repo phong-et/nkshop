@@ -11,7 +11,7 @@ var error = chalk.bold.yellow;
 var disconnected = chalk.bold.red;
 var termination = chalk.bold.magenta;
 
-mongoose.connect(dbURL, { useNewUrlParser: true });
+// mongoose.createConnection(dbURL, { useNewUrlParser: true });
 // fix autoIncrementId (warning)
 mongoose.set('useCreateIndex', true);
 // fix warning DeprecationWarning: Mongoose: `findOneAndUpdate()` and `findOneAndDelete()` without the `useFindAndModify` option set to false are deprecated. See: https://mongoosejs.com/docs/deprecations.html#-findandmodify

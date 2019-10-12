@@ -86,7 +86,6 @@ function insert(jsonProductDetail) {
     db.connection.close()
   });
 }
-
 module.exports = {
   insert:insert
 }
