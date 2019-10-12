@@ -219,7 +219,36 @@ async function fetchReviewListOfProduct(url, productId, reviewPerPageNumber) {
     log(error.message)
   }
 }
-// Test 1
+
+async function fetchReviewListOfProductSaveDb(url, productId, reviewPerPageNumber) {
+  try {
+    var options = {
+      url: url,
+      headers: headers,
+      qs: {
+        entityId: productId,
+        entityType: 'product',
+        includeAuthor: true,
+        orderBy: 'latest',
+        page: 1,
+        plugin: 'escort',
+        rpp: reviewPerPageNumber,
+      },
+    }
+    let json = await rp(options)
+    let arrReview = JSON.parse(json)
+    //log(options)
+    //log(arrReview)
+    arrReview.forEach(review => {
+      review.survey = JSON.parse(review.survey)
+      review.productId = productId
+    })
+    log('arrReview.length = %s', arrReview.length)
+    return arrReview
+  } catch (error) {
+    log(error.message)
+  }
+}
 
 async function fetchReviewOfProduct(url, reviewId, productId) {
   try {
@@ -422,7 +451,8 @@ module.exports = {
   fetchProductsSGByPriceDescAllPage: fetchProductsSGByPriceDescAllPage,
   fetchProductsByIdRange: fetchProductsByIdRange,
   fetchProductDetailByListId: fetchProductDetailByListId,
-  fetchProductByCTOnePage:fetchProductByCTOnePage
+  fetchProductByCTOnePage: fetchProductByCTOnePage,
+  fetchReviewListOfProductSaveDb: fetchReviewListOfProductSaveDb
   //fetchJsonOfProduct: fetchJsonOfProduct
   // requestChkJschl: requestChkJschl,
   // fetchProductsSGByPriceDescOnePage: fetchProductsSGByPriceDescOnePage

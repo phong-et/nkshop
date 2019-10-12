@@ -22,3 +22,5 @@ test/t9.js
 api/model/_product.js
 
 test/t10.js
+
+api/model/ids.json
