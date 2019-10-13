@@ -91,6 +91,49 @@ async function insert(jsonProductDetail) {
     log(error)
   }
 }
+function findProductByConditions(conditions, callback) {
+  // var query = {
+  //     '$where': 'this.price ' + priceCondition + ' && this.ratingCount ' + ratingCountCondition + '&&' + 'this.status ' + statusCondition
+  // }
+  var query = {
+      '$where': conditions.map(condition => {
+          if (condition.indexOf('new') > -1)
+              return condition
+          return 'this.' + condition
+      }).join(' && ')
+  }
+  log(query)
+  db.connect(dbURL, { useNewUrlParser: true });
+  return ProductDetail.find(
+      query,
+      'id name price ratingCount lastUpdateStamp status attributes')
+      .sort({ lastUpdateStamp: -1 })
+      .exec((err, data) => {
+          if (err) log(err)
+          log('data.length=%s', data.length)
+          data.forEach(e => {
+              e.lastUpdateStamp = new Date(e.lastUpdateStamp * 1000).toLocaleDateString()
+          })
+          callback(data)
+          db.connection.close()
+      })
+}
+findProductByConditions([
+  "price >= 1000",
+  "ratingCount === 0",
+  "status === 2",
+  "parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(0,4)) === 2019",
+  "attributes !== undefined",
+  "attributes[\"51\"] >= 95",
+  "attributes[\"49\"] >= 95",
+], products => {
+  log(products)
+  products.forEach(product => {
+      // if (product.attributes)
+      //     if (product.attributes["51"] >= 90)
+      //         log(product) 
+  })
+})
 module.exports = {
   insert: insert
 }
