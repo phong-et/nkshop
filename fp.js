@@ -1,16 +1,14 @@
-var nk = require('./nk');
-var cfg = require('./nk.cfg')
+let nk = require('./nk'),
+cfg = require('./nk.cfg'),
+Product = require('./api/model/product')
+// fetch
 // nk.fetchProducts(cfg.productUrl,
 //   [
 //     24855
 //   ])
 
-nk.fetchProductDetailByListId(cfg.productUrl, [
-  25736,
-  // 23229,
-  // 25409
-])
-//nk.fetchProductsSGByPriceDescAllPage(1,15);
+// nk.fetchProductDetailByListId(cfg.productUrl, [
+// ])
 
 // nk.fetchProductsByIdRange(
 //   cfg.productUrl, 
@@ -29,14 +27,11 @@ nk.fetchProductDetailByListId(cfg.productUrl, [
 
 //nk.fetchJsonOfProduct(cfg.productUrl, id)
 
-/**
- * internal/streams/legacy.js:57
-      throw er; // Unhandled stream error in pipe.
-      ^
-Error: connect ETIMEDOUT ip
-    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1097:14)
-Error: connect ETIMEDOUT ip
-    
-Error: read ECONNRESET
-downloadImage.request.head:Error: connect ETIMEDOUT 104.25.90.6:443
-*/
+
+//Product.findProductByPRC(1000,10)
+
+////////////////////////////////// SUMARY WEEKEND //////////////////////////////////////
+// fetch all review, product image and json of 8227 product detail | 10001 product || 24.497 review
+// Code again fetchProduct (save product, product detail, review to db & all images)
+// onLeave & status 
+// code update new products, althorithm on google keep

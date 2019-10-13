@@ -3,7 +3,6 @@ const db = require('../db')
 const dbURL = require('../../nk.cfg').dbUrl
 const Schema = db.Schema
 const log = console.log
-const autoIncrement = require('mongoose-sequence')(db);
 const common = require('./common')
 const COLLECTION_NAME = 'products'
 const productSchema = new Schema({
@@ -59,7 +58,6 @@ const productSchema = new Schema({
     address: String,
     slug: String
 });
-//productSchema.plugin(autoIncrement, { inc_field: '_id' })
 const Product = db.model('product', productSchema, COLLECTION_NAME);
 function findProductByPRC(price, ratingCount) {
     var query = {
@@ -142,27 +140,9 @@ module.exports = {
     findProductByPRC: findProductByPRC,
     insert: insert,
     insertMany: insertMany,
-    saveAllProductIdToFile: saveAllProductIdToFile
+    saveAllProductIdToFile: saveAllProductIdToFile,
+    getLatestProductId:getLatestProductId
 }
 
 //saveAllProductIdToFile('ids');
 //getLatestProductId()
-findProductByConditions([
-    "price <= 1600",
-    "ratingCount === 0",
-    "status === 2",
-    "parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(0,4)) === 2019"
-    //"attributes !== undefined",
-    //"attributes[\"51\"] >= 90",
-], products => {
-    products.forEach(product => {
-        if (product.attributes)
-            if (product.attributes["51"] >= 90)
-                log(product)
-            else
-                log('product.attributes["51"]:%s',product.attributes["51"])
-        else
-            log(product)
-                
-    })
-})
