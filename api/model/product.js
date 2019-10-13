@@ -80,6 +80,34 @@ function findProductByPRC(price, ratingCount) {
             db.connection.close()
         })
 }
+function findProductByConditions(conditions, priceCondition, ratingCountCondition, statusCondition) {
+    // var query = {
+    //     '$where': 'this.price ' + priceCondition + ' && this.ratingCount ' + ratingCountCondition + '&&' + 'this.status ' + statusCondition
+    // }
+    var query = {
+        '$where': conditions.map(condition => {
+            if(condition.indexOf('new')>-1)
+                return condition
+            return 'this.' + condition
+        }).join(' && ')
+    }
+    log(query)
+    db.connect(dbURL, { useNewUrlParser: true });
+    return Product.find(
+        query,
+        'id name price ratingCount lastUpdateStamp status')
+        .sort({ lastUpdateStamp: -1 })
+        .exec((err, data) => {
+            if (err) log(err)
+            log('data.length=%s', data.length)
+            data.forEach(e => {
+                e.lastUpdateStamp = new Date(e.lastUpdateStamp * 1000).toLocaleDateString()
+            })
+            //log(data)
+            db.connection.close()
+        })
+}
+
 async function insert(jsonProduct) {
     try {
         db.connect(dbURL, { useNewUrlParser: true });
@@ -132,7 +160,7 @@ function saveAllProductIdToFile(fileName) {
 function getLatestProductId() {
     db.connect(dbURL, { useNewUrlParser: true });
     Product.findOne({}).sort({ id: -1 }).exec((err, data) => {
-        if(err) log(err)
+        if (err) log(err)
         log(data.id)
         db.connection.close()
     })
@@ -145,4 +173,12 @@ module.exports = {
 }
 
 //saveAllProductIdToFile('ids');
-getLatestProductId()
+//getLatestProductId()
+findProductByConditions([
+    // "price <= 100", 
+    // "ratingCount === 0", 
+    // "status === 2", 
+    // "parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(0,4)) === 2019",
+    "attributes === undefined",
+    //"attributes[\"51\"] >= 90"
+])
