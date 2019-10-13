@@ -59,14 +59,14 @@ const productSchema = new Schema({
     address: String,
     slug: String
 });
-productSchema.plugin(autoIncrement, { inc_field: '_id' })
+//productSchema.plugin(autoIncrement, { inc_field: '_id' })
 const Product = db.model('product', productSchema, COLLECTION_NAME);
 function findProductByPRC(price, ratingCount) {
     var query = {
         '$where': 'this.price >= ' + price + ' && this.ratingCount >= ' + ratingCount
     }
     db.connect(dbURL, { useNewUrlParser: true });
-    return productModel.find(
+    return Product.find(
         query,
         'id name price ratingCount lastUpdateStamp')
         .sort({ lastUpdateStamp: -1 })
@@ -108,25 +108,34 @@ function insertMany(jsonProducts, callback) {
 }
 function saveAllProductIdToFile(fileName) {
     db.connect(dbURL, { useNewUrlParser: true });
-    products =  Product.find(
+    products = Product.find(
         {},
-        'id')
+        'id ratingCount')
         .sort({ id: -1 })
         .exec((err, products) => {
             if (err) log(err)
             log('data.length=%s', products.length)
             let pathFileName = './' + fileName + '.json'
             let arrProductId = []
-            products.forEach(product =>{
-                arrProductId.push(product.id)
+            products.forEach(product => {
+                if (product.ratingCount > 0)
+                    arrProductId.push({ id: product.id, ratingCount: product.ratingCount })
             })
-            fs.writeFile(pathFileName, '[' +arrProductId.toString() + ']', function (err) {
+            fs.writeFile(pathFileName, '[' + JSON.stringify(arrProductId) + ']', function (err) {
                 if (err) reject(err)
                 var statusText = 'write file > ' + fileName + ' success'
                 log(statusText)
             })
             db.connection.close()
         })
+}
+function getLatestProductId() {
+    db.connect(dbURL, { useNewUrlParser: true });
+    Product.findOne({}).sort({ id: -1 }).exec((err, data) => {
+        if(err) log(err)
+        log(data.id)
+        db.connection.close()
+    })
 }
 module.exports = {
     findProductByPRC: findProductByPRC,
@@ -135,4 +144,5 @@ module.exports = {
     saveAllProductIdToFile: saveAllProductIdToFile
 }
 
-saveAllProductIdToFile('ids');
+//saveAllProductIdToFile('ids');
+getLatestProductId()

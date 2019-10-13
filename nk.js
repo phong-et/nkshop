@@ -49,12 +49,12 @@ function writeProduct(productId, content) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir)
     }
-    fs.writeFile(fileName, content, function (err) {
-      if (err) reject(err)
-      var statusText = 'write file > ' + fileName + ' success'
-      //log(statusText)
-      resolve(statusText)
-    })
+    // fs.writeFile(fileName, content, function (err) {
+    //   if (err) reject(err)
+    //   var statusText = 'write file > ' + fileName + ' success'
+    //   //log(statusText)
+    //   resolve(statusText)
+    // })
   })
 }
 // folder = SGBP/
@@ -69,12 +69,12 @@ function writeProductsCity(fileName, folder, content) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir)
     }
-    fs.writeFile(fileName, content, function (err) {
-      if (err) reject(err)
-      var statusText = 'write file > ' + fileName + ' success'
-      //log(statusText)
-      resolve(statusText)
-    })
+    // fs.writeFile(fileName, content, function (err) {
+    //   if (err) reject(err)
+    //   var statusText = 'write file > ' + fileName + ' success'
+    //   //log(statusText)
+    //   resolve(statusText)
+    // })
   })
 }
 function writeReviews(productId, content) {
@@ -84,12 +84,12 @@ function writeReviews(productId, content) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir)
     }
-    fs.writeFile(fileName, content, function (err) {
-      if (err) reject(err)
-      var statusText = 'write file > ' + fileName + ' success'
-      //log(statusText)
-      resolve(statusText)
-    })
+    // fs.writeFile(fileName, content, function (err) {
+    //   if (err) reject(err)
+    //   var statusText = 'write file > ' + fileName + ' success'
+    //   //log(statusText)
+    //   resolve(statusText)
+    // })
   })
 }
 function writeReview(productId, reviewId, content) {
@@ -99,12 +99,12 @@ function writeReview(productId, reviewId, content) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir)
     }
-    fs.writeFile(fileName, content, function (err) {
-      if (err) reject(err)
-      var statusText = 'write file > ' + fileName + ' success'
-      //log(statusText)
-      resolve(statusText)
-    })
+    // fs.writeFile(fileName, content, function (err) {
+    //   if (err) reject(err)
+    //   var statusText = 'write file > ' + fileName + ' success'
+    //   //log(statusText)
+    //   resolve(statusText)
+    // })
   })
 }
 ///////////////////////// FETCH Product /////////////////////////
@@ -260,22 +260,21 @@ async function fetchReviewListOfProductSaveDb(url, productId, reviewPerPageNumbe
   }
 }
 
-async function fetchReviewOfProduct(url, reviewId, productId) {
+async function fetchReviewOfProduct(url, reviewId, productId, saveToDisk, isFetchImage) {
   try {
     var options = {
       url: url + '/' + reviewId,
       headers: headers,
     }
     let json = await rp(options)
-    writeReview(productId, reviewId, json)
-    await fetchImagesOfReview(JSON.parse(json), productId)
+    if(saveToDisk) writeReview(productId, reviewId, json)
+    if(isFetchImage) await fetchImagesOfReview(JSON.parse(json), productId)
     return JSON.parse(json)
   } catch (error) {
     log('fetchReviewOfProduct:')
     log(error.message)
   }
 }
-// Test 2
 
 async function delay(ms) {
   return new Promise(resolve => {
@@ -283,7 +282,7 @@ async function delay(ms) {
   })
 }
 function wait(label, i, val) {
-  var seconds = Array(1000, 2000, 1500, 500)
+  var seconds = Array(1000, 500, 1500, 500)
   second = seconds[Math.floor(Math.random() * seconds.length)]
   log('%sId[%s] = %s, wait : ', label, i, val, second)
   return second
@@ -292,15 +291,13 @@ async function fetchReviewsOfProduct(url, productId, reviewIds) {
   try {
     for (let i = 0; i < reviewIds.length; i++) {
       await delay(wait('review', i, reviewIds[i]))
-      await fetchReviewOfProduct(url, reviewIds[i], productId)
+      await fetchReviewOfProduct(url, reviewIds[i], productId, true, true)
     }
   } catch (error) {
     log('fetchReviewsOfProduct:')
     log(error.message)
   }
 }
-// Test 3
-
 /////////////////  MAIN /////////////
 async function fetchProducts(url, productIds) {
   try {
@@ -378,11 +375,6 @@ function fetchProductsSGByPriceDescOnePage(pageNumber, callback) {
   })
 }
 
-// Test OnePage
-// fetchProductsSGByPriceDescOnePage(0, (data) => {
-//   writeProductsCity('P1', 'SGBPD/', data)
-// })
-
 /////////////////////// Recursive load all pages ///////////////////////
 let nkProducts = []
 function fetchProductsSGByPriceDescAllPage(fromPage, toPage) {
@@ -413,8 +405,6 @@ function fetchProductsSGByPriceDescAllPage(fromPage, toPage) {
     log(error)
   }
 }
-// fetchProductsSGByPriceDescOnePage(1,()=> {})
-// fetchProductsSGByPriceDescAllPage(251,500)
 
 // save to db version 
 async function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback){
