@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Hello, world!</title>
+    <style>
+        form#form-search .conditions {
+            width: 80px;
+            margin: 0 10px;
+        }
+
+        form#form-search .form-control {
+            margin: 0 5px;
+        }
+
+        form#form-search input {
+            width: 98px !important
+        }
+
+        form#form-search label {
+            margin-left: 15px;
+            font-weight: bold;
+            color: green;
+        }
+
+        fieldset {
+            border: 1px groove #ddd !important;
+            padding: 0 1.4em 1.4em 1.4em !important;
+            margin: 0 0 1.5em 0 !important;
+            -webkit-box-shadow: 0px 0px 0px 0px #000;
+            box-shadow: 0px 0px 0px 0px #000;
+        }
+
+        legend {
+            width: inherit;
+            /* Or auto */
+            padding: 0 10px;
+            /* To give a bit of padding on the left and right */
+            border-bottom: none;
+        }
+
+        #form-search-control {
+            margin-bottom: 20px;
+        }
+
+        #form-search-control label {
+            padding: 5px;
+            margin-right: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <fieldset>
+        <legend>
+            <h3>NKShop Find Tool</h3>
+        </legend>
+        <form id="form-search-control" class="form-inline">
+            <input type="checkbox" checked id="cbPrice">
+            <label>Price</label>
+            <input type="checkbox" checked id="cbRatingCount">
+            <label>Rating Count</label>
+            <input type="checkbox" checked id="cbStatus">
+            <label>Status</label>
+            <input type="checkbox" checked id="cbPhotoCount">
+            <label>Photo Count</label>
+            <input type="checkbox" checked id="cbYear">
+            <label>Year</label>
+            <input type="checkbox" checked id="cbV1">
+            <label>V1</label>
+            <input type="checkbox" checked id="cbV3">
+            <label>V3</label>
+            <input type="checkbox" checked id="cbAge">
+            <label>Age</label>
+        </form>
+        <form id="form-search" class="form-inline">
+            <label style="margin-left:0;">Price: </label>
+            <select class="form-control conditions" id="conditionsPrice">
+                <option>&gt;=</option>
+                <option>&lt;=</option>
+                <option>==</option>
+                <option>&gt;</option>
+                <option>&lt;</option>
+            </select>
+            <select class="form-control" id="price">
+                <option>Price</option>
+            </select>
+            <label>Rating: </label>
+            <select class="form-control conditions" id="conditionsRatingCount">
+                <option>&gt;=</option>
+                <option>&lt;=</option>
+                <option>==</option>
+                <option>&gt;</option>
+                <option>&lt;</option>
+            </select>
+            <input type="number" class="form-control" id="ratingCount" placeholder="number">
+            <select class="form-control" id="status">
+                <option value="0">Status</option>
+                <option value="1">Active</option>
+                <option value="2">Off</option>
+            </select>
+            <label>Photo: </label>
+            <select class="form-control conditions" id="conditionsPhotoCount">
+                <option>&gt;=</option>
+                <option>&lt;=</option>
+                <option>==</option>
+                <option>&gt;</option>
+                <option>&lt;</option>
+            </select>
+            <select class="form-control" id="photoCount">
+                <option>Photo</option>
+                <option>0</option>
+                <option>1</option>
+            </select>
+
+            <label>Year: </label>
+            <select class="form-control" id="conditionsYear">
+                <option>&gt;=</option>
+                <option>&lt;=</option>
+                <option>==</option>
+                <option>&gt;</option>
+                <option>&lt;</option>
+            </select>
+            <select class="form-control" id="year">
+                <option>Year</option>
+                <option>2019</option>
+                <option>2018</option>
+                <option>2017</option>
+                <option>2016</option>
+                <option>2015</option>
+            </select>
+
+            <label>Version 1: </label>
+            <select class="form-control" id="conditionsV1">
+                <option>&gt;=</option>
+                <option>&lt;=</option>
+                <option>==</option>
+                <option>&gt;</option>
+                <option>&lt;</option>
+            </select>
+            <input type="number" class="form-control" id="v1Number" placeholder="number">
+
+            <label>Version 3: </label>
+            <select class="form-control" id="conditionsV3">
+                <option>&gt;=</option>
+                <option>&lt;=</option>
+                <option>==</option>
+                <option>&gt;</option>
+                <option>&lt;</option>
+            </select>
+            <input type="number" class="form-control" id="v3Number" placeholder="number">
+
+            <label>Age: </label>
+            <select class="form-control" id="conditionsAge">
+                <option>&gt;=</option>
+                <option>&lt;=</option>
+                <option>==</option>
+                <option>&gt;</option>
+                <option>&lt;</option>
+            </select>
+            <select class="form-control" id="age">
+                <option>Year</option>
+            </select>
+        </form>
+        <button id="btnSearch" style="margin: 10px;" type="button" class="btn btn-primary btn-lg">Search</button>
+    </fieldset>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <script>
+        function genConditions() {
+            var query = []
+            if ($('#cbPrice').is(':checked'))
+                query.push(`price ${$('#conditionsPrice option:selected').text()} ${$('#price option:selected').text()}`)
+            if ($('#cbRatingCount').is(':checked'))
+                query.push(` ratingCount ${$('#conditionsRatingCount option:selected').text()} ${$('#ratingCount').val()}`)
+            if ($('#cbStatus').is(':checked'))
+                query.push(` status === ${$('#status option:selected').val()}`)
+            if ($('#cbPhotoCount').is(':checked'))
+                query.push(` photos.length ${$('#conditionsPhotoCount option:selected').text()} ${$('#photoCount option:selected').text()}`)
+            if ($('#cbYear').is(':checked'))
+                query.push(` parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(0,4)) ${$('#conditionsYear option:selected').text()} ${$('#year option:selected').text()}`)
+            if ($('#cbV1').is(':checked') || $('#cbV3').is(':checked') ||  $('#cbAge').is(':checked')) {
+                query.push('attributes !== undefined')
+                if ($('#cbV1').is(':checked'))
+                    query.push(` attributes['51'] ${$('#conditionsV1 option:selected').text()} ${$('#v1Number').val()}`)
+                if ($('#cbV3').is(':checked'))
+                    query.push(` attributes['49'] ${$('#conditionsV3 option:selected').text()} ${$('#v3Number').val()}`)
+                if ($('#cbAge').is(':checked'))
+                    query.push(` new Date(this.attributes['42']*1000).getFullYear() ${$('#conditionsAge option:selected').text()} ${$('#age option:selected').text()}`)
+            }
+            return query
+        }
+        function setDefaultValues() {
+
+        }
+        function drawProduct(products){
+            
+        }
+        $().ready(function () {
+            $('#btnSearch').click(function () {
+                var query = genConditions()
+                $.ajax({
+                    url: '/product/',
+                    type: 'GET',
+                    data: { query: query.toString() },
+                    success: function (responseText) {
+                        try {
+                            var records = JSON.parse(responseText);
+                            //callback(records)
+                        }
+                        catch (e) {
+                            //callback(e)
+                        }
+                    },
+                    error: function (err) {
+                        //alert(err)
+                    }
+                });
+            })
+        })
+    </script>
+</body>
+
+</html>
