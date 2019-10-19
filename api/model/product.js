@@ -128,14 +128,16 @@ function saveAllProductIdToFile(fileName) {
             db.connection.close()
         })
 }
-function getLatestProductId() {
+function getLatestProductId(callback) {
     db.connect(dbURL, { useNewUrlParser: true });
     Product.findOne({}).sort({ id: -1 }).exec((err, data) => {
         if (err) log(err)
         log(data.id)
         db.connection.close()
+        callback(data.id)
     })
 }
+
 module.exports = {
     findProductByPRC: findProductByPRC,
     insert: insert,

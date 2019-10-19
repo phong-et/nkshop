@@ -5,7 +5,7 @@ function filterProductByPriceAndReport(price, ratingCount) {
     try {
       log('filterProductByPriceAndReport')
       let products = JSON.parse(fs.readFileSync(__dirname + '/products/SGBPD/20190720/P_ALL_0_400.json', 'utf-8'))
-      log(`products,.length = ${products.length}`)
+      log(`products.length = ${products.length}`)
       products.map(product => {
         let productPrice = parseInt(product.price),
           productRatingCount = parseInt(product.ratingCount)

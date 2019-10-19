@@ -8,7 +8,7 @@ const log = console.log
 //     Product.insertMany(JSON.parse(products))
 // })
 
-
+// customize to save db
 async function fetchProductByCTAllPage(cityId, orderBy, fromPage, toPage) {
     try {
         nk.fetchProductByCTOnePage(cityId, orderBy, fromPage, (products) => {
@@ -30,5 +30,30 @@ async function fetchProductByCTAllPage(cityId, orderBy, fromPage, toPage) {
         log(error)
     }
 }
+async function fetchProductByCTAllPageGetNewProducts(cityId, orderBy, fromPage, toPage) {
+    try {
+        var result = []
+        return nk.fetchProductByCTOnePage(cityId, orderBy, fromPage, (products) => {
+            result = result.concat(products)
+            fromPage = fromPage + 1
+            if (fromPage <= toPage) {
+                setTimeout(() => {
+                    log('====> Current page = ', fromPage)
+                    fetchProductByCTAllPage(cityId, orderBy, fromPage, toPage)
+                }, 1000)
+            }
+            else {
+                log('Done fetching product all %s page', toPage)
+                return result
+            }
+        })
+    } catch (error) {
+        log('fetchProductByCTAllPage')
+        log(error)
+    }
+}
 // save data to mongodb
-fetchProductByCTAllPage(cfg.cities[0], cfg.orderBy[0], 1, 500)
+//fetchProductByCTAllPage(cfg.cities[0], cfg.orderBy[0], 1, 500)
+(async () => {
+    log(await fetchProductByCTAllPageGetNewProducts(cfg.cities[0], cfg.orderBy[0], 1, 2))
+})()
