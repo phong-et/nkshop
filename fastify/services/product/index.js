@@ -1,19 +1,13 @@
 'use strict'
-
-// module.exports = function (fastify, opts, next) {
-//   fastify.get('/example', function (request, reply) {
-//     reply.send('this is an example')
-//   })
-
-//   next()
-// }
-
-// If you prefer async/await, use the following
-//
-var log = console.log
+let log = console.log,
+    productDetail = require('../../models/productDetail')
 module.exports = async function (fastify, opts) {
-  fastify.get('/product/', async function (request, reply) {
-    log(request.query)
-    reply.send(request.query)
-  })
+    fastify.get('/product/', async function (request, reply) {
+        //log('----request.query----')
+        //log(request.query['query'])
+        productDetail.findProductByConditions(request.query['query'].split(','), products => {
+            log(products.length)
+            reply.send(products)
+        })
+    })
 }
