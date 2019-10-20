@@ -6,7 +6,7 @@ const log = console.log
 const common = require('./common')
 const COLLECTION_NAME = 'reviews'
 const reviewSchema = new Schema({
-    photos:[],
+    photos: [],
     productId: Number,
     title: String,
     entityId: Number,
@@ -61,8 +61,37 @@ async function insertMany(jsonReviews) {
         log(error)
     }
 }
+async function findReviewsOfProduct(productId) {
+    var query = {
+        '$where': 'this.productId == ' + productId
+    }
+    log(query)
+    db.connect(dbURL, { useNewUrlParser: true });
+    try {
+        let reviews = await Review.find(
+            query,
+            'id productId'
+            //userId phone timeStamp'
+        )
+        .sort({ timeStamp: -1 })
+        .exec()
+        log('data.length=%s', reviews.length)
+        let reviewIds = []
+        reviews.forEach(e => {
+            e.timeStamp = new Date(e.timeStamp * 1000).toLocaleDateString()
+            reviewIds.push(e.id)
+        })
+        //log(reviews)
+        db.connection.close()
+        return reviewIds
+    } catch (error) {
+        log(error)
+    }
 
+}
 module.exports = {
     insert: insert,
     insertMany: insertMany,
-}
+    findReviewsOfProduct: findReviewsOfProduct
+};
+//(async function () { await findReviewsOfProduct(24842) }())

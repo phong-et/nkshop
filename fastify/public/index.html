@@ -283,7 +283,8 @@
                     <i class="fa fa-child"></i><span>${product.attributes['46']}</span><br />
                     
                     <i class="fa fa-film"></i><span class="productId">${product.id}</span>
-                    <i class="fa fa-external-link"></i><span><a href="#" onclick="openProductFolder('${product.id}')">Open</a></span>
+                    <i class="fa fa-external-link"></i><span><a href="#" onclick="openProductFolder('${product.id}'); return false">Open</a></span>
+                    <i class="fa fa-external-link"></i><span><a href="#" onclick="updateReviews('${product.id}'); return false;">Update Reviews</a></span>
                 </div>`
             })
             $('#divProducts').html(strHtml)
@@ -295,6 +296,23 @@
                 success: function (isOpen) {
                     try {
                         console.log(isOpen)
+                    }
+                    catch (e) {
+                        console.log(e)
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            });
+        }
+        function updateReviews(productId) {
+            $.ajax({
+                url: '/product/updateReviews/' + productId,
+                type: 'GET',
+                success: function (isUpdated) {
+                    try {
+                        console.log(isUpdated)
                     }
                     catch (e) {
                         console.log(e)
