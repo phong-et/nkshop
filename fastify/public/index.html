@@ -80,91 +80,40 @@
             <label>Age</label>
         </form>
         <form id="form-search" class="form-inline">
-            <label style="margin-left:0;">Price: </label>
-            <select class="form-control conditions" id="conditionsPrice">
-                <option>&gt;=</option>
-                <option>&lt;=</option>
-                <option>==</option>
-                <option>&gt;</option>
-                <option>&lt;</option>
-            </select>
-            <select class="form-control" id="price">
-                <option>Price</option>
-            </select>
-            <label>Rating: </label>
-            <select class="form-control conditions" id="conditionsRatingCount">
-                <option>&gt;=</option>
-                <option>&lt;=</option>
-                <option>==</option>
-                <option>&gt;</option>
-                <option>&lt;</option>
-            </select>
-            <input type="number" class="form-control" id="ratingCount" placeholder="number">
-            <select class="form-control" id="status">
+            <label id="lbPrice" style="margin-left:0;">Price: </label>
+            <select class="form-control conditions" id="conditionsPrice"></select>
+            <select class="form-control" id="ddlPrice"></select>
+            <label id="lbRatingCount">Rating: </label>
+            <select class="form-control conditions" id="conditionsRatingCount"></select>
+            <input type="number" class="form-control" id="txtRatingCount" placeholder="number">
+            <select class="form-control" id="ddlStatus">
                 <option value="0">Status</option>
                 <option value="1">Active</option>
                 <option value="2">Off</option>
             </select>
-            <label>Photo: </label>
-            <select class="form-control conditions" id="conditionsPhotoCount">
-                <option>&gt;=</option>
-                <option>&lt;=</option>
-                <option>==</option>
-                <option>&gt;</option>
-                <option>&lt;</option>
-            </select>
-            <select class="form-control" id="photoCount">
+            <label id="lbPhotoCount">Photo: </label>
+            <select class="form-control conditions" id="conditionsPhotoCount"></select>
+            <select class="form-control" id="ddlPhotoCount">
                 <option>Photo</option>
                 <option>0</option>
                 <option>1</option>
             </select>
 
-            <label>Year: </label>
-            <select class="form-control" id="conditionsYear">
-                <option>&gt;=</option>
-                <option>&lt;=</option>
-                <option>==</option>
-                <option>&gt;</option>
-                <option>&lt;</option>
-            </select>
-            <select class="form-control" id="year">
-                <option>Year</option>
-                <option>2019</option>
-                <option>2018</option>
-                <option>2017</option>
-                <option>2016</option>
-                <option>2015</option>
-            </select>
+            <label id="lbYear">Year: </label>
+            <select class="form-control" id="conditionsYear"></select>
+            <select class="form-control" id="ddlYear"></select>
 
-            <label>Version 1: </label>
-            <select class="form-control" id="conditionsV1">
-                <option>&gt;=</option>
-                <option>&lt;=</option>
-                <option>==</option>
-                <option>&gt;</option>
-                <option>&lt;</option>
-            </select>
-            <input type="number" class="form-control" id="v1Number" placeholder="number">
+            <label id="lbV1">1V: </label>
+            <select class="form-control" id="conditionsV1"></select>
+            <input type="number" class="form-control" id="txtV1" placeholder="number">
 
-            <label>Version 3: </label>
-            <select class="form-control" id="conditionsV3">
-                <option>&gt;=</option>
-                <option>&lt;=</option>
-                <option>==</option>
-                <option>&gt;</option>
-                <option>&lt;</option>
-            </select>
-            <input type="number" class="form-control" id="v3Number" placeholder="number">
+            <label id="lbV3">3V: </label>
+            <select class="form-control" id="conditionsV3"></select>
+            <input type="number" class="form-control" id="txtV3" placeholder="number">
 
-            <label>Age: </label>
-            <select class="form-control" id="conditionsAge">
-                <option>&gt;=</option>
-                <option>&lt;=</option>
-                <option>==</option>
-                <option>&gt;</option>
-                <option>&lt;</option>
-            </select>
-            <select class="form-control" id="age">
+            <label id="lbAge">Age: </label>
+            <select class="form-control" id="conditionsAge"></select>
+            <select class="form-control" id="ddlAge">
                 <option>Year</option>
             </select>
         </form>
@@ -183,42 +132,120 @@
         crossorigin="anonymous"></script>
 
     <script>
-        function genConditions() {
+        function getQueryConditions() {
             var query = []
             if ($('#cbPrice').is(':checked'))
-                query.push(`price ${$('#conditionsPrice option:selected').text()} ${$('#price option:selected').text()}`)
+                query.push(`price ${$('#conditionsPrice option:selected').text()} ${$('#ddlPrice option:selected').text()}`)
             if ($('#cbRatingCount').is(':checked'))
-                query.push(` ratingCount ${$('#conditionsRatingCount option:selected').text()} ${$('#ratingCount').val()}`)
+                query.push(`ratingCount ${$('#conditionsRatingCount option:selected').text()} ${$('#txtRatingCount').val()}`)
             if ($('#cbStatus').is(':checked'))
-                query.push(` status === ${$('#status option:selected').val()}`)
+                query.push(`status === ${$('#ddlStatus option:selected').val()}`)
             if ($('#cbPhotoCount').is(':checked'))
-                query.push(` photos.length ${$('#conditionsPhotoCount option:selected').text()} ${$('#photoCount option:selected').text()}`)
+                query.push(`photos.length ${$('#conditionsPhotoCount option:selected').text()} ${$('#ddlPhotoCount option:selected').text()}`)
             if ($('#cbYear').is(':checked'))
-                query.push(` parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(0,4)) ${$('#conditionsYear option:selected').text()} ${$('#year option:selected').text()}`)
-            if ($('#cbV1').is(':checked') || $('#cbV3').is(':checked') ||  $('#cbAge').is(':checked')) {
+                query.push(`parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(0,4)) ${$('#conditionsYear option:selected').text()} ${$('#ddlYear option:selected').text()}`)
+            if ($('#cbV1').is(':checked') || $('#cbV3').is(':checked') || $('#cbAge').is(':checked')) {
                 query.push('attributes !== undefined')
                 if ($('#cbV1').is(':checked'))
-                    query.push(` attributes['51'] ${$('#conditionsV1 option:selected').text()} ${$('#v1Number').val()}`)
+                    query.push(`attributes['51'] ${$('#conditionsV1 option:selected').text()} ${$('#txtV1').val()}`)
                 if ($('#cbV3').is(':checked'))
-                    query.push(` attributes['49'] ${$('#conditionsV3 option:selected').text()} ${$('#v3Number').val()}`)
+                    query.push(`attributes['49'] ${$('#conditionsV3 option:selected').text()} ${$('#txtV3').val()}`)
                 if ($('#cbAge').is(':checked'))
-                    query.push(` new Date(this.attributes['42']*1000).getFullYear() ${$('#conditionsAge option:selected').text()} ${$('#age option:selected').text()}`)
+                    query.push(`new Date(this.attributes['42']*1000).getFullYear() ${$('#conditionsAge option:selected').text()} ${$('#ddlAge option:selected').text()}`)
             }
             return query
         }
         function setDefaultValues() {
+            let checkboxsControl = [
+                { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
+                { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
+                { cbStatus: ['ddlStatus'] },
+                { cbPhotoCount: ['lbPhotoCount', 'conditionsPhotoCount', 'ddlPhotoCount'] },
+                { cbYear: ['lbYear', 'conditionsYear', 'ddlYear'] },
+                { cbV1: ['lbV1', 'conditionsV1', 'txtV1'] },
+                { cbV3: ['lbV3', 'conditionsV3', 'txtV3'] },
+                { cbAge: ['lbAge', 'conditionsAge', 'ddlAge'] }
+            ]
+            checkboxsControl.forEach(checkbox => {
+                var checkboxId = Object.keys(checkbox)[0]
+                $('#' + checkboxId).change(function () {
+                    let checkboxIsChecked = $('#' + checkboxId).is(':checked')
+                    if (checkboxIsChecked) {
+                        checkbox[checkboxId].forEach(e => {
+                            $('#' + e).show()
+                        })
+                    } else {
+                        checkbox[checkboxId].forEach(e => {
+                            $('#' + e).hide()
+                            //console.log(component.html())
+                        })
+                    }
+                })
+                switch (checkboxId) {
+                    case 'cbPrice':
+                    case 'cbAge':
+                    case 'cbYear':
+                        $('#' + checkboxId).prop('checked', true).change();
+                        break
+                    default:
+                        $('#' + checkboxId).prop('checked', false).change();
+                        break
+                }
+            })
+        }
+        function genConditions() {
+            let conditions = ['&gt;=', '&lt;=', '==', '&gt;', '&lt;'],
+                ddlIds = [
+                    'conditionsPrice', 'conditionsRatingCount',
+                    'conditionsPhotoCount', 'conditionsYear',
+                    'conditionsV1', 'conditionsV3',
+                    'conditionsAge'
+                ]
+            strHtml = ''
+            conditions.forEach(condition => {
+                strHtml += `<option>${condition}</option>`
+            })
+            ddlIds.forEach(ddlId => {
+                $('#' + ddlId).html(strHtml)
+            })
+        }
+        function genPrices() {
+            let strHtml = ''
+            for (let i = 2; i <= 40; i++) {
+                strHtml += `<option>${i * 100}</option>`
+            }
+            $('#ddlPrice').html(strHtml)
+        }
+        function genYears() {
+            let strHtml = ''
+            for (let i = new Date().getFullYear(); i >= 2015; i--) {
+                strHtml += `<option>${i}</option>`
+            }
+            $('#ddlYear').html(strHtml)
+        }
+        function genAges() {
+            let strHtml = ''
+            for (let i = 101; i >= 86; i--) {
+                strHtml += `<option>${1900 + i}</option>`
+            }
+            $('#ddlAge').html(strHtml)
+        }
+        function drawProduct(products) {
 
         }
-        function drawProduct(products){
-            
-        }
         $().ready(function () {
+            // gen conditions part
+            genConditions()
+            genPrices()
+            genYears()
+            genAges()
+            setDefaultValues()
             $('#btnSearch').click(function () {
-                var query = genConditions()
+                var query = getQueryConditions()
                 $.ajax({
                     url: '/product/',
                     type: 'GET',
-                    data: { query: query.toString() },
+                    data: { query: JSON.stringify(query)},
                     success: function (responseText) {
                         try {
                             var records = JSON.parse(responseText);
