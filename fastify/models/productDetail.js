@@ -103,7 +103,7 @@ function findProductByConditions(conditions, callback) {
   db.connect(dbURL, { useNewUrlParser: true });
   return ProductDetail.find(
     query,
-    'id name price ratingCount lastUpdateStamp status attributes')
+    'id name price ratingCount lastUpdateStamp status attributes phone')
     //.sort({ lastUpdateStamp: -1 })
     .exec((err, data) => {
       if (err) log(err)
@@ -115,21 +115,7 @@ function findProductByConditions(conditions, callback) {
       callback(data)
     })
 }
-var rimraf = require('rimraf');
-function deleteFolderImages(index, productIds) {
-  if (index < productIds.length) {
-     //var pathFolder = './products/' + productIds[index];
-     var pathFolder = 'D:\\VSCode\\nk\\products\\' + productIds[index];
-    rimraf(pathFolder, function () {
-      log(`[${index}] deleted ' + ${pathFolder}`)
-      index++
-      deleteFolderImages(index, productIds)
-    })
-  }
-  else {
-    log('Done all')
-  }
-}
+
 ///////////////////////////////// Export part /////////////////////////////////
 module.exports = {
   insert: insert,
@@ -137,30 +123,4 @@ module.exports = {
 }
 
 ///////////////////////////////// Testing part /////////////////////////////////
-findProductByConditions([
-  "price >= ",
-  //"ratingCount === 0",
-  "status === 2",
-  //"meta !== undefined",
-  //"meta.onLeave === true",
-  //"photos.length <= 0",
-  //"parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(0,4)) <= ",
-  //"attributes !== undefined",
-  // "attributes['51'] >= ",
-  // "attributes['49'] >= ",
-  "new Date(this.attributes['42']*1000).getFullYear() >= "
-], products => {
-  try {
-    log(products.length)
-  } catch (error) {
-    log(error)
-  }
-  //var productIds = products.map(product => product.id)
-  //log('productIds.length = ' + productIds.length )
-  //deleteFolderImages(0,productIds)
-})
-
-// deleteFolderImages(0, [18030,
-//   18290,
-//   17723])
-
+//moved t.14

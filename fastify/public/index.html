@@ -8,6 +8,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <title>Hello, world!</title>
     <style>
         form#form-search .conditions {
@@ -119,6 +120,37 @@
         </form>
         <button id="btnSearch" style="margin: 10px;" type="button" class="btn btn-primary btn-lg">Search</button>
     </fieldset>
+    <fieldset>
+        <legend>
+            <h3>Product Result</h3>
+        </legend>
+        <style>
+            .productItem span {
+                margin-left: 5px;
+                margin-right: 20px !important;
+                color: green;
+                width: 150px;
+            }
+
+            body {
+                background-color: #eee;
+            }
+
+            .productName {
+                font-weight: bold;
+            }
+
+            .productItem {
+                width: 400px;
+                height: 169px;
+                background-color: #ccc;
+                padding: 10px;
+                margin: 5px;
+                float: left;
+            }
+        </style>
+        <div id="divProducts"></div>
+    </fieldset>
 
 
     <!-- Optional JavaScript -->
@@ -166,6 +198,7 @@
                 { cbV3: ['lbV3', 'conditionsV3', 'txtV3'] },
                 { cbAge: ['lbAge', 'conditionsAge', 'ddlAge'] }
             ]
+            // bind event change show hide component conditions
             checkboxsControl.forEach(checkbox => {
                 var checkboxId = Object.keys(checkbox)[0]
                 $('#' + checkboxId).change(function () {
@@ -181,6 +214,7 @@
                         })
                     }
                 })
+                // set checked default
                 switch (checkboxId) {
                     case 'cbPrice':
                     case 'cbAge':
@@ -212,7 +246,7 @@
         function genPrices() {
             let strHtml = ''
             for (let i = 2; i <= 40; i++) {
-                strHtml += `<option>${i * 100}</option>`
+                strHtml += `<option ${i === 20 ? 'selected' : ''}>${i * 100}</option>`
             }
             $('#ddlPrice').html(strHtml)
         }
@@ -231,32 +265,69 @@
             $('#ddlAge').html(strHtml)
         }
         function drawProduct(products) {
-
+            var strHtml = '';
+            products.forEach(product => {
+                var productLastUpdateTime = new Date(product.lastUpdateStamp * 1000)
+                strHtml = strHtml + `
+                <div class="productItem">
+                    <i class="fa fa-user"></i><span class="productName">${product.name}</span><br />
+                    <i class="fa fa-money"></i><span class="productPrice ">${product.price}</span>
+                    <i class="fa fa-bolt"></i><span class="productStatus">${product.status == 1 ? 'Active' : 'Off'}</span>
+                    <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}</span>
+                    <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span><br/>
+                    <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString() + ' ' + productLastUpdateTime.toLocaleTimeString()}</span><br />
+                    <i class="fa fa-heartbeat"></i><span class="productAge">${new Date(product.attributes['42'] * 1000).getFullYear()}</span>
+                    <!-- <i class="fa fa-american-sign-language-interpreting"></i> -->
+                    <i class="fa fa-stethoscope"></i><span class="productV1">${product.attributes['51']}</span>
+                    <i class="fa fa-wheelchair"></i><span class="productV3">${product.attributes['49']}</span>
+                    <i class="fa fa-child"></i><span>${product.attributes['46']}</span><br />
+                    
+                    <i class="fa fa-film"></i><span class="productId">${product.id}</span>
+                    <i class="fa fa-external-link"></i><span><a href="#" onclick="openProductFolder('${product.id}')">Open</a></span>
+                </div>`
+            })
+            $('#divProducts').html(strHtml)
+        }
+        function openProductFolder(productId) {
+            $.ajax({
+                url: '/product/openFolder/' + productId,
+                type: 'GET',
+                success: function (isOpen) {
+                    try {
+                        console.log(isOpen)
+                    }
+                    catch (e) {
+                        console.log(e)
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            });
         }
         $().ready(function () {
             // gen conditions part
+            setDefaultValues()
             genConditions()
             genPrices()
             genYears()
             genAges()
-            setDefaultValues()
             $('#btnSearch').click(function () {
                 var query = getQueryConditions()
                 $.ajax({
-                    url: '/product/',
+                    url: '/product/findConditions',
                     type: 'GET',
-                    data: { query: JSON.stringify(query)},
-                    success: function (responseText) {
+                    data: { query: JSON.stringify(query) },
+                    success: function (products) {
                         try {
-                            var records = JSON.parse(responseText);
-                            //callback(records)
+                            drawProduct(products)
                         }
                         catch (e) {
-                            //callback(e)
+                            console.log(e)
                         }
                     },
                     error: function (err) {
-                        //alert(err)
+                        console.log(err)
                     }
                 });
             })
