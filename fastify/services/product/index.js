@@ -32,20 +32,23 @@ module.exports = async function (fastify, opts, next) {
                 oldReviewIds = await Review.findReviewsOfProduct(productId),
                 product = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
                 currentReviewIds = await nk.fetchReviewListOfProduct(cfg.reviewUrl, productId, product.ratingCount),
-                newReviewIds = currentReviewIds.filter(value => !oldReviewIds.includes(value)),
-                newReviewIds2 = oldReviewIds.filter(value => !currentReviewIds.includes(value))
+                newReviewIds = currentReviewIds.filter(value => !oldReviewIds.includes(value))
+            //newReviewIds2 = oldReviewIds.filter(value => !currentReviewIds.includes(value))
             log(oldReviewIds)
             log(currentReviewIds)
             log(newReviewIds)
-            log(newReviewIds2)
+            //log(newReviewIds2)
             if (newReviewIds.length > 0) {
                 newReviewIds.forEach(async reviewId => {
                     await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId, true, true)
                 });
             }
-            reply(true)
+            oldReviewIds.sort((a, b) => a - b)
+            currentReviewIds.sort((a, b) => a - b)
+            newReviewIds.sort((a, b) => a - b)
+            reply.send({ oldReviewIds: oldReviewIds, currentReviewIds: currentReviewIds, newReviewIds: newReviewIds })
         } catch (error) {
-            reply.send(error)
+            reply.send({error})
         }
     })
 

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" />
     <title>Hello, world!</title>
     <style>
         form#form-search .conditions {
@@ -63,6 +64,8 @@
             <h3>NKShop Find Tool</h3>
         </legend>
         <form id="form-search-control" class="form-inline">
+            <input type="checkbox" checked id="cbName">
+            <label>Name</label>
             <input type="checkbox" checked id="cbPrice">
             <label>Price</label>
             <input type="checkbox" checked id="cbRatingCount">
@@ -74,14 +77,17 @@
             <input type="checkbox" checked id="cbYear">
             <label>Year</label>
             <input type="checkbox" checked id="cbV1">
-            <label>V1</label>
+            <label>1V</label>
             <input type="checkbox" checked id="cbV3">
-            <label>V3</label>
+            <label>3V</label>
             <input type="checkbox" checked id="cbAge">
             <label>Age</label>
         </form>
         <form id="form-search" class="form-inline">
-            <label id="lbPrice" style="margin-left:0;">Price: </label>
+            <label style="margin-left:0;" id="lbName">Name: </label>
+            <input style="width:200px !important;" type="text" class="form-control" id="txtName" placeholder="name">
+            
+            <label id="lbPrice">Price: </label>
             <select class="form-control conditions" id="conditionsPrice"></select>
             <select class="form-control" id="ddlPrice"></select>
             <label id="lbRatingCount">Rating: </label>
@@ -141,12 +147,21 @@
             }
 
             .productItem {
-                width: 400px;
+                width: 430px;
                 height: 169px;
                 background-color: #ccc;
                 padding: 10px;
                 margin: 5px;
                 float: left;
+                cursor: pointer;
+            }
+
+            .productItem:hover {
+                background: #c0ccaa;
+            }
+
+            .active {
+                background: #c0ccaa;
             }
         </style>
         <div id="divProducts"></div>
@@ -166,6 +181,8 @@
     <script>
         function getQueryConditions() {
             var query = []
+            if ($('#cbName').is(':checked'))
+                query.push(`name.toLowerCase().indexOf('${$('#txtName').val().toLowerCase()}')>-1`)
             if ($('#cbPrice').is(':checked'))
                 query.push(`price ${$('#conditionsPrice option:selected').text()} ${$('#ddlPrice option:selected').text()}`)
             if ($('#cbRatingCount').is(':checked'))
@@ -189,6 +206,7 @@
         }
         function setDefaultValues() {
             let checkboxsControl = [
+                { cbName: ['lbName', 'txtName'] },
                 { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
                 { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
                 { cbStatus: ['ddlStatus'] },
@@ -205,12 +223,13 @@
                     let checkboxIsChecked = $('#' + checkboxId).is(':checked')
                     if (checkboxIsChecked) {
                         checkbox[checkboxId].forEach(e => {
-                            $('#' + e).show()
+                            var eE = $('#' + e)
+                            eE.show()
+                            if (eE.is('input') || eE.is('select')) eE.focus()
                         })
                     } else {
                         checkbox[checkboxId].forEach(e => {
                             $('#' + e).hide()
-                            //console.log(component.html())
                         })
                     }
                 })
@@ -270,7 +289,7 @@
                 var productLastUpdateTime = new Date(product.lastUpdateStamp * 1000)
                 strHtml = strHtml + `
                 <div class="productItem">
-                    <i class="fa fa-user"></i><span class="productName">${product.name}</span><br />
+                    <i class="fa fa-user"></i><span class="productName">${product.name}</span><i class="fa fa-film"></i><span class="productId">${product.id}</span><br />
                     <i class="fa fa-money"></i><span class="productPrice ">${product.price}</span>
                     <i class="fa fa-bolt"></i><span class="productStatus">${product.status == 1 ? 'Active' : 'Off'}</span>
                     <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}</span>
@@ -281,13 +300,22 @@
                     <i class="fa fa-stethoscope"></i><span class="productV1">${product.attributes['51']}</span>
                     <i class="fa fa-wheelchair"></i><span class="productV3">${product.attributes['49']}</span>
                     <i class="fa fa-child"></i><span>${product.attributes['46']}</span><br />
-                    
-                    <i class="fa fa-film"></i><span class="productId">${product.id}</span>
-                    <i class="fa fa-external-link"></i><span><a href="#" onclick="openProductFolder('${product.id}'); return false">Open</a></span>
-                    <i class="fa fa-external-link"></i><span><a href="#" onclick="updateReviews('${product.id}'); return false;">Update Reviews</a></span>
+                    <i class="fa fa-windows"></i></i><span><a href="#" onclick="openProductFolder('${product.id}'); return false">Open</a></span>
+                    <i class="fa fa-refresh"></i><span><a href="#" onclick="updateReviews('${product.id}',this); return false;">Update Reviews</a></span>
+                    <i class="fa fa-cloud-download"></i><span><a href="#" onclick="fetchAllReviews('${product.id}'); return false;">Fetch All Reviews</a></span>
                 </div>`
             })
             $('#divProducts').html(strHtml)
+            // register event runtime
+            $('.productItem').click(function () {
+                let productItem = $(this)
+                if (!productItem.hasClass('active')) {
+                    $('.productItem').removeClass('active')
+                    productItem.addClass('active')
+                }
+                else
+                    productItem.removeClass('active')
+            })
         }
         function openProductFolder(productId) {
             $.ajax({
@@ -306,13 +334,18 @@
                 }
             });
         }
-        function updateReviews(productId) {
+        function updateReviews(productId, e) {
+            $(e).parent().prev().prop('class', 'fas fa-sync fa-spin')
             $.ajax({
                 url: '/product/updateReviews/' + productId,
                 type: 'GET',
-                success: function (isUpdated) {
+                success: function (data) {
                     try {
-                        console.log(isUpdated)
+                        $(e).parent().prev().prop('class', 'fa fa-refresh')
+                        if (data.newReviewIds.length > 0) {
+                            alert(`Has ${data.newReviewIds.length} new reviews`)
+                        }
+                        console.log(data)
                     }
                     catch (e) {
                         console.log(e)
