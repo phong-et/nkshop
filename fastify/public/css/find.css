@@ -1,0 +1,87 @@
+/* ============== Start Find Form ============== */
+
+form#form-search .conditions {
+    width: 80px;
+    margin: 0 10px;
+}
+
+form#form-search .form-control {
+    margin: 0 5px;
+}
+
+form#form-search input {
+    width: 98px !important
+}
+
+form#form-search label {
+    margin-left: 15px;
+    font-weight: bold;
+    color: green;
+}
+
+fieldset {
+    border: 1px groove #ddd !important;
+    padding: 0 1.4em 1.4em 1.4em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow: 0px 0px 0px 0px #000;
+    box-shadow: 0px 0px 0px 0px #000;
+}
+
+legend {
+    width: inherit;
+    /* Or auto */
+    padding: 0 10px;
+    /* To give a bit of padding on the left and right */
+    border-bottom: none;
+}
+
+#form-search-control {
+    margin-bottom: 20px;
+}
+
+#form-search-control label {
+    padding: 5px;
+    margin-right: 30px;
+}
+
+
+/* ============== End Find Form ============== */
+
+
+/* ============== Start Product Item ============== */
+
+.productItem span {
+    margin-left: 5px;
+    margin-right: 20px !important;
+    color: green;
+    width: 150px;
+}
+
+body {
+    background-color: #eee;
+}
+
+.productName {
+    font-weight: bold;
+}
+
+.productItem {
+    width: 430px;
+    height: 169px;
+    background-color: #ccc;
+    padding: 10px;
+    margin: 5px;
+    float: left;
+    cursor: pointer;
+}
+
+.productItem:hover {
+    background: #c0ccaa;
+}
+
+.active {
+    background: #c0ccaa;
+}
+
+
+/* ============== End Product Item ============== */
