@@ -1,30 +1,32 @@
-$().ready(function () {
+var log = console.log
+$().ready(function() {
     // gen conditions part
     setDefaultValues()
     genConditions()
     genPrices()
     genYears()
     genAges()
-    $('#btnSearch').click(function () {
+    $('#btnSearch').click(function() {
         var query = getQueryConditions()
         $.ajax({
             url: '/product/findConditions',
             type: 'GET',
             data: { query: JSON.stringify(query) },
-            success: function (products) {
+            success: function(products) {
                 try {
                     drawProduct(products)
-                }
-                catch (e) {
-                    console.log(e)
+                    log(`[${products.map(product => product.id).sort((a,b)=> a- b).toString()}]`)
+                } catch (e) {
+                    log(e)
                 }
             },
-            error: function (err) {
-                console.log(err)
+            error: function(err) {
+                log(err)
             }
         });
     })
 })
+
 function getQueryConditions() {
     var query = []
     if ($('#cbName').is(':checked'))
@@ -50,36 +52,37 @@ function getQueryConditions() {
     }
     return query
 }
+
 function setDefaultValues() {
     let checkboxsControl = [
-        { cbName: ['lbName', 'txtName'] },
-        { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
-        { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
-        { cbStatus: ['ddlStatus'] },
-        { cbPhotoCount: ['lbPhotoCount', 'conditionsPhotoCount', 'ddlPhotoCount'] },
-        { cbYear: ['lbYear', 'conditionsYear', 'ddlYear'] },
-        { cbV1: ['lbV1', 'conditionsV1', 'txtV1'] },
-        { cbV3: ['lbV3', 'conditionsV3', 'txtV3'] },
-        { cbAge: ['lbAge', 'conditionsAge', 'ddlAge'] }
-    ]
-    // bind event change show hide component conditions
+            { cbName: ['lbName', 'txtName'] },
+            { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
+            { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
+            { cbStatus: ['ddlStatus'] },
+            { cbPhotoCount: ['lbPhotoCount', 'conditionsPhotoCount', 'ddlPhotoCount'] },
+            { cbYear: ['lbYear', 'conditionsYear', 'ddlYear'] },
+            { cbV1: ['lbV1', 'conditionsV1', 'txtV1'] },
+            { cbV3: ['lbV3', 'conditionsV3', 'txtV3'] },
+            { cbAge: ['lbAge', 'conditionsAge', 'ddlAge'] }
+        ]
+        // bind event change show hide component conditions
     checkboxsControl.forEach(checkbox => {
         var checkboxId = Object.keys(checkbox)[0]
-        $('#' + checkboxId).change(function () {
-            let checkboxIsChecked = $('#' + checkboxId).is(':checked')
-            if (checkboxIsChecked) {
-                checkbox[checkboxId].forEach(e => {
-                    var eE = $('#' + e)
-                    eE.show()
-                    if (eE.is('input') || eE.is('select')) eE.focus()
-                })
-            } else {
-                checkbox[checkboxId].forEach(e => {
-                    $('#' + e).hide()
-                })
-            }
-        })
-        // set checked default
+        $('#' + checkboxId).change(function() {
+                let checkboxIsChecked = $('#' + checkboxId).is(':checked')
+                if (checkboxIsChecked) {
+                    checkbox[checkboxId].forEach(e => {
+                        var eE = $('#' + e)
+                        eE.show()
+                        if (eE.is('input') || eE.is('select')) eE.focus()
+                    })
+                } else {
+                    checkbox[checkboxId].forEach(e => {
+                        $('#' + e).hide()
+                    })
+                }
+            })
+            // set checked default
         switch (checkboxId) {
             case 'cbPrice':
             case 'cbAge':
@@ -92,6 +95,7 @@ function setDefaultValues() {
         }
     })
 }
+
 function drawProduct(products) {
     var strHtml = '';
     products.forEach(product => {
@@ -115,17 +119,17 @@ function drawProduct(products) {
         </div>`
     })
     $('#divProducts').html(strHtml)
-    // register event runtime
-    $('.productItem').click(function () {
+        // register event runtime
+    $('.productItem').click(function() {
         let productItem = $(this)
         if (!productItem.hasClass('active')) {
             $('.productItem').removeClass('active')
             productItem.addClass('active')
-        }
-        else
+        } else
             productItem.removeClass('active')
     })
 }
+
 function genConditions() {
     let conditions = ['&gt;=', '&lt;=', '==', '&gt;', '&lt;'],
         ddlIds = [
@@ -150,6 +154,7 @@ function genPrices() {
     }
     $('#ddlPrice').html(strHtml)
 }
+
 function genYears() {
     let strHtml = ''
     for (let i = new Date().getFullYear(); i >= 2015; i--) {
@@ -157,6 +162,7 @@ function genYears() {
     }
     $('#ddlYear').html(strHtml)
 }
+
 function genAges() {
     let strHtml = ''
     for (let i = 101; i >= 86; i--) {
@@ -169,37 +175,36 @@ function openProductFolder(productId) {
     $.ajax({
         url: '/product/openFolder/' + productId,
         type: 'GET',
-        success: function (isOpen) {
+        success: function(isOpen) {
             try {
                 console.log(isOpen)
-            }
-            catch (e) {
+            } catch (e) {
                 console.log(e)
             }
         },
-        error: function (err) {
+        error: function(err) {
             console.log(err)
         }
     });
 }
+
 function updateReviews(productId, e) {
     $(e).parent().prev().prop('class', 'fas fa-sync fa-spin')
     $.ajax({
-        url: '/product/updateReviews/' + productId,
+        url: '/product/updateReview/' + productId,
         type: 'GET',
-        success: function (data) {
+        success: function(data) {
             try {
                 $(e).parent().prev().prop('class', 'fa fa-refresh')
                 if (data.newReviewIds.length > 0) {
                     alert(`Has ${data.newReviewIds.length} new reviews`)
                 }
                 console.log(data)
-            }
-            catch (e) {
+            } catch (e) {
                 console.log(e)
             }
         },
-        error: function (err) {
+        error: function(err) {
             console.log(err)
         }
     });
