@@ -29,7 +29,7 @@ $().ready(function () {
         });
     })
     $('#btnUpdateReviewsAllProducts').click(function () {
-        updateReiewsProducts(0, globalProducts.length)
+        updateReiewsProducts($('#txtStartIndexUpdateReviews').val(), globalProducts.length)
     })
 })
 
@@ -158,14 +158,15 @@ function setDefaultValues() {
 
 function drawProduct(products) {
     var strHtml = '';
-    products.forEach(product => {
+    products.forEach((product, index) => {
         let productLastUpdateTime = new Date(product.lastUpdateStamp * 1000),
-        _age = product.attributes && product.attributes['42'] || 1,
-        _1v = product.attributes && product.attributes['51'] || 'NULL',
-        _3v = product.attributes && product.attributes['49'] || 'NULL'
+            _age = product.attributes && product.attributes['42'] || 1,
+            _1v = product.attributes && product.attributes['51'] || 'NULL',
+            _3v = product.attributes && product.attributes['49'] || 'NULL'
         _t = product.attributes && product.attributes['46'] || 'NULL'
         strHtml = strHtml + `
         <div class="productItem">
+            <span class="productIndex rounded-circle">${index + 1}</span>
             <i class="fa fa-user"></i><span class="productName">${product.name}</span><i class="fa fa-film"></i><span class="productId">${product.id}</span><br />
             <i class="fa fa-money"></i><span class="productPrice ">${product.price}</span>
             <i class="fa fa-bolt"></i><span class="productStatus">${product.status == 1 ? 'Active' : 'Off'}</span>
