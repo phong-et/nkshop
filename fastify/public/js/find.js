@@ -3,6 +3,7 @@ $().ready(function() {
     // gen conditions part
     setDefaultValues()
     genConditions()
+    genDistrict(2)
     genPrices()
     genYears()
     genAges()
@@ -33,6 +34,8 @@ function getQueryConditions() {
         query.push(`name.toLowerCase().indexOf('${$('#txtName').val().toLowerCase()}')>-1`)
     if ($('#cbPrice').is(':checked'))
         query.push(`price ${$('#conditionsPrice option:selected').text()} ${$('#ddlPrice option:selected').text()}`)
+    if ($('#cbDistrict').is(':checked'))
+        query.push(`districtId == ${$('#ddlDisctrict option:selected').val()}`)
     if ($('#cbRatingCount').is(':checked'))
         query.push(`ratingCount ${$('#conditionsRatingCount option:selected').text()} ${$('#txtRatingCount').val()}`)
     if ($('#cbStatus').is(':checked'))
@@ -55,6 +58,7 @@ function getQueryConditions() {
 
 function setDefaultValues() {
     let checkboxsControl = [
+            { cbDistrict: ['ddlDisctrict'] },
             { cbName: ['lbName', 'txtName'] },
             { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
             { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
@@ -189,15 +193,18 @@ function openProductFolder(productId) {
 }
 
 function updateReviews(productId, e) {
-    $(e).parent().prev().prop('class', 'fas fa-sync fa-spin')
+    let spiner = $(e).parent().prev()
+    spiner.prop('class', 'fas fa-sync fa-spin')
     $.ajax({
         url: '/product/updateReview/' + productId,
         type: 'GET',
         success: function(data) {
             try {
-                $(e).parent().prev().prop('class', 'fa fa-refresh')
+                spiner.prop('class', 'fa fa-refresh')
                 if (data.newReviewIds.length > 0) {
-                    alert(`Has ${data.newReviewIds.length} new reviews`)
+                    //alert(`Has ${data.newReviewIds.length} new reviews`)
+                    //let oldText = $(e).parent().text()
+                    $(e).parent().html(`New<span class="newReview">(${data.newReviewIds.length})</span>`)
                 }
                 console.log(data)
             } catch (e) {
@@ -206,6 +213,32 @@ function updateReviews(productId, e) {
         },
         error: function(err) {
             console.log(err)
+        }
+    });
+}
+
+function genDistrict(cityId) {
+    $.ajax({
+        url: '/product/fetchDistrict/' + cityId,
+        type: 'GET',
+        success: function(districts) {
+            let html = ''
+            try {
+                districts.sort(function(a, b){
+                    if(a.name < b.name) { return -1; }
+                    if(a.name > b.name) { return 1; }
+                    return 0;
+                })
+                districts.forEach(district =>{
+                    html = html + `<option value="${district.id}">${district.name}</option>`
+                })
+                $('#ddlDisctrict').html(html)
+            } catch (e) {
+                log(e)
+            }
+        },
+        error: function(err) {
+            log(err)
         }
     });
 }

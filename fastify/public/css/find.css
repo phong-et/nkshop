@@ -82,6 +82,6 @@ body {
 .active {
     background: #c0ccaa;
 }
-
+.newReview{color: red !important;}
 
 /* ============== End Product Item ============== */
