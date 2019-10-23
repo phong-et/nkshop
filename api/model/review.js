@@ -61,7 +61,6 @@ async function insertMany(jsonReviews) {
         log(error)
     }
 }
-
 module.exports = {
     insert: insert,
     insertMany: insertMany,
