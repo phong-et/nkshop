@@ -269,9 +269,10 @@ function updateReviews(productId, e) {
             try {
                 spiner.prop('class', 'fa fa-refresh')
                 if (data.newReviewIds.length > 0) {
-                    //alert(`Has ${data.newReviewIds.length} new reviews`)
-                    //let oldText = $(e).parent().text()
-                    $(e).html(`New<span class="newReview">(${data.newReviewIds.length})</span>`)
+                    $(e).parent().parent().addClass('reviewUpdated')
+                    $(e).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
+                } else {
+                    $(e).html(`Updated<span>(${data.newReviewIds.length})</span>`)
                 }
                 console.log(data)
             } catch (e) {
