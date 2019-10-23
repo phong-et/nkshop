@@ -5,7 +5,7 @@
   "main": "nk.cfg.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"cd fastify && npm start"
+    "start": "cd fastify && npm start"
   },
   "author": "",
   "license": "ISC",
@@ -14,7 +14,7 @@
     "cheerio": "^1.0.0-rc.3",
     "eval": "^0.1.4",
     "express": "^4.17.1",
-    "mongoose": "^5.6.6",
+    "mongoose": "^5.7.6",
     "mongoose-sequence": "^5.2.2",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",

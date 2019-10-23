@@ -20,7 +20,8 @@
     "fastify-cli": "^1.2.0",
     "fastify-plugin": "^1.5.0",
     "fastify-static": "^2.5.0",
-    "google-spreadsheet": "^2.0.8"
+    "google-spreadsheet": "^2.0.8",
+    "mongoose": "^5.7.6"
   },
   "devDependencies": {
     "tap": "^12.5.3"
