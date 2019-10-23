@@ -1,5 +1,13 @@
 var log = console.log
 var globalProducts = []
+/**
+ * todo 
+ * add setting bar for find page 
+ *  - stop/start focus when run scaper tool
+ *  - position of fetch all revews button and input startIndex must be fixed (bottom-right)
+ *  - add month condition
+ *  - add id condition
+ */
 $().ready(function () {
     // gen conditions part
     configureConditionsController()
@@ -60,6 +68,8 @@ function updateReiewsProducts(index, limitIndex) {
     // use recursive native
     let productId = globalProducts[index].id
     let e = document.getElementsByClassName('btnUpdateReviews')[index];
+    $(e).parent().parent().addClass('active')
+    $(e).focus()
     let spiner = $(e).parent().prev()
     spiner.prop('class', 'fas fa-sync fa-spin')
     $.ajax({
@@ -67,6 +77,7 @@ function updateReiewsProducts(index, limitIndex) {
         type: 'GET',
         success: function (data) {
             try {
+                $(e).parent().parent().removeClass('active')
                 spiner.prop('class', 'fa fa-refresh')
                 if (data.newReviewIds.length > 0) {
                     $(e).parent().parent().addClass('reviewUpdated')
