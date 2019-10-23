@@ -2,7 +2,7 @@ var log = console.log
 var globalProducts = []
 $().ready(function () {
     // gen conditions part
-    setDefaultValues()
+    configureConditionsController()
     genConditions()
     genDistrict(2)
     genPrices()
@@ -68,7 +68,12 @@ function updateReiewsProducts(index, limitIndex) {
         success: function (data) {
             try {
                 spiner.prop('class', 'fa fa-refresh')
-                $(e).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
+                if (data.newReviewIds.length > 0) {
+                    $(e).parent().parent().addClass('reviewUpdated')
+                    $(e).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
+                } else {
+                    $(e).html(`Updated<span>(${data.newReviewIds.length})</span>`)
+                }
                 console.log(data)
                 index++
                 if (index < limitIndex)
@@ -112,7 +117,7 @@ function getQueryConditions() {
     return query
 }
 
-function setDefaultValues() {
+function configureConditionsController() {
     let checkboxsControl = [
         { cbDistrict: ['ddlDisctrict'] },
         { cbName: ['lbName', 'txtName'] },
@@ -162,8 +167,8 @@ function drawProduct(products) {
         let productLastUpdateTime = new Date(product.lastUpdateStamp * 1000),
             _age = product.attributes && product.attributes['42'] || 1,
             _1v = product.attributes && product.attributes['51'] || 'NULL',
-            _3v = product.attributes && product.attributes['49'] || 'NULL'
-        _t = product.attributes && product.attributes['46'] || 'NULL'
+            _3v = product.attributes && product.attributes['49'] || 'NULL',
+            _t = product.attributes && product.attributes['46'] || 'NULL'
         strHtml = strHtml + `
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
