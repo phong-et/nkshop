@@ -103,8 +103,8 @@ function findProductByConditions(conditions, callback) {
   db.connect(dbURL, { useNewUrlParser: true });
   return ProductDetail.find(
       query,
-      'id name price ratingCount lastUpdateStamp status attributes')
-      .sort({ lastUpdateStamp: -1 })
+      'id name price ratingCount lastUpdateStamp status attributes phone')
+      //.sort({ lastUpdateStamp: -1 })
       .exec((err, data) => {
           if (err) log(err)
           log('data.length=%s', data.length)
@@ -115,17 +115,17 @@ function findProductByConditions(conditions, callback) {
           callback(data)
       })
 }
-findProductByConditions([
-  "price >= 1000",
-  "ratingCount === 0",
-  "status === 2",
-  "parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(0,4)) === 2019",
-  "attributes !== undefined",
-  "attributes['51'] >= 93",
-  "attributes['49'] >= 95",
-], products => {
-  log(products)
-})
+// findProductByConditions([
+//   "price >= 1000",
+//   "ratingCount === 0",
+//   "status === 2",
+//   "parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(0,4)) === 2019",
+//   "attributes !== undefined",
+//   "attributes['51'] >= 93",
+//   "attributes['49'] >= 95",
+// ], products => {
+//   log(products)
+// })
 module.exports = {
   insert: insert
 }
