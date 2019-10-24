@@ -74,7 +74,7 @@ body {
     margin-bottom: 11px;
     margin-left: 15px;
     float: left;
-    cursor: pointer;
+    /* cursor: pointer; */
     position: relative;
 }
 
@@ -87,7 +87,8 @@ body {
 }
 .newReview{color: red !important;}
 .reviewUpdated{background:#ffc4c4 !important;}
-
+.errorTry{color: red;}
+.errorAjax{color: palevioletred;}
 span.productIndex{position: absolute;
     width: 34px;
     height: 34px;

@@ -12,23 +12,24 @@ module.exports = async function (fastify, opts, next) {
             var GoogleSpreadsheet = require('google-spreadsheet')
             var creds = require('../../NKSHOP-204503-d0f45f50664e.json')
             var doc = new GoogleSpreadsheet('1_zZAxM2IHrVLxmnVeiwVCkOPybgyxCVwBKuhygPfqbo')
-
             function getData() {
                 return new Promise((resolve, reject) => {
                     doc.useServiceAccountAuth(creds, function (err) {
                         doc.getRows(1, function (err, rows) {
                             if (err) reject(err)
-                            else resolve(rows.map(row => {
-                                // delete row._links
-                                // delete row._xml
-                                // delete row['app:edited']
-                                // return row
-                                let data = {}
-                                data.cityId = row.cityid
-                                data.id = row.id
-                                data.name = row.name
-                                return data
-                            }))
+                            else {
+                                resolve(rows.map(row => {
+                                    // delete row._links
+                                    // delete row._xml
+                                    // delete row['app:edited']
+                                    // return row
+                                    let data = {}
+                                    data.cityId = row.cityid
+                                    data.id = row.id
+                                    data.name = row.name
+                                    return data
+                                }))
+                            }
                         })
                     })
                 })
@@ -57,6 +58,11 @@ module.exports = async function (fastify, opts, next) {
         log(request.params)
         require('child_process').exec('start ' + cfg.productFolder + '\\' + request.params.productId)
         reply.send(true)
+    })
+
+    fastify.get('/product/fetchConfiguration/', function (request, reply) {
+        log('load config')
+        reply.send({productDetailUrl:cfg.productDetailUrl})
     })
 
     fastify.get('/product/updateReview/:productId', async function (request, reply) {

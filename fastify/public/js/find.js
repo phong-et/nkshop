@@ -1,5 +1,8 @@
-var log = console.log
-var globalProducts = []
+let log = console.log,
+    globalProducts = [],
+    globalDistricts = {},
+    globalConfiguration = {},
+    globalUpdatedReviewProducts = []
 /**
  * todo 
  * add setting bar for find page 
@@ -7,10 +10,12 @@ var globalProducts = []
  *  - position of fetch all revews button and input startIndex must be fixed (bottom-right)
  *  - add month condition
  *  - add id condition
+ *  - FETCH ALL STOP IMEDIATELY -> ADD ERROR HANLDER AJAX NEXT 
  */
 $().ready(function () {
     // gen conditions part
     configureConditionsController()
+    fetchConfiguration()
     genConditions()
     genDistrict(2)
     genPrices()
@@ -69,7 +74,7 @@ function updateReiewsProducts(index, limitIndex) {
     let productId = globalProducts[index].id
     let e = document.getElementsByClassName('btnUpdateReviews')[index];
     $(e).parent().parent().addClass('active')
-    $(e).focus()
+    if ($('#cbFocusProductItem').is(':checked')) $(e).focus()
     let spiner = $(e).parent().prev()
     spiner.prop('class', 'fas fa-sync fa-spin')
     $.ajax({
@@ -79,9 +84,13 @@ function updateReiewsProducts(index, limitIndex) {
             try {
                 $(e).parent().parent().removeClass('active')
                 spiner.prop('class', 'fa fa-refresh')
+
                 if (data.newReviewIds.length > 0) {
+                    // effect to html layout
                     $(e).parent().parent().addClass('reviewUpdated')
                     $(e).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
+                    // push updated product 
+                    globalUpdatedReviewProducts.push(globalProducts[index])
                 } else {
                     $(e).html(`Updated<span>(${data.newReviewIds.length})</span>`)
                 }
@@ -89,13 +98,27 @@ function updateReiewsProducts(index, limitIndex) {
                 index++
                 if (index < limitIndex)
                     updateReiewsProducts(index, limitIndex)
+                else {
+                    log('Done Update Reviews All Product')
+                    drawProduct(globalUpdatedReviewProducts)
+                }
+            } catch (e) {
+                $(e).parent().parent().addClass('errorTry')
+                index++
+                if (index < limitIndex)
+                    updateReiewsProducts(index, limitIndex)
                 else
                     log('Done Update Reviews All Product')
-            } catch (e) {
                 console.log(e)
             }
         },
         error: function (err) {
+            $(e).parent().parent().addClass('errorAjax')
+            index++
+            if (index < limitIndex)
+                updateReiewsProducts(index, limitIndex)
+            else
+                log('Done Update Reviews All Product')
             console.log(err)
         }
     });
@@ -183,18 +206,19 @@ function drawProduct(products) {
         strHtml = strHtml + `
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
-            <i class="fa fa-user"></i><span class="productName">${product.name}</span><i class="fa fa-film"></i><span class="productId">${product.id}</span><br />
+            <i class="fa fa-user"></i><span class="productName"><a href="#" onclick="openWebProduct('${product.id}'); return false;">${product.name}</a></span><i class="fa fa-film"></i><span class="productId">${product.id}</span><br />
             <i class="fa fa-money"></i><span class="productPrice ">${product.price}</span>
             <i class="fa fa-bolt"></i><span class="productStatus">${product.status == 1 ? 'Active' : 'Off'}</span>
             <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}</span>
             <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span><br/>
-            <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString() + ' ' + productLastUpdateTime.toLocaleTimeString()}</span><br />
+            <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString() + ' ' + productLastUpdateTime.toLocaleTimeString()}</span>
+            <i class="fas fa-globe"></i><span class="productPlace">${globalDistricts['"' + product.districtId + '"']}</span><br />
             <i class="fa fa-heartbeat"></i><span class="productAge">${new Date(_age * 1000).getFullYear()}</span>
             <!-- <i class="fa fa-american-sign-language-interpreting"></i> -->
             <i class="fa fa-stethoscope"></i><span class="productV1">${_1v}</span>
             <i class="fa fa-wheelchair"></i><span class="productV3">${_3v}</span>
             <i class="fa fa-child"></i><span>${_t}</span><br />
-            <i class="fa fa-windows"></i></i><span><a href="#" onclick="openProductFolder('${product.id}'); return false">Open</a></span>
+            <i class="far fa-folder-open"></i><span><a href="#" onclick="openProductFolder('${product.id}'); return false">Open</a></span>
             <i class="fa fa-refresh"></i><span><a href="#" class="btnUpdateReviews" onclick="updateReviews('${product.id}',this); return false;">Update Reviews</a></span>
             <i class="fa fa-cloud-download"></i><span><a href="#" onclick="fetchAllReviews('${product.id}'); return false;">Fetch All Reviews</a></span>
         </div>`
@@ -210,7 +234,6 @@ function drawProduct(products) {
             productItem.removeClass('active')
     })
 }
-
 function genConditions() {
     let conditions = ['&gt;=', '&lt;=', '==', '&gt;', '&lt;'],
         ddlIds = [
@@ -268,6 +291,25 @@ function openProductFolder(productId) {
         }
     });
 }
+function openWebProduct(id) {
+    window.open(globalConfiguration.productDetailUrl + id, '_blank')
+}
+function fetchConfiguration() {
+    $.ajax({
+        url: '/product/fetchConfiguration/',
+        type: 'GET',
+        success: function (configs) {
+            try {
+                globalConfiguration = configs
+            } catch (e) {
+                console.log(e)
+            }
+        },
+        error: function (err) {
+            console.log(err)
+        }
+    });
+}
 
 // only use for click button a at product item
 function updateReviews(productId, e) {
@@ -310,7 +352,9 @@ function genDistrict(cityId) {
                 })
                 districts.forEach(district => {
                     html = html + `<option value="${district.id}">${district.name}</option>`
+                    globalDistricts['"' + district.id + '"'] = district.name
                 })
+                log(globalDistricts)
                 $('#ddlDisctrict').html(html)
             } catch (e) {
                 log(e)
