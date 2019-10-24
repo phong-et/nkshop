@@ -147,4 +147,4 @@ module.exports = {
 }
 
 //saveAllProductIdToFile('ids');
-//getLatestProductId()
+//getLatestProductId(()=>{})

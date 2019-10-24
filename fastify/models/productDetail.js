@@ -78,7 +78,8 @@ const productDetailSchema = new Schema({
   slug: String
 })
 productDetailSchema.plugin(autoIncrement, { inc_field: '_id' })
-const ProductDetail = db.model('ProductDetail', productDetailSchema, COLLECTION_NAME);
+const ProductDetail = db.model('ProductDetail', productDetailSchema, COLLECTION_NAME)
+
 async function insert(jsonProductDetail) {
   try {
     db.connect(dbURL, { useNewUrlParser: true });
@@ -91,6 +92,7 @@ async function insert(jsonProductDetail) {
     log(error)
   }
 }
+
 function findProductByConditions(conditions, callback) {
   var query = {
     '$where': conditions.map(condition => {
@@ -103,7 +105,7 @@ function findProductByConditions(conditions, callback) {
   db.connect(dbURL, { useNewUrlParser: true });
   return ProductDetail.find(
     query,
-    'id name price ratingCount lastUpdateStamp status attributes phone')
+    'id name price ratingCount lastUpdateStamp status attributes phone districtId')
     //.sort({ lastUpdateStamp: -1 })
     .exec((err, data) => {
       if (err) log(err)
