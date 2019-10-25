@@ -45,6 +45,7 @@ const productDetailSchema = new Schema({
   },
   ratingScore: Number,
   ratingCount: Number,
+  ratingCountTotal: Number,
   ratingAvg: Number,
   photoCount: Number,
   timestamp: Number,
@@ -92,6 +93,30 @@ async function insert(jsonProductDetail) {
     log(error)
   }
 }
+async function updateByModelId(id, jsonProductDetail, ratingCountTotal) {
+  try {
+    db.connect(dbURL, { useNewUrlParser: true });
+    common.convertStringToNumber(jsonProductDetail)
+    jsonProductDetail.ratingCountTotal = ratingCountTotal
+    await ProductDetail.findByIdAndUpdate(id, jsonProductDetail)
+    await db.connection.close()
+    log(id + " Updated to %s collection.", COLLECTION_NAME)
+  } catch (error) {
+    log(error)
+  }
+}
+async function update(productId, jsonProductDetail, ratingCountTotal) {
+  try {
+    db.connect(dbURL, { useNewUrlParser: true });
+    common.convertStringToNumber(jsonProductDetail)
+    jsonProductDetail.ratingCountTotal = ratingCountTotal
+    await ProductDetail.findOneAndUpdate({ id: productId }, jsonProductDetail)
+    await db.connection.close()
+    log(productId + " Updated to %s collection.", COLLECTION_NAME)
+  } catch (error) {
+    log(error)
+  }
+}
 
 function findProductByConditions(conditions, callback) {
   var query = {
@@ -132,11 +157,9 @@ async function getLatestProductId() {
 module.exports = {
   insert: insert,
   findProductByConditions: findProductByConditions,
-  getLatestProductId:getLatestProductId
+  getLatestProductId: getLatestProductId,
+  update: update
 };
 
 ///////////////////////////////// Testing part /////////////////////////////////
 //moved t.14
-// (async function(){
-//   log(await getLatestProductId())
-// })()

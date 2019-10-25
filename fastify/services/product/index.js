@@ -62,7 +62,7 @@ module.exports = async function (fastify, opts, next) {
 
     fastify.get('/product/fetchConfiguration/', function (request, reply) {
         log('load config')
-        reply.send({productDetailUrl:cfg.productDetailUrl})
+        reply.send({ productDetailUrl: cfg.productDetailUrl })
     })
 
     fastify.get('/product/updateReview/:productId', async function (request, reply) {
@@ -73,12 +73,14 @@ module.exports = async function (fastify, opts, next) {
                 oldReviewIds = await Review.findReviewsOfProduct(productId),
                 product = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
                 currentReviewIds = await nk.fetchReviewListOfProduct(cfg.reviewUrl, productId, product.ratingCount),
-                newReviewIds = currentReviewIds.filter(value => !oldReviewIds.includes(value))
-            //newReviewIds2 = oldReviewIds.filter(value => !currentReviewIds.includes(value))
+                newReviewIds = currentReviewIds.filter(value => !oldReviewIds.includes(value)),
+                totalReviewIds = currentReviewIds.concat(oldReviewIds)
+
+            totalReviewIds = [...new Set(totalReviewIds)]
+            productDetail.update(productId, product, totalReviewIds.length)
             log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
             log(`newReviewIds: ${JSON.stringify(newReviewIds)}`)
-            //log(newReviewIds2)
             if (newReviewIds.length > 0) {
                 // newReviewIds.forEach(async reviewId => {
                 //     let reviewJson = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId, true, true)
@@ -114,7 +116,7 @@ module.exports = async function (fastify, opts, next) {
     fastify.get('/product/fetchLatestProduct/', function (request, reply) {
         log('fetch latest product')
         let productId = productDetail.find
-        reply.send({productId:cfg.productDetailUrl})
+        reply.send({ productId: cfg.productDetailUrl })
     })
     next()
 }

@@ -2,7 +2,13 @@ let log = console.log,
     globalProducts = [],
     globalDistricts = {},
     globalConfiguration = {},
-    globalUpdatedReviewProducts = []
+    globalUpdatedReviewProducts = [],
+    globalStatus = {
+        "1":'Active',
+        "2":'Off',
+        "4":'Fake',
+        "8":'Pending',
+    }
 /**
  * todo 
  *  - add setting bar for find page (hide all conditions, show cover ...)
@@ -197,7 +203,7 @@ function configureConditionsController() {
         // set checked default
         switch (checkboxId) {
             case 'cbPrice':
-            case 'cbAge':
+            //case 'cbAge':
             case 'cbYear':
             case 'cbMonth':
                 $('#' + checkboxId).prop('checked', true).change();
@@ -228,7 +234,7 @@ function drawProduct(products) {
             <span class="productIndex rounded-circle">${index + 1}</span>
             <i class="fa fa-user"></i><span class="productName"><a href="#" onclick="openWebProduct('${product.id}'); return false;">${product.name}</a></span><i class="fa fa-film"></i><span class="productId">${product.id}</span><br />
             <i class="fa fa-money"></i><span class="productPrice ">${product.price}</span>
-            <i class="fa fa-bolt"></i><span class="productStatus">${product.status == 1 ? 'Active' : 'Off'}</span>
+            <i class="fa fa-bolt"></i><span class="productStatus">${globalStatus[product.status]}</span>
             <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}</span>
             <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span><br/>
             <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString() + ' ' + productLastUpdateTime.toLocaleTimeString()}</span>
