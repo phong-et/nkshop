@@ -418,7 +418,8 @@ async function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
     var url = cfg.productUrl + '?cityCode=' + cityId + '&mode=directory&offset=' + offset + '&orderBy=' + orderBy
     log(url)
     request(url, function(error, response, body) {
-            if (error) log(error);
+            if(error) 
+                log(error)
             log('statusCode:', response && response.statusCode);
             //log('headers:', response && response.headers);
             //log('body:', body);
@@ -426,7 +427,7 @@ async function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
             if (response && response.statusCode === 503) {
                 callback(503)
             } else {
-                callback(body);
+                callback(JSON.parse(body));
             }
         })
         /////////////// Request promise (failed) ///////////////

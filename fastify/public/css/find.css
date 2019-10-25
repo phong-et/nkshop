@@ -107,3 +107,6 @@ span.productIndex{position: absolute;
 /* ============== End Product Item ============== */
 
 #txtStartIndexUpdateReviews{width:100px;}
+#btnSearch, #btnUpdateReviewsAllProducts{margin: 10px;}
+#cbFocusProductItem{margin: 0 5px}
+#txtStartIndexUpdateReviews{width:80px;}

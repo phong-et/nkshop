@@ -17,23 +17,27 @@
 <body>
     <fieldset>
         <legend>
-            <h3>NKShop Find Tool</h3>
+            <h3></h3>
         </legend>
         <form id="form-search-control" class="form-inline">
+            <input type="checkbox" name="price" checked id="cbPriceRange">
+            <label>Price Range</label>
+            <input type="checkbox" name="price" checked id="cbPrice">
+            <label>Price Specification</label>
             <input type="checkbox" checked id="cbName">
             <label>Name</label>
-            <input type="checkbox" checked id="cbPrice">
-            <label>Price</label>
             <input type="checkbox" id="cbDistrict">
             <label>District</label>
+            <input type="checkbox" checked id="cbYear">
+            <label>Year</label>
+            <input type="checkbox" checked id="cbMonth">
+            <label>Month</label>
             <input type="checkbox" checked id="cbRatingCount">
             <label>Rating Count</label>
             <input type="checkbox" checked id="cbStatus">
             <label>Status</label>
             <input type="checkbox" checked id="cbPhotoCount">
             <label>Photo Count</label>
-            <input type="checkbox" checked id="cbYear">
-            <label>Year</label>
             <input type="checkbox" checked id="cbV1">
             <label>1V</label>
             <input type="checkbox" checked id="cbV3">
@@ -44,9 +48,24 @@
         <form id="form-search" class="form-inline">
             <label style="margin-left:0;" id="lbName">Name: </label>
             <input style="width:200px !important;" type="text" class="form-control" id="txtName" placeholder="name">
+            <!--price specification-->
             <label id="lbPrice">Price: </label>
             <select class="form-control conditions" id="conditionsPrice"></select>
             <select class="form-control" id="ddlPrice"></select>
+            <!--price range-->
+            <select class="form-control" id="ddlPriceFrom"></select>
+            <select class="form-control conditions" id="conditionsPriceFrom">
+                <option value="&gt;=">&lt;=</option>
+                <option value="&gt;">&lt;</option>
+            </select>
+            </select>
+            <label id="lbPriceRange">Price &nbsp; </label>
+            <select class="form-control conditions" id="conditionsPriceTo">
+                <option value="&lt;=">&lt;=</option>
+                <option value="&lt;">&lt;</option>
+            </select>
+            <select class="form-control" id="ddlPriceTo"></select>
+
             <select class="form-control" id="ddlDisctrict"></select>
             <label id="lbRatingCount">Rating: </label>
             <select class="form-control conditions" id="conditionsRatingCount"></select>
@@ -63,6 +82,10 @@
                 <option>0</option>
                 <option>1</option>
             </select>
+
+            <label id="lbMonth">Month: </label>
+            <select class="form-control" id="conditionsMonth"></select>
+            <select class="form-control" id="ddlMonth"></select>
 
             <label id="lbYear">Year: </label>
             <select class="form-control" id="conditionsYear"></select>
@@ -83,13 +106,13 @@
             </select>
         </form>
         <form class="form-inline">
-            <button id="btnSearch" style="margin: 10px;" type="button" class="btn btn-primary btn-lg"><i class="fab fa-searchengin"></i>  Search</button>
-            <button id="btnUpdateReviewsAllProducts" style="margin: 10px;" type="button"
-                class="btn btn-primary btn-lg"><i class="fa fa-refresh"></i><span></span>  Update Reviews
+            <button id="btnSearch" type="button" class="btn btn-primary btn-small"><i class="fab fa-searchengin"></i>
+                Search</button>
+            <button id="btnUpdateReviewsAllProducts" type="button" class="btn btn-primary btn-small"><i
+                    class="fa fa-refresh"></i><span></span> Update Reviews
                 All Products</button>
             <input type="number" class="form-control" value="0" id="txtStartIndexUpdateReviews" placeholder="number">
-            
-            <input style="margin: 0 5px" class="form-control" type="checkbox" checked id="cbFocusProductItem">
+            <input type="checkbox" checked id="cbFocusProductItem">
             <label>Focus to .productItem</label>
         </form>
 

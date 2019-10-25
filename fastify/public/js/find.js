@@ -5,23 +5,28 @@ let log = console.log,
     globalUpdatedReviewProducts = []
 /**
  * todo 
- * add setting bar for find page 
- *  - stop/start focus when run scaper tool
+ *  - add setting bar for find page (hide all conditions, show cover ...)
+ *  - stop/start focus when run scaper tool (done)
  *  - position of fetch all revews button and input startIndex must be fixed (bottom-right)
- *  - add month condition
+ *  - add month condition (done)
  *  - add id condition
- *  - FETCH ALL STOP IMEDIATELY -> ADD ERROR HANLDER AJAX NEXT 
+ *  - FETCH ALL STOP IMEDIATELY -> ADD ERROR HANLDER AJAX NEXT (done)
+ *  - show cover photo(latest photo type is cover)
+ *  - Fix : (node:20896) DeprecationWarning: current Server Discovery and Monitoring engine is deprecated, and will be removed in a future version. 
+ *          To use the new Server Discover and Monitoring engine, pass option { useUnifiedTopology: true } to the MongoClient constructor.
  */
 $().ready(function () {
     // gen conditions part
-    configureConditionsController()
     fetchConfiguration()
     genConditions()
     genDistrict(2)
     genPrices()
+    genMonths()
     genYears()
     genAges()
+    configureConditionsController()
     $('#btnSearch').click(function () {
+
         var query = getQueryConditions()
         $.ajax({
             url: '/product/findConditions',
@@ -129,6 +134,10 @@ function getQueryConditions() {
         query.push(`name.toLowerCase().indexOf('${$('#txtName').val().toLowerCase()}')>-1`)
     if ($('#cbPrice').is(':checked'))
         query.push(`price ${$('#conditionsPrice option:selected').text()} ${$('#ddlPrice option:selected').text()}`)
+    if ($('#cbPriceRange').is(':checked')){
+        query.push(`price ${$('#conditionsPriceFrom option:selected').val()} ${$('#ddlPriceFrom option:selected').text()}`)
+        query.push(`price ${$('#conditionsPriceTo option:selected').val()} ${$('#ddlPriceTo option:selected').text()}`)
+    }        
     if ($('#cbDistrict').is(':checked'))
         query.push(`districtId == ${$('#ddlDisctrict option:selected').val()}`)
     if ($('#cbRatingCount').is(':checked'))
@@ -137,6 +146,8 @@ function getQueryConditions() {
         query.push(`status === ${$('#ddlStatus option:selected').val()}`)
     if ($('#cbPhotoCount').is(':checked'))
         query.push(`photos.length ${$('#conditionsPhotoCount option:selected').text()} ${$('#ddlPhotoCount option:selected').text()}`)
+    if ($('#cbMonth').is(':checked'))
+        query.push(`parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(5,7)) ${$('#conditionsMonth option:selected').text()} ${$('#ddlMonth option:selected').text()}`)
     if ($('#cbYear').is(':checked'))
         query.push(`parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(0,4)) ${$('#conditionsYear option:selected').text()} ${$('#ddlYear option:selected').text()}`)
     if ($('#cbV1').is(':checked') || $('#cbV3').is(':checked') || $('#cbAge').is(':checked')) {
@@ -155,10 +166,12 @@ function configureConditionsController() {
     let checkboxsControl = [
         { cbDistrict: ['ddlDisctrict'] },
         { cbName: ['lbName', 'txtName'] },
+        { cbPriceRange: ['lbPriceRange', 'conditionsPriceFrom', 'conditionsPriceTo', 'ddlPriceFrom', 'ddlPriceTo'] },
         { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
         { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
         { cbStatus: ['ddlStatus'] },
         { cbPhotoCount: ['lbPhotoCount', 'conditionsPhotoCount', 'ddlPhotoCount'] },
+        { cbMonth: ['lbMonth', 'conditionsMonth', 'ddlMonth'] },
         { cbYear: ['lbYear', 'conditionsYear', 'ddlYear'] },
         { cbV1: ['lbV1', 'conditionsV1', 'txtV1'] },
         { cbV3: ['lbV3', 'conditionsV3', 'txtV3'] },
@@ -186,6 +199,7 @@ function configureConditionsController() {
             case 'cbPrice':
             case 'cbAge':
             case 'cbYear':
+            case 'cbMonth':
                 $('#' + checkboxId).prop('checked', true).change();
                 break
             default:
@@ -193,6 +207,12 @@ function configureConditionsController() {
                 break
         }
     })
+    $('#conditionsPriceFrom option[value="<="]').prop('selected', 'selected')
+    $('#conditionsPriceTo option[value="<="]').prop('selected', 'selected')
+    $('#conditionsAge option[value="<="]').prop('selected', 'selected')
+    $('#conditionsYear option[value="=="]').prop('selected', 'selected')
+    $('#conditionsMonth option[value="=="]').prop('selected', 'selected')
+    $(`#ddlMonth option[value=${new Date().getMonth() + 1}]`).prop('selected', 'selected')
 }
 
 function drawProduct(products) {
@@ -238,13 +258,13 @@ function genConditions() {
     let conditions = ['&gt;=', '&lt;=', '==', '&gt;', '&lt;'],
         ddlIds = [
             'conditionsPrice', 'conditionsRatingCount',
-            'conditionsPhotoCount', 'conditionsYear',
+            'conditionsPhotoCount', 'conditionsMonth', 'conditionsYear',
             'conditionsV1', 'conditionsV3',
             'conditionsAge'
         ]
     strHtml = ''
     conditions.forEach(condition => {
-        strHtml += `<option>${condition}</option>`
+        strHtml += `<option value="${condition}">${condition}</option>`
     })
     ddlIds.forEach(ddlId => {
         $('#' + ddlId).html(strHtml)
@@ -257,6 +277,8 @@ function genPrices() {
         strHtml += `<option ${i === 20 ? 'selected' : ''}>${i * 100}</option>`
     }
     $('#ddlPrice').html(strHtml)
+    $('#ddlPriceFrom').html(strHtml)
+    $('#ddlPriceTo').html(strHtml)
 }
 
 function genYears() {
@@ -265,6 +287,13 @@ function genYears() {
         strHtml += `<option>${i}</option>`
     }
     $('#ddlYear').html(strHtml)
+}
+function genMonths() {
+    let strHtml = ''
+    for (let i = 1; i <= 12; i++) {
+        strHtml += `<option value="${i}">${i}</option>`
+    }
+    $('#ddlMonth').html(strHtml)
 }
 
 function genAges() {

@@ -111,5 +111,10 @@ module.exports = async function (fastify, opts, next) {
         }
     })
 
+    fastify.get('/product/fetchLatestProduct/', function (request, reply) {
+        log('fetch latest product')
+        let productId = productDetail.find
+        reply.send({productId:cfg.productDetailUrl})
+    })
     next()
 }

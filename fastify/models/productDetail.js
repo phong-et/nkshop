@@ -117,12 +117,26 @@ function findProductByConditions(conditions, callback) {
       callback(data)
     })
 }
+async function getLatestProductId() {
+  try {
+    db.connect(dbURL, { useNewUrlParser: true });
+    let product = await ProductDetail.findOne({}).sort({ id: -1 }).exec()
+    await db.connection.close()
+    return product.id
+  } catch (error) {
+    log(error)
+  }
+}
 
 ///////////////////////////////// Export part /////////////////////////////////
 module.exports = {
   insert: insert,
-  findProductByConditions: findProductByConditions
-}
+  findProductByConditions: findProductByConditions,
+  getLatestProductId:getLatestProductId
+};
 
 ///////////////////////////////// Testing part /////////////////////////////////
 //moved t.14
+// (async function(){
+//   log(await getLatestProductId())
+// })()
