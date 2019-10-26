@@ -4,10 +4,10 @@ let log = console.log,
     globalConfiguration = {},
     globalUpdatedReviewProducts = [],
     globalStatus = {
-        "1":'Active',
-        "2":'Off',
-        "4":'Fake',
-        "8":'Pending',
+        "1": 'Active',
+        "2": 'Off',
+        "4": 'Fake',
+        "8": 'Pending',
     }
 /**
  * todo 
@@ -54,6 +54,16 @@ $().ready(function () {
     })
     $('#btnUpdateReviewsAllProducts').click(function () {
         updateReiewsProducts($('#txtStartIndexUpdateReviews').val(), globalProducts.length)
+    })
+    $('#cbHideProductCover').change(function () {
+        if ($(this).is(':checked')) {
+            $('.productCover').css('display', 'none')
+            $('.productItem').css('width', '300px')
+        }
+        else{
+            $('.productItem').css('width', '500px')
+            $('.productCover').css('display', '')
+        }
     })
 })
 
@@ -140,10 +150,10 @@ function getQueryConditions() {
         query.push(`name.toLowerCase().indexOf('${$('#txtName').val().toLowerCase()}')>-1`)
     if ($('#cbPrice').is(':checked'))
         query.push(`price ${$('#conditionsPrice option:selected').text()} ${$('#ddlPrice option:selected').text()}`)
-    if ($('#cbPriceRange').is(':checked')){
+    if ($('#cbPriceRange').is(':checked')) {
         query.push(`price ${$('#conditionsPriceFrom option:selected').val()} ${$('#ddlPriceFrom option:selected').text()}`)
         query.push(`price ${$('#conditionsPriceTo option:selected').val()} ${$('#ddlPriceTo option:selected').text()}`)
-    }        
+    }
     if ($('#cbDistrict').is(':checked'))
         query.push(`districtId == ${$('#ddlDisctrict option:selected').val()}`)
     if ($('#cbRatingCount').is(':checked'))
@@ -219,6 +229,11 @@ function configureConditionsController() {
     $('#conditionsYear option[value="=="]').prop('selected', 'selected')
     $('#conditionsMonth option[value="=="]').prop('selected', 'selected')
     $(`#ddlMonth option[value=${new Date().getMonth() + 1}]`).prop('selected', 'selected')
+    // set default cover setting
+    $('#cbHideProductCover').prop('checked')
+    $('.productCover').css('display','none')
+    $('.productItem').css('width','300px')
+    
 }
 
 function drawProduct(products) {
@@ -228,26 +243,58 @@ function drawProduct(products) {
             _age = product.attributes && product.attributes['42'] || 1,
             _1v = product.attributes && product.attributes['51'] || 'NULL',
             _3v = product.attributes && product.attributes['49'] || 'NULL',
-            _t = product.attributes && product.attributes['46'] || 'NULL'
+            _t = product.attributes && product.attributes['46'] || 'NULL',
+            _cover = product.cover && product.cover.dimensions && product.cover.dimensions && product.cover.dimensions.original && product.cover.dimensions.original.file || 'NULL'
+        // strHtml = strHtml + `
+        // <div class="productItem">
+        //     <span class="productIndex rounded-circle">${index + 1}</span>
+        //     <i class="fa fa-user"></i><span class="productName"><a href="#" onclick="openWebProduct('${product.id}'); return false;">${product.name}</a></span><i class="fa fa-film"></i><span class="productId">${product.id}</span><br />
+        //     <i class="fa fa-money"></i><span class="productPrice ">${product.price}</span>
+        //     <i class="fa fa-bolt"></i><span class="productStatus">${globalStatus[product.status]}</span>
+        //     <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}(${product.ratingCountTotal || 0})</span>
+        //     <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span><br/>
+        //     <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString() + ' ' + productLastUpdateTime.toLocaleTimeString()}</span>
+        //     <i class="fas fa-globe"></i><span class="productPlace">${globalDistricts['"' + product.districtId + '"']}</span><br />
+        //     <i class="fa fa-heartbeat"></i><span class="productAge">${new Date(_age * 1000).getFullYear()}</span>
+        //     <!-- <i class="fa fa-american-sign-language-interpreting"></i> -->
+        //     <i class="fa fa-stethoscope"></i><span class="productV1">${_1v}</span>
+        //     <i class="fa fa-wheelchair"></i><span class="productV3">${_3v}</span>
+        //     <i class="fa fa-child"></i><span>${_t}</span><br />
+        //     <i class="far fa-folder-open"></i><span><a href="#" onclick="openProductFolder('${product.id}'); return false">Open</a></span>
+        //     <i class="fa fa-refresh"></i><span><a href="#" class="btnUpdateReviews" onclick="updateReviews('${product.id}',this); return false;">Update Reviews</a></span>
+        //     <i class="fa fa-cloud-download"></i><span><a href="#" onclick="fetchAllReviews('${product.id}'); return false;">Fetch All Reviews</a></span>
+        // </div>`
         strHtml = strHtml + `
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
-            <i class="fa fa-user"></i><span class="productName"><a href="#" onclick="openWebProduct('${product.id}'); return false;">${product.name}</a></span><i class="fa fa-film"></i><span class="productId">${product.id}</span><br />
-            <i class="fa fa-money"></i><span class="productPrice ">${product.price}</span>
-            <i class="fa fa-bolt"></i><span class="productStatus">${globalStatus[product.status]}</span>
-            <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}</span>
-            <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span><br/>
-            <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString() + ' ' + productLastUpdateTime.toLocaleTimeString()}</span>
-            <i class="fas fa-globe"></i><span class="productPlace">${globalDistricts['"' + product.districtId + '"']}</span><br />
-            <i class="fa fa-heartbeat"></i><span class="productAge">${new Date(_age * 1000).getFullYear()}</span>
-            <!-- <i class="fa fa-american-sign-language-interpreting"></i> -->
-            <i class="fa fa-stethoscope"></i><span class="productV1">${_1v}</span>
-            <i class="fa fa-wheelchair"></i><span class="productV3">${_3v}</span>
-            <i class="fa fa-child"></i><span>${_t}</span><br />
-            <i class="far fa-folder-open"></i><span><a href="#" onclick="openProductFolder('${product.id}'); return false">Open</a></span>
-            <i class="fa fa-refresh"></i><span><a href="#" class="btnUpdateReviews" onclick="updateReviews('${product.id}',this); return false;">Update Reviews</a></span>
-            <i class="fa fa-cloud-download"></i><span><a href="#" onclick="fetchAllReviews('${product.id}'); return false;">Fetch All Reviews</a></span>
-        </div>`
+            <div><i class="fa fa-user"></i><span class="productName">
+            <a href="#" onclick="openWebProduct('${product.id}'); return false;">[${product.id}] ${product.name}</a>
+            </div>
+            <div class="productCover">
+                <img src="/public/products/${product.id}/${_cover}">
+            </div>
+            <div class="productInfo">
+                <i class="fa fa-money"></i><span class="productPrice ">${product.price}</span>
+                <i class="fa fa-bolt"></i><span class="productStatus">${globalStatus[product.status]}</span><br />
+                <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span><br />
+                <i class="fas fa-globe"></i><span class="productPlace">${globalDistricts['"' + product.districtId + '"']}</span>
+                <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}(${product.ratingCountTotal})</span><br />
+                <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString()}</span><br />
+                <i class="fa fa-stethoscope"></i><span class="productV1">${_1v}</span>
+                <i class="fa fa-wheelchair"></i><span class="productV3">${_3v}</span>
+                <i class="fa fa-child"></i><span>${_t}</span><br />
+                <i class="fa fa-heartbeat"></i><span class="productAge">${new Date(_age * 1000).getFullYear()}</span>
+                <i class="far fa-folder-open"></i><span><a href="#"
+                        onclick="openProductFolder('${product.id}'); return false">Open Folder</a></span><br />
+                        <i class="fa fa-external-link-alt"></i><span><a href="#"
+                            onclick="openWeb('${product.id}'); return false;">Open Web</a></span><br />
+                <i class="fa fa-refresh"></i><span style="margin-right: 0!important;"><a href="#" class="btnUpdateReviews"
+                        onclick="updateReviews('${product.id}',this); return false;">Update Reviews</a></span><br />
+                <i class="fa fa-cloud-download-alt"></i><span><a href="#"
+                        onclick="fetchAllReviews('${product.id}'); return false;">Fetch All Reviews</a></span><br />
+            </div>
+            </div>
+        `
     })
     $('#divProducts').html(strHtml)
     // register event runtime
@@ -259,9 +306,10 @@ function drawProduct(products) {
         } else
             productItem.removeClass('active')
     })
+    $('#cbHideProductCover').trigger('change')
 }
 function genConditions() {
-    let conditions = ['&gt;=', '&lt;=', '==', '&gt;', '&lt;'],
+    let conditions = ['&gt;=', '&lt;=', '==', '&gt;', '&lt;', '!='],
         ddlIds = [
             'conditionsPrice', 'conditionsRatingCount',
             'conditionsPhotoCount', 'conditionsMonth', 'conditionsYear',

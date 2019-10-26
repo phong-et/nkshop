@@ -110,6 +110,7 @@ async function update(productId, jsonProductDetail, ratingCountTotal) {
     db.connect(dbURL, { useNewUrlParser: true });
     common.convertStringToNumber(jsonProductDetail)
     jsonProductDetail.ratingCountTotal = ratingCountTotal
+    delete jsonProductDetail.phone
     await ProductDetail.findOneAndUpdate({ id: productId }, jsonProductDetail)
     await db.connection.close()
     log(productId + " Updated to %s collection.", COLLECTION_NAME)
@@ -130,7 +131,7 @@ function findProductByConditions(conditions, callback) {
   db.connect(dbURL, { useNewUrlParser: true });
   return ProductDetail.find(
     query,
-    'id name price ratingCount lastUpdateStamp status attributes phone districtId')
+    'id name price ratingCount lastUpdateStamp status attributes phone districtId cover ratingCountTotal')
     //.sort({ lastUpdateStamp: -1 })
     .exec((err, data) => {
       if (err) log(err)

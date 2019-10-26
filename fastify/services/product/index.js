@@ -78,6 +78,7 @@ module.exports = async function (fastify, opts, next) {
 
             totalReviewIds = [...new Set(totalReviewIds)]
             productDetail.update(productId, product, totalReviewIds.length)
+            nk.fetchImagesOfProduct(product)
             log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
             log(`newReviewIds: ${JSON.stringify(newReviewIds)}`)

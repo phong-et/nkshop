@@ -4,6 +4,7 @@ let rp = require('request-promise'),
     fs = require('fs'),
     cfg = require('./nk.cfg.js'),
     log = console.log,
+    shell = require("shelljs"),
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36',
     }
@@ -12,7 +13,7 @@ const DIR_REVIEWS = 'reviews/'
 
 function appendFile(fileName, content) {
     return new Promise((resolve, reject) => {
-        fs.appendFile(fileName, content, function(err) {
+        fs.appendFile(fileName, content, function (err) {
             if (err) reject(err)
             var statusText = 'write file > ' + fileName + ' success'
             log(statusText)
@@ -34,7 +35,7 @@ async function fetchProductList(url, params) {
 }
 // Test 0
 
-async function fetchDirectories(url) {}
+async function fetchDirectories(url) { }
 
 ///////////////////////// WRITE FILE /////////////////////////////
 function writeProduct(productId, content) {
@@ -98,7 +99,6 @@ function writeReview(productId, reviewId, content) {
     return new Promise((resolve, reject) => {
         let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS
 
-        var shell = require("shelljs")
         shell.mkdir("-p", dir);
         //  fileName = dir + reviewId + '.json'
         // if (!fs.existsSync(dir)) {
@@ -146,7 +146,8 @@ async function fetchImagesOfProduct(nkJson) {
                 dir = DIR_PRODUCTS + productId + '/',
                 url = e.data.dimensions.original.url,
                 fileName = dir + url.substring(url.lastIndexOf('/') + 1)
-            downloadImage(fileName, url, () => {})
+            shell.mkdir("-p", dir);
+            downloadImage(fileName, url, () => { })
         })
     } catch (error) {
         log(error)
@@ -158,9 +159,9 @@ async function fetchImagesOfReview(nkJson, productId) {
             let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS
             let url = e.data.dimensions.original.url
             let encodeUrl = url.substring(0, url.lastIndexOf('review-of-') + 1) + encodeURIComponent(url.substring(url.lastIndexOf('review-of-') + 1, url.length))
-                //log(encodeUrl);
+            //log(encodeUrl);
             let fileName = dir + url.substring(url.lastIndexOf('/') + 1)
-            downloadImage(fileName, encodeUrl, () => {})
+            downloadImage(fileName, encodeUrl, () => { })
         })
     } catch (error) {
         log('fetchImagesOfReview:')
@@ -174,12 +175,12 @@ function downloadImage(fileName, url, callback) {
         else {
             try {
                 request(url, (error, response, body) => {
-                        try {
-                            if (error) log('downloadImage.request.head.request:' + error)
-                        } catch (error) {
-                            log('downloadImage.request.head.request.catch:' + error)
-                        }
-                    })
+                    try {
+                        if (error) log('downloadImage.request.head.request:' + error)
+                    } catch (error) {
+                        log('downloadImage.request.head.request.catch:' + error)
+                    }
+                })
                     .pipe(fs.createWriteStream(fileName)
                         .on("error", (err) => log('downloadImage.request.head.request.fs.createWriteStream' + err))
                     )
@@ -212,7 +213,7 @@ async function fetchReviewListOfProduct(url, productId, reviewPerPageNumber, sav
         let json = await rp(options)
         if (saveDiskReview === true) writeReviews(productId, json)
         reviewIds = JSON.parse(json).map(review => parseInt(review.id))
-            // log(reviewIds);
+        // log(reviewIds);
         log('reviewIds.length = %s', reviewIds.length)
         return reviewIds
     } catch (error) {
@@ -238,15 +239,15 @@ async function fetchReviewListOfProductSaveDb(url, productId, reviewPerPageNumbe
         }
         let json = await rp(options)
         let arrReview = JSON.parse(json)
-            // FOREACH can not apply async await
-            // arrReview.forEach( async review => {
-            //   review.survey = JSON.parse(review.survey)
-            //   review.productId = productId
-            //   let reviewDetail = await fetchReviewOfProduct(url, review.id, productId)
-            //   review.photos = [];
-            //   review.photos = review.photos.concat(reviewDetail.data.review.photos)
-            //   //log(review.photos)
-            // })
+        // FOREACH can not apply async await
+        // arrReview.forEach( async review => {
+        //   review.survey = JSON.parse(review.survey)
+        //   review.productId = productId
+        //   let reviewDetail = await fetchReviewOfProduct(url, review.id, productId)
+        //   review.photos = [];
+        //   review.photos = review.photos.concat(reviewDetail.data.review.photos)
+        //   //log(review.photos)
+        // })
 
         await Promise.all(arrReview.map(async review => {
             review.survey = JSON.parse(review.survey)
@@ -268,7 +269,7 @@ async function fetchReviewOfProduct(url, reviewId, productId, saveToDisk, isFetc
             headers: headers,
         }
         let json = await rp(options)
-            //log(json)
+        //log(json)
         if (saveToDisk) writeReview(productId, reviewId, json)
         let nkJson = JSON.parse(json)
         if (isFetchImage) await fetchImagesOfReview(nkJson, productId)
@@ -364,7 +365,7 @@ async function fetchProductsByIdRange(url, fromProductId, toProductId, condition
 function fetchProductsSGByPriceDescOnePage(pageNumber, callback) {
     let offset = pageNumber == 1 ? 0 : pageNumber * 20
     log(`offset = ${offset} || pageNumber = ${pageNumber}`);
-    request(cfg.productUrl + '?cityCode=' + cfg.cities[0] + '&mode=directory&offset=' + offset + '&orderBy=byPriceDesc', function(error, response, body) {
+    request(cfg.productUrl + '?cityCode=' + cfg.cities[0] + '&mode=directory&offset=' + offset + '&orderBy=byPriceDesc', function (error, response, body) {
         //log('error:', error);
         log('statusCode:', response && response.statusCode);
         log('headers:', response && response.headers);
@@ -417,37 +418,37 @@ async function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
     /////////////// Request-native (success) ///////////////
     var url = cfg.productUrl + '?cityCode=' + cityId + '&mode=directory&offset=' + offset + '&orderBy=' + orderBy
     log(url)
-    request(url, function(error, response, body) {
-            if(error) 
-                log(error)
-            log('statusCode:', response && response.statusCode);
-            //log('headers:', response && response.headers);
-            //log('body:', body);
-            //writeProduct('fetchProductsSGByPriceDescOnePage' + new Date().getTime(), body)
-            if (response && response.statusCode === 503) {
-                callback(503)
-            } else {
-                callback(JSON.parse(body));
-            }
-        })
-        /////////////// Request promise (failed) ///////////////
-        // var options = {
-        //   url: cfg.productUrl,
-        //   //headers: headers,
-        //   qs: {
-        //     cityCode: cityId,
-        //     mode: 'directory',
-        //     offset: offset,
-        //     orderBy: orderBy
-        //   }
-        // }
-        // log(options)
-        // let products = await rp(options)
-        // .catch(function (err) {
-        //   console.log(err)
-        // })
-        // log(products)
-        // return products
+    request(url, function (error, response, body) {
+        if (error)
+            log(error)
+        log('statusCode:', response && response.statusCode);
+        log('headers:', response && response.headers);
+        //log('body:', body);
+        //writeProduct('fetchProductsSGByPriceDescOnePage' + new Date().getTime(), body)
+        if (response && response.statusCode === 503) {
+            callback(503)
+        } else {
+            callback(JSON.parse(body));
+        }
+    })
+    /////////////// Request promise (failed) ///////////////
+    // var options = {
+    //   url: cfg.productUrl,
+    //   //headers: headers,
+    //   qs: {
+    //     cityCode: cityId,
+    //     mode: 'directory',
+    //     offset: offset,
+    //     orderBy: orderBy
+    //   }
+    // }
+    // log(options)
+    // let products = await rp(options)
+    // .catch(function (err) {
+    //   console.log(err)
+    // })
+    // log(products)
+    // return products
 }
 module.exports = {
     downloadImage: downloadImage,
@@ -460,10 +461,11 @@ module.exports = {
     fetchProductByCTOnePage: fetchProductByCTOnePage,
     fetchReviewListOfProductSaveDb: fetchReviewListOfProductSaveDb,
     fetchReviewListOfProduct: fetchReviewListOfProduct,
-    fetchReviewOfProduct: fetchReviewOfProduct
-        //fetchJsonOfProduct: fetchJsonOfProduct
-        // requestChkJschl: requestChkJschl,
-        // fetchProductsSGByPriceDescOnePage: fetchProductsSGByPriceDescOnePage
+    fetchReviewOfProduct: fetchReviewOfProduct,
+    fetchImagesOfProduct: fetchImagesOfProduct
+    //fetchJsonOfProduct: fetchJsonOfProduct
+    // requestChkJschl: requestChkJschl,
+    // fetchProductsSGByPriceDescOnePage: fetchProductsSGByPriceDescOnePage
 };
 // (async function () {
 //   //{"data":null,"type":"exception","message":"review not found"}
