@@ -17,7 +17,7 @@ let log = console.log,
  *  - add month condition (done)
  *  - add id condition
  *  - FETCH ALL STOP IMEDIATELY -> ADD ERROR HANLDER AJAX NEXT (done)
- *  - show cover photo(latest photo type is cover)
+ *  - show cover photo(latest photo type is cover) (done)
  *  - Fix : (node:20896) DeprecationWarning: current Server Discovery and Monitoring engine is deprecated, and will be removed in a future version. 
  *          To use the new Server Discover and Monitoring engine, pass option { useUnifiedTopology: true } to the MongoClient constructor.
  */
@@ -25,6 +25,7 @@ $().ready(function () {
     // gen conditions part
     fetchConfiguration()
     genConditions()
+    genBackground()
     genDistrict(2)
     genPrices()
     genMonths()
@@ -66,6 +67,30 @@ $().ready(function () {
         }
     })
 })
+function genBackground(){
+   backgrounds = [
+       'https://wallpapercave.com/wp/PJQ9RmH.jpg',
+       'https://wallpapercave.com/wp/WNPETWc.jpg',
+       'https://wallpapercave.com/wp/bWZFLeb.jpg',
+       'https://wallpapercave.com/wp/SjRtY50.jpg',
+       'https://wallpapercave.com/wp/1Q2Oq86.jpg',
+       'https://wallpapercave.com/wp/4ZpzUS5.jpg',
+       'https://wallpapercave.com/wp/DXao8Lv.jpg',
+       'https://wallpapercave.com/wp/WU4lDbg.jpg',
+       'https://wallpapercave.com/wp/09S6BiG.jpg',
+       'https://wallpapercave.com/wp/O4sVDbJ.jpg',
+       'https://images.unsplash.com/photo-1544933863-582aca697094?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1866&q=80',
+       'https://images2.alphacoders.com/286/thumb-1920-286880.jpg',
+       'https://initiate.alphacoders.com/download/wallpaper/286880/images2/jpg/88080776727680',
+       'https://www.tokkoro.com/picsup/5095476-beach-blue-dress-brunette-girl-horizon-model-ocean-sea-woman.jpg',
+       'https://www.tokkoro.com/picsup/5046849-blue-eyes-brunette-dress-girl-lipstick-model-woman.jpg',
+   ]
+   $('body').css('background',`url('${backgrounds[Math.floor(Math.random() * 14)]}')`)
+   $('body').css('background-repeat','no-repeat')
+   $('body').css('background-attachment','fixed')
+   $('body').css('background-size','cover')
+   //$('body').css('background',url('https://www.tokkoro.com/picsup/5046849-blue-eyes-brunette-dress-girl-lipstick-model-woman.jpg'))
+}
 
 // use for button update all product
 function updateReiewsProducts(index, limitIndex) {
@@ -271,7 +296,7 @@ function drawProduct(products) {
             <a href="#" onclick="openWebProduct('${product.id}'); return false;">[${product.id}] ${product.name}</a>
             </div>
             <div class="productCover">
-                <img src="/public/products/${product.id}/${_cover}">
+                ${($('#cbHideProductCover').is(':checked')?'':`<img src="/public/products/${product.id}/${_cover}">`)}
             </div>
             <div class="productInfo">
                 <i class="fa fa-money"></i><span class="productPrice ">${product.price}</span>

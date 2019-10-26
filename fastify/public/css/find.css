@@ -49,9 +49,9 @@ legend {
 
 
 /* ============== Start Product Item ============== */
-body {
-    background-color:#eee; /*:#1B1F24  #090f10; */
-}
+/* body {
+    background-color:#eee;
+} */
 label{color: #000;}
 .productItem {
     width: 500px;
@@ -67,7 +67,7 @@ label{color: #000;}
 }
 
 .productItem:hover, .active {
-    background: #636161;
+    background: #8a3232;
 }
 .productCover img{width: 214px; height: 214px;}
 
