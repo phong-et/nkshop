@@ -146,8 +146,20 @@ async function fetchImagesOfProduct(nkJson) {
                 dir = DIR_PRODUCTS + productId + '/',
                 url = e.data.dimensions.original.url,
                 fileName = dir + url.substring(url.lastIndexOf('/') + 1)
+
             shell.mkdir("-p", dir);
             downloadImage(fileName, url, () => { })
+            // download cover image
+            if (e.type === 'cover') {
+                log('download cover')
+                let productId = nkJson.id,
+                    dir = DIR_PRODUCTS + productId + '/',
+                    url = e.data.dimensions.small.url,
+                    fileName = dir + url.substring(url.lastIndexOf('/') + 1)
+                log(fileName)
+                shell.mkdir("-p", dir);
+                downloadImage(fileName, url, () => { })
+            }
         })
     } catch (error) {
         log(error)
