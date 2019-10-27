@@ -5,7 +5,7 @@ let log = console.log,
     cfg = require('../../../nk.cfg'),
     nk = require('../../../nk')
 module.exports = async function (fastify, opts, next) {
-    fastify.get('/product/fetchDistrict/:cityId', async function (request, reply) {
+    fastify.get('/products/fetchDistrict/:cityId', async function (request, reply) {
         log('----request.query----')
         log(request.params.cityId)
         try {
@@ -41,7 +41,7 @@ module.exports = async function (fastify, opts, next) {
         }
     })
 
-    fastify.get('/product/findConditions', function (request, reply) {
+    fastify.get('/products/findConditions', function (request, reply) {
         log('----request.query----')
         log(request.query['query'])
         try {
@@ -53,19 +53,19 @@ module.exports = async function (fastify, opts, next) {
             reply.send(error)
         }
     })
-    fastify.get('/product/openFolder/:productId', function (request, reply) {
+    fastify.get('/products/openFolder/:productId', function (request, reply) {
         log('------ request.params ------------')
         log(request.params)
         require('child_process').exec('start ' + cfg.productFolder + '\\' + request.params.productId)
         reply.send(true)
     })
 
-    fastify.get('/product/fetchConfiguration/', function (request, reply) {
+    fastify.get('/products/configurations/', function (request, reply) {
         log('load config')
         reply.send({ productDetailUrl: cfg.productDetailUrl })
     })
 
-    fastify.get('/product/updateReview/:productId', async function (request, reply) {
+    fastify.get('/products/updateReview/:productId', async function (request, reply) {
         log('----request.query----')
         log(request.params)
         try {
@@ -114,10 +114,26 @@ module.exports = async function (fastify, opts, next) {
         }
     })
 
-    fastify.get('/product/fetchLatestProduct/', function (request, reply) {
+    fastify.get('/products/fetchLatestProduct/', function (request, reply) {
         log('fetch latest product')
         let productId = productDetail.find
         reply.send({ productId: cfg.productDetailUrl })
+    })
+
+    fastify.get('/products/delete/:productId', function (request, reply) {
+        try {
+            let productId = request.params.productId
+            log('delete productId = ' + productId)
+            var pathFolder = cfg.pathFolder + productIds[index];
+            rimraf(pathFolder, function (e) {
+                log(e)
+                index++
+              })
+            reply.send({ success: true })
+        } catch (error) {
+            reply.send({ success: false, msg: error })
+        }
+
     })
     next()
 }

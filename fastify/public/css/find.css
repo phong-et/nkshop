@@ -64,10 +64,14 @@ label{color: #000;}
     float: left;
     /* cursor: pointer; */
     position: relative;
+    opacity: 0.9;
 }
 
-.productItem:hover, .active {
-    background: #8a3232;
+.productItem:hover {
+    background: #4c4141;
+}
+.selected {
+    background: #4c4141;
 }
 .productCover img{width: 214px; height: 214px;}
 
@@ -77,7 +81,7 @@ label{color: #000;}
     color: #7ce6fe;
     width: 150px;
 }
-i.fa, i.fas, i.far{color: #fff;}
+i.fa, i.fas, i.far{color: #d7eee5;}
 .productCover{
     float: left;
 }
@@ -86,12 +90,22 @@ i.fa, i.fas, i.far{color: #fff;}
     float: left;
 }
 
-.productName a {
+.productName a, span.productName {
     font-weight: bold;
-    color:#bac152;
+    color:#effb40;
 }
-span.productDate, span.productPrice {color:#eeffee}
+
+span a.action{color:#efe936;}
+span a.action-delete{color:#ff0000;}
+span.productDate{color:#eeffee}
+span.productPrice{color: #ff5858; font-weight: bold;} 
 span.productStatus {color:#71ff71}
+span.productStatus-ACTIVE{color:#03ff22;font-weight: bold;}
+span.productStatus-OFF{color:#fd1fe2;font-weight: bold;}
+span.productStatus-FAKE{color:#ff0000;font-weight: bold;}
+span.productStatus-PENDING{color:#b19b01;font-weight: bold;}
+span.productAge{color:#2be82b}
+span a.btnUpdateReviews {color:#03ff22 !important;}
 
 .newReview{color: red !important;}
 .reviewUpdated{background:#ffc4c4 !important;}
@@ -99,19 +113,21 @@ span.productStatus {color:#71ff71}
 .errorAjax{color: palevioletred;}
 
 span.productIndex{position: absolute;
+    position: absolute;
     width: 34px;
     height: 34px;
     opacity: 0.9;
-    color: green;
+    color: #ff0101;
     right: -35px;
     bottom: -11px;
     background: #c1c5d2;
     text-align: center;
     z-index: 99;
-    padding-top: 4px;
+    padding-top: 7px;
     vertical-align: middle;
     font-weight: bold;
-    border: dotted 1px #d6c6c6
+    border: dotted 1px #d6c6c6;
+    font-family: monospace;
 }
 /* ============== End Product Item ============== */
 
@@ -119,3 +135,27 @@ span.productIndex{position: absolute;
 #btnSearch, #btnUpdateReviewsAllProducts{margin: 10px;}
 #cbFocusProductItem{margin: 0 5px}
 #txtStartIndexUpdateReviews{width:80px;}
+
+div.active {
+    animation-duration: 900ms;
+    animation-name: blink;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    -webkit-animation: blink 900ms infinite; /* Safari and Chrome */
+}
+@keyframes blink {
+    from {
+        background-color: #303030;
+    }
+    to {
+        background-color:#4c4141;
+    }
+}
+@-webkit-keyframes blink {
+    from {
+        background-color:#303030;
+    }
+    to {
+        background-color:#4c4141;
+    }
+}

@@ -4,10 +4,10 @@ let log = console.log,
     globalConfiguration = {},
     globalUpdatedReviewProducts = [],
     globalStatus = {
-        "1": 'Active',
-        "2": 'Off',
-        "4": 'Fake',
-        "8": 'Pending',
+        "1": 'ACTIVE',
+        "2": 'OFF',
+        "4": 'FAKE',
+        "8": 'PENDING..',
     }
 /**
  * todo 
@@ -36,7 +36,7 @@ $().ready(function () {
 
         var query = getQueryConditions()
         $.ajax({
-            url: '/product/findConditions',
+            url: '/products/findConditions',
             type: 'GET',
             data: { query: JSON.stringify(query) },
             success: function (products) {
@@ -61,35 +61,40 @@ $().ready(function () {
             $('.productCover').css('display', 'none')
             $('.productItem').css('width', '300px')
         }
-        else{
+        else {
             $('.productItem').css('width', '500px')
             $('.productCover').css('display', '')
         }
     })
 })
-function genBackground(){
-   backgrounds = [
-       'https://wallpapercave.com/wp/PJQ9RmH.jpg',
-       'https://wallpapercave.com/wp/WNPETWc.jpg',
-       'https://wallpapercave.com/wp/bWZFLeb.jpg',
-       'https://wallpapercave.com/wp/SjRtY50.jpg',
-       'https://wallpapercave.com/wp/1Q2Oq86.jpg',
-       'https://wallpapercave.com/wp/4ZpzUS5.jpg',
-       'https://wallpapercave.com/wp/DXao8Lv.jpg',
-       'https://wallpapercave.com/wp/WU4lDbg.jpg',
-       'https://wallpapercave.com/wp/09S6BiG.jpg',
-       'https://wallpapercave.com/wp/O4sVDbJ.jpg',
-       'https://images.unsplash.com/photo-1544933863-582aca697094?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1866&q=80',
-       'https://images2.alphacoders.com/286/thumb-1920-286880.jpg',
-       'https://initiate.alphacoders.com/download/wallpaper/286880/images2/jpg/88080776727680',
-       'https://www.tokkoro.com/picsup/5095476-beach-blue-dress-brunette-girl-horizon-model-ocean-sea-woman.jpg',
-       'https://www.tokkoro.com/picsup/5046849-blue-eyes-brunette-dress-girl-lipstick-model-woman.jpg',
-   ]
-   $('body').css('background',`url('${backgrounds[Math.floor(Math.random() * 14)]}')`)
-   $('body').css('background-repeat','no-repeat')
-   $('body').css('background-attachment','fixed')
-   $('body').css('background-size','cover')
-   //$('body').css('background',url('https://www.tokkoro.com/picsup/5046849-blue-eyes-brunette-dress-girl-lipstick-model-woman.jpg'))
+function genBackground() {
+    // src : http://wallpaperswide.com
+    backgrounds = [
+        'http://wallpaperswide.com/download/girl_beach_background-wallpaper-1920x1080.jpg',
+        'http://wallpaperswide.com/download/woman_carnival-wallpaper-1920x1080.jpg',
+        'http://wallpaperswide.com/download/bride_outdoor_photography-wallpaper-1920x1080.jpg',
+        'http://wallpaperswide.com/download/blue_eyes___blue_eyes___-wallpaper-1920x1080.jpg',
+        'http://wallpaperswide.com/download/sexy_girl_2-wallpaper-1920x1080.jpg',
+        'http://wallpaperswide.com/download/ballerina-wallpaper-2560x1600.jpg',
+        'http://wallpaperswide.com/download/summertime_6-wallpaper-1920x1080.jpg',
+        'http://wallpaperswide.com/download/girl_in_nature-wallpaper-1920x1080.jpg',
+        'http://wallpaperswide.com/download/jenna_pietersen_model-wallpaper-1920x1080.jpg',
+        'http://wallpaperswide.com/download/jenna_pietersen_2-wallpaper-1920x1080.jpg',
+        'https://images.unsplash.com/photo-1544933863-582aca697094?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1866&q=80',
+        'https://images2.alphacoders.com/286/thumb-1920-286880.jpg',
+        'https://initiate.alphacoders.com/download/wallpaper/286880/images2/jpg/88080776727680',
+        'https://www.tokkoro.com/picsup/5095476-beach-blue-dress-brunette-girl-horizon-model-ocean-sea-woman.jpg',
+        'https://www.tokkoro.com/picsup/5046849-blue-eyes-brunette-dress-girl-lipstick-model-woman.jpg',
+        'http://wallpaperswide.com/download/sunbathing_on_the_beach-wallpaper-1920x1080.jpg',
+        'http://wallpaperswide.com/download/girl_playing_in_the_water-wallpaper-1920x1080.jpg',
+        'http://wallpaperswide.com/download/natalia_contreras_2_sdgn-wallpaper-1920x1080.jpg',
+        ''
+    ]
+    $('body').css('background', `url('${backgrounds[Math.floor(Math.random() * 17)]}')`)
+    $('body').css('background-repeat', 'no-repeat')
+    $('body').css('background-attachment', 'fixed')
+    $('body').css('background-size', 'cover')
+    //$('body').css('background',url('https://www.tokkoro.com/picsup/5046849-blue-eyes-brunette-dress-girl-lipstick-model-woman.jpg'))
 }
 
 // use for button update all product
@@ -118,27 +123,27 @@ function updateReiewsProducts(index, limitIndex) {
 
     // use recursive native
     let productId = globalProducts[index].id
-    let e = document.getElementsByClassName('btnUpdateReviews')[index];
-    $(e).parent().parent().addClass('active')
-    if ($('#cbFocusProductItem').is(':checked')) $(e).focus()
-    let spiner = $(e).parent().prev()
+    let btnUpdateReview = document.getElementsByClassName('btnUpdateReviews')[index];
+    $(btnUpdateReview).parent().parent().parent().addClass('active')
+    if ($('#cbFocusProductItem').is(':checked')) $(btnUpdateReview).focus()
+    let spiner = $(btnUpdateReview).parent().prev()
     spiner.prop('class', 'fas fa-sync fa-spin')
     $.ajax({
-        url: '/product/updateReview/' + productId,
+        url: '/products/updateReview/' + productId,
         type: 'GET',
         success: function (data) {
             try {
-                $(e).parent().parent().removeClass('active')
+                $(btnUpdateReview).parent().parent().parent().removeClass('active')
                 spiner.prop('class', 'fa fa-refresh')
 
                 if (data.newReviewIds.length > 0) {
                     // effect to html layout
-                    $(e).parent().parent().addClass('reviewUpdated')
-                    $(e).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
+                    $(btnUpdateReview).parent().parent().parent().addClass('reviewUpdated')
+                    $(btnUpdateReview).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
                     // push updated product 
                     globalUpdatedReviewProducts.push(globalProducts[index])
                 } else {
-                    $(e).html(`Updated<span>(${data.newReviewIds.length})</span>`)
+                    $(btnUpdateReview).html(`Updated<span>(${data.newReviewIds.length})</span>`)
                 }
                 console.log(data)
                 index++
@@ -148,18 +153,18 @@ function updateReiewsProducts(index, limitIndex) {
                     log('Done Update Reviews All Product')
                     drawProduct(globalUpdatedReviewProducts)
                 }
-            } catch (e) {
-                $(e).parent().parent().addClass('errorTry')
+            } catch (error) {
+                $(btnUpdateReview).parent().parent().parent().addClass('errorTry')
                 index++
                 if (index < limitIndex)
                     updateReiewsProducts(index, limitIndex)
                 else
                     log('Done Update Reviews All Product')
-                console.log(e)
+                log(error)
             }
         },
         error: function (err) {
-            $(e).parent().parent().addClass('errorAjax')
+            $(btnUpdateReview).parent().parent().parent().addClass('errorAjax')
             index++
             if (index < limitIndex)
                 updateReiewsProducts(index, limitIndex)
@@ -256,9 +261,9 @@ function configureConditionsController() {
     $(`#ddlMonth option[value=${new Date().getMonth() + 1}]`).prop('selected', 'selected')
     // set default cover setting
     $('#cbHideProductCover').prop('checked')
-    $('.productCover').css('display','none')
-    $('.productItem').css('width','300px')
-    
+    $('.productCover').css('display', 'none')
+    $('.productItem').css('width', '300px')
+
 }
 
 function drawProduct(products) {
@@ -269,7 +274,7 @@ function drawProduct(products) {
             _1v = product.attributes && product.attributes['51'] || 'NULL',
             _3v = product.attributes && product.attributes['49'] || 'NULL',
             _t = product.attributes && product.attributes['46'] || 'NULL',
-            _cover = product.cover && product.cover.dimensions && product.cover.dimensions && product.cover.dimensions.original && product.cover.dimensions.original.file || 'NULL'
+            _cover = product.cover && product.cover.dimensions && product.cover.dimensions && product.cover.dimensions.small && product.cover.dimensions.small.file || 'NULL'
         // strHtml = strHtml + `
         // <div class="productItem">
         //     <span class="productIndex rounded-circle">${index + 1}</span>
@@ -293,30 +298,28 @@ function drawProduct(products) {
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
             <div><i class="fa fa-user"></i><span class="productName">
-            <a href="#" onclick="openWebProduct('${product.id}'); return false;">[${product.id}] ${product.name}</a>
+            <a href="#" onclick="openTab('${product.id}'); return false;">[${product.id}]</a> ${product.name}
             </div>
             <div class="productCover">
-                ${($('#cbHideProductCover').is(':checked')?'':`<img src="/public/products/${product.id}/${_cover}">`)}
+                ${($('#cbHideProductCover').is(':checked') ? '' : `<img src="/public/products/${product.id}/${_cover}">`)}
             </div>
             <div class="productInfo">
-                <i class="fa fa-money"></i><span class="productPrice ">${product.price}</span>
-                <i class="fa fa-bolt"></i><span class="productStatus">${globalStatus[product.status]}</span><br />
+                <i class="fa fa-money"></i><span class="productPrice">${product.price} $</span>
+                <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalStatus[product.status] || ''}">${globalStatus[product.status]}</span><br />
                 <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span><br />
                 <i class="fas fa-globe"></i><span class="productPlace">${globalDistricts['"' + product.districtId + '"']}</span>
-                <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}(${product.ratingCountTotal})</span><br />
+                <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}(${product.ratingCountTotal || 'NULL'})</span><br />
                 <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString()}</span><br />
                 <i class="fa fa-stethoscope"></i><span class="productV1">${_1v}</span>
                 <i class="fa fa-wheelchair"></i><span class="productV3">${_3v}</span>
                 <i class="fa fa-child"></i><span>${_t}</span><br />
                 <i class="fa fa-heartbeat"></i><span class="productAge">${new Date(_age * 1000).getFullYear()}</span>
-                <i class="far fa-folder-open"></i><span><a href="#"
-                        onclick="openProductFolder('${product.id}'); return false">Open Folder</a></span><br />
-                        <i class="fa fa-external-link-alt"></i><span><a href="#"
-                            onclick="openWeb('${product.id}'); return false;">Open Web</a></span><br />
-                <i class="fa fa-refresh"></i><span style="margin-right: 0!important;"><a href="#" class="btnUpdateReviews"
-                        onclick="updateReviews('${product.id}',this); return false;">Update Reviews</a></span><br />
-                <i class="fa fa-cloud-download-alt"></i><span><a href="#"
-                        onclick="fetchAllReviews('${product.id}'); return false;">Fetch All Reviews</a></span><br />
+                <i class="fa fa-refresh"></i><span style="margin-right: 0!important;">
+                <a class="btnUpdateReviews action" href="#" onclick="updateReviews('${product.id}',this); return false;">Update Reviews</a></span><br />
+                <i class="far fa-folder-open"></i><span><a class="action" href="#" onclick="openProductFolder('${product.id}'); return false">Open Folder</a></span>
+                <i class="fa fa-external-link-alt"></i><span><a class="action" href="#" onclick="openWeb('${product.id}'); return false;">Open Web</a></span><br />
+                <i class="fa fa-cloud-download-alt"></i><span><a class="action" href="#" onclick="fetchAllReviews('${product.id}'); return false;">Fetch All Reviews</a></span>
+                <i class="fa fa-trash-alt"></i><span><a class="action-delete" href="#" onclick="deleteProduct('${product.id}'); return false;">Delete</a></span><br />
             </div>
             </div>
         `
@@ -325,11 +328,11 @@ function drawProduct(products) {
     // register event runtime
     $('.productItem').click(function () {
         let productItem = $(this)
-        if (!productItem.hasClass('active')) {
-            $('.productItem').removeClass('active')
-            productItem.addClass('active')
+        if (!productItem.hasClass('selected')) {
+            $('.productItem').removeClass('selected')
+            productItem.addClass('selected')
         } else
-            productItem.removeClass('active')
+            productItem.removeClass('selected')
     })
     $('#cbHideProductCover').trigger('change')
 }
@@ -385,7 +388,7 @@ function genAges() {
 //////////////////////////////////////// AJAX FUNCTIONS ////////////////////////////////////////
 function openProductFolder(productId) {
     $.ajax({
-        url: '/product/openFolder/' + productId,
+        url: '/products/openFolder/' + productId,
         type: 'GET',
         success: function (isOpen) {
             try {
@@ -399,12 +402,12 @@ function openProductFolder(productId) {
         }
     });
 }
-function openWebProduct(id) {
+function openTab(id) {
     window.open(globalConfiguration.productDetailUrl + id, '_blank')
 }
 function fetchConfiguration() {
     $.ajax({
-        url: '/product/fetchConfiguration/',
+        url: '/products/configurations/',
         type: 'GET',
         success: function (configs) {
             try {
@@ -424,7 +427,7 @@ function updateReviews(productId, e) {
     let spiner = $(e).parent().prev()
     spiner.prop('class', 'fas fa-sync fa-spin')
     $.ajax({
-        url: '/product/updateReview/' + productId,
+        url: '/products/updateReview/' + productId,
         type: 'GET',
         success: function (data) {
             try {
@@ -448,7 +451,7 @@ function updateReviews(productId, e) {
 
 function genDistrict(cityId) {
     $.ajax({
-        url: '/product/fetchDistrict/' + cityId,
+        url: '/products/fetchDistrict/' + cityId,
         type: 'GET',
         success: function (districts) {
             let html = ''
@@ -472,4 +475,27 @@ function genDistrict(cityId) {
             log(err)
         }
     });
+}
+
+function deleteProduct(productId) {
+    var isAccepted = confirm('Are you sure delete product has id=' + productId)
+    if (isAccepted) {
+        $.ajax({
+            url: '/products/delete/' + productId,
+            type: 'GET',
+            success: function (res) {
+                try {
+                    if(res.responseText.success)
+                        alert('deleted')
+                    else
+                        log(res.responseText.msg)
+                } catch (e) {
+                    log(e)
+                }
+            },
+            error: function (err) {
+                log(err)
+            }
+        });
+    }
 }
