@@ -68,33 +68,13 @@ $().ready(function () {
     })
 })
 function genBackground() {
-    // src : http://wallpaperswide.com
-    backgrounds = [
-        'http://wallpaperswide.com/download/girl_beach_background-wallpaper-1920x1080.jpg',
-        'http://wallpaperswide.com/download/woman_carnival-wallpaper-1920x1080.jpg',
-        'http://wallpaperswide.com/download/bride_outdoor_photography-wallpaper-1920x1080.jpg',
-        'http://wallpaperswide.com/download/blue_eyes___blue_eyes___-wallpaper-1920x1080.jpg',
-        'http://wallpaperswide.com/download/sexy_girl_2-wallpaper-1920x1080.jpg',
-        'http://wallpaperswide.com/download/ballerina-wallpaper-2560x1600.jpg',
-        'http://wallpaperswide.com/download/summertime_6-wallpaper-1920x1080.jpg',
-        'http://wallpaperswide.com/download/girl_in_nature-wallpaper-1920x1080.jpg',
-        'http://wallpaperswide.com/download/jenna_pietersen_model-wallpaper-1920x1080.jpg',
-        'http://wallpaperswide.com/download/jenna_pietersen_2-wallpaper-1920x1080.jpg',
-        'https://images.unsplash.com/photo-1544933863-582aca697094?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1866&q=80',
-        'https://images2.alphacoders.com/286/thumb-1920-286880.jpg',
-        'https://initiate.alphacoders.com/download/wallpaper/286880/images2/jpg/88080776727680',
-        'https://www.tokkoro.com/picsup/5095476-beach-blue-dress-brunette-girl-horizon-model-ocean-sea-woman.jpg',
-        'https://www.tokkoro.com/picsup/5046849-blue-eyes-brunette-dress-girl-lipstick-model-woman.jpg',
-        'http://wallpaperswide.com/download/sunbathing_on_the_beach-wallpaper-1920x1080.jpg',
-        'http://wallpaperswide.com/download/girl_playing_in_the_water-wallpaper-1920x1080.jpg',
-        'http://wallpaperswide.com/download/natalia_contreras_2_sdgn-wallpaper-1920x1080.jpg',
-        ''
-    ]
-    $('body').css('background', `url('${backgrounds[Math.floor(Math.random() * 17)]}')`)
+    //src : http://wallpaperswide.com
+    let bgRandomNumber = Math.floor(Math.random() * 17)
+    bgRandomNumber = bgRandomNumber === 0 ? bgRandomNumber + 1 : bgRandomNumber
+    $('body').css('background', `url('img/bg/1 (${bgRandomNumber}).jpg')`)
     $('body').css('background-repeat', 'no-repeat')
     $('body').css('background-attachment', 'fixed')
     $('body').css('background-size', 'cover')
-    //$('body').css('background',url('https://www.tokkoro.com/picsup/5046849-blue-eyes-brunette-dress-girl-lipstick-model-woman.jpg'))
 }
 
 // use for button update all product
@@ -485,7 +465,7 @@ function deleteProduct(productId) {
             type: 'GET',
             success: function (res) {
                 try {
-                    if(res.responseText.success)
+                    if (res.responseText.success)
                         alert('deleted')
                     else
                         log(res.responseText.msg)
