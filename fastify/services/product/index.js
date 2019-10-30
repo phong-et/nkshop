@@ -3,7 +3,8 @@ let log = console.log,
     productDetail = require('../../models/productDetail'),
     Review = require('../../models/review'),
     cfg = require('../../../nk.cfg'),
-    nk = require('../../../nk')
+    nk = require('../../../nk'),
+    rimraf = require('rimraf')
 module.exports = async function (fastify, opts, next) {
     fastify.get('/products/fetchDistrict/:cityId', async function (request, reply) {
         log('----request.query----')
@@ -114,26 +115,30 @@ module.exports = async function (fastify, opts, next) {
         }
     })
 
-    fastify.get('/products/fetchLatestProduct/', function (request, reply) {
+    fastify.get('/products/latest/', function (request, reply) {
         log('fetch latest product')
-        let productId = productDetail.find
-        reply.send({ productId: cfg.productDetailUrl })
+        let product = productDetail.fetchLatestProduct()
+        reply.send({ product: product })
     })
 
-    fastify.get('/products/delete/:productId', function (request, reply) {
+    fastify.get('/products/delete/:productId', async function (request, reply) {
         try {
             let productId = request.params.productId
             log('delete productId = ' + productId)
-            var pathFolder = cfg.pathFolder + productIds[index];
+            var pathFolder = cfg.productFolder + productId
+            log('pathFolder', pathFolder)
             rimraf(pathFolder, function (e) {
                 log(e)
-                index++
-              })
+            })
+            log(request.query.isDeleteAtDatabase)
+            if (request.query.isDeleteAtDatabase) {
+                await productDetail.deleteProduct(productId)
+            }
             reply.send({ success: true })
         } catch (error) {
-            reply.send({ success: false, msg: error })
+            log(error)
+            reply.send({ success: false, msg: error.message })
         }
-
     })
     next()
 }

@@ -17,7 +17,13 @@ const productDetailSchema = new Schema({
   lastUpdateStamp: Number,
   meta: {
     locId: Number,
-    address: String
+    address: String,
+    badgeLabel: String,
+    badgeStyle: String,
+    leaveNotice: String,
+    notificationTime: String,
+    onLeave: Boolean,
+    registered: Boolean
   },
   lat: String,
   lng: String,
@@ -118,37 +124,57 @@ async function update(productId, jsonProductDetail, ratingCountTotal) {
     log(error)
   }
 }
+async function deleteProduct(productId) {
+  try {
+    db.connect(dbURL, { useNewUrlParser: true });
+    await ProductDetail.findOneAndDelete({ id: productId })
+    await db.connection.close()
+    log(productId + " Delete to %s collection.", COLLECTION_NAME)
+  } catch (error) {
+    log(error)
+  }
+}
 
 function findProductByConditions(conditions, callback) {
-  var query = {
-    '$where': conditions.map(condition => {
-      if (condition.indexOf('new') > -1)
-        return condition
-      return 'this.' + condition
-    }).join(' && ')
-  }
-  log(query)
-  db.connect(dbURL, { useNewUrlParser: true });
-  return ProductDetail.find(
-    query,
-    'id name price ratingCount lastUpdateStamp status attributes phone districtId cover ratingCountTotal')
-    //.sort({ lastUpdateStamp: -1 })
-    .exec((err, data) => {
-      if (err) log(err)
-      log('data.length=%s', data.length)
-      data.forEach(e => {
-        e.lastUpdateStamp = new Date(e.lastUpdateStamp * 1000).toLocaleDateString()
+  try {
+    var query = {
+      '$where': conditions.map(condition => {
+        if (condition.indexOf('new') > -1)
+          return condition
+        return 'this.' + condition
+      }).join(' && ')
+    }
+    log(query)
+    db.connect(dbURL, { useNewUrlParser: true });
+    return ProductDetail.find(
+      query,
+      'id name price ratingCount lastUpdateStamp status attributes phone districtId cover ratingCountTotal')
+      //.sort({ lastUpdateStamp: -1 })
+      .exec((err, data) => {
+        if (err) log(err)
+        if (data && data.length > 0) {
+          log('data.length=%s', data.length)
+          data.forEach(e => {
+            e.lastUpdateStamp = new Date(e.lastUpdateStamp * 1000).toLocaleDateString()
+          })
+          callback(data)
+        }
+        else
+          callback([])
+        db.connection.close()
       })
-      db.connection.close()
-      callback(data)
-    })
+  } catch (error) {
+    log(error)
+    callback([])
+  }
+
 }
-async function getLatestProductId() {
+async function fetchLatestProduct() {
   try {
     db.connect(dbURL, { useNewUrlParser: true });
     let product = await ProductDetail.findOne({}).sort({ id: -1 }).exec()
     await db.connection.close()
-    return product.id
+    return product
   } catch (error) {
     log(error)
   }
@@ -158,8 +184,9 @@ async function getLatestProductId() {
 module.exports = {
   insert: insert,
   findProductByConditions: findProductByConditions,
-  getLatestProductId: getLatestProductId,
-  update: update
+  fetchLatestProduct: fetchLatestProduct,
+  update: update,
+  deleteProduct: deleteProduct
 };
 
 ///////////////////////////////// Testing part /////////////////////////////////

@@ -6,6 +6,7 @@ let log = console.log,
     globalStatus = {
         "1": 'ACTIVE',
         "2": 'OFF',
+        "3": "ON LEAVE",
         "4": 'FAKE',
         "8": 'PENDING..',
     }
@@ -56,6 +57,10 @@ $().ready(function () {
     $('#btnUpdateReviewsAllProducts').click(function () {
         updateReiewsProducts($('#txtStartIndexUpdateReviews').val(), globalProducts.length)
     })
+    $('#btnDeleteAllProducts').click(function () {
+        var isDeleted = confirm('Are you sure delete all product ?')
+        if(isDeleted) deleteProducts($('#txtStartIndexUpdateReviews').val(), globalProducts.length)
+    })
     $('#cbHideProductCover').change(function () {
         if ($(this).is(':checked')) {
             $('.productCover').css('display', 'none')
@@ -64,6 +69,14 @@ $().ready(function () {
         else {
             $('.productItem').css('width', '500px')
             $('.productCover').css('display', '')
+        }
+    })
+    $('#cbHideProductName').change(function () {
+        if ($(this).is(':checked')) {
+            $('.productName').css('display', 'none')
+        }
+        else {
+            $('.productName').css('display', '')
         }
     })
 })
@@ -168,8 +181,14 @@ function getQueryConditions() {
         query.push(`districtId == ${$('#ddlDisctrict option:selected').val()}`)
     if ($('#cbRatingCount').is(':checked'))
         query.push(`ratingCount ${$('#conditionsRatingCount option:selected').text()} ${$('#txtRatingCount').val()}`)
-    if ($('#cbStatus').is(':checked'))
-        query.push(`status === ${$('#ddlStatus option:selected').val()}`)
+    if ($('#cbStatus').is(':checked')){
+        var status = parseInt($('#ddlStatus option:selected').val())
+        if(status === 3){
+            query.push('meta !== undefined')
+            query.push(`meta.onLeave === true`)
+        }
+        else query.push(`status === ${status}`)
+    }
     if ($('#cbPhotoCount').is(':checked'))
         query.push(`photos.length ${$('#conditionsPhotoCount option:selected').text()} ${$('#ddlPhotoCount option:selected').text()}`)
     if ($('#cbMonth').is(':checked'))
@@ -225,7 +244,8 @@ function configureConditionsController() {
             case 'cbPrice':
             //case 'cbAge':
             case 'cbYear':
-            case 'cbMonth':
+            case 'cbStatus':
+            //case 'cbMonth':
                 $('#' + checkboxId).prop('checked', true).change();
                 break
             default:
@@ -277,8 +297,10 @@ function drawProduct(products) {
         strHtml = strHtml + `
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
-            <div><i class="fa fa-user"></i><span class="productName">
-            <a href="#" onclick="openTab('${product.id}'); return false;">[${product.id}]</a> ${product.name}
+            <div>
+            <i class="fa fa-user"></i>
+            <a href="#" onclick="openTab('${product.id}'); return false;">[${product.id}]</a>
+            <span class="productName"> ${product.name}</span>
             </div>
             <div class="productCover">
                 ${($('#cbHideProductCover').is(':checked') ? '' : `<img src="/public/products/${product.id}/${_cover}">`)}
@@ -299,7 +321,7 @@ function drawProduct(products) {
                 <i class="far fa-folder-open"></i><span><a class="action" href="#" onclick="openProductFolder('${product.id}'); return false">Open Folder</a></span>
                 <i class="fa fa-external-link-alt"></i><span><a class="action" href="#" onclick="openWeb('${product.id}'); return false;">Open Web</a></span><br />
                 <i class="fa fa-cloud-download-alt"></i><span><a class="action" href="#" onclick="fetchAllReviews('${product.id}'); return false;">Fetch All Reviews</a></span>
-                <i class="fa fa-trash-alt"></i><span><a class="action-delete" href="#" onclick="deleteProduct('${product.id}'); return false;">Delete</a></span><br />
+                <i class="fa fa-trash-alt"></i><span><a class="action-delete btnDelete" href="#" onclick="deleteProduct('${product.id}', this); return false;">Delete</a></span><br />
             </div>
             </div>
         `
@@ -457,16 +479,21 @@ function genDistrict(cityId) {
     });
 }
 
-function deleteProduct(productId) {
+function deleteProduct(productId, btnDelete) {
     var isAccepted = confirm('Are you sure delete product has id=' + productId)
     if (isAccepted) {
         $.ajax({
             url: '/products/delete/' + productId,
             type: 'GET',
+            data:{
+                isDeleteAtDatabase:$('#cbDeleteProductAtDatabase').is(':checked')
+            },
             success: function (res) {
                 try {
-                    if (res.responseText.success)
+                    if (res.success){
                         alert('deleted')
+                        $(btnDelete).parent().parent().parent().detach()
+                    }
                     else
                         log(res.responseText.msg)
                 } catch (e) {
@@ -478,4 +505,52 @@ function deleteProduct(productId) {
             }
         });
     }
+}
+function deleteProducts(index, limitIndex) {
+    // use recursive native
+    let productId = globalProducts[index].id
+    let btnDelete = document.getElementsByClassName('btnDelete')[index];
+    $(btnDelete).parent().parent().parent().addClass('active')
+    if ($('#cbFocusProductItem').is(':checked')) $(btnDelete).focus()
+    let spiner = $(btnDelete).parent().prev()
+    spiner.prop('class', 'fas fa-sync fa-spin')
+    $.ajax({
+        url: '/products/delete/' + productId,
+        type: 'GET',
+        data:{
+            isDeleteAtDatabase:$('#cbDeleteProductAtDatabase').is(':checked')
+        },
+        success: function (res) {
+            try {
+                if (res.success){
+                    $(btnDelete).parent().parent().parent().detach()
+                }
+                console.log(res)
+                index++
+                if (index < limitIndex)
+                    deleteProducts(index, limitIndex)
+                else {
+                    log('Done Delete All Products')
+                    drawProduct(globalUpdatedReviewProducts)
+                }
+            } catch (error) {
+                // $(btnDelete).parent().parent().parent().addClass('errorTry')
+                // index++
+                // if (index < limitIndex)
+                //     deleteProducts(index, limitIndex)
+                // else
+                // log('Done Delete All Products')
+                // log(error)
+            }
+        },
+        error: function (err) {
+            // $(btnDelete).parent().parent().parent().addClass('errorAjax')
+            // index++
+            // if (index < limitIndex)
+            //     deleteProducts(index, limitIndex)
+            // else
+            // log('Done Delete All Products')
+            // console.log(err)
+        }
+    });
 }

@@ -30,3 +30,5 @@ test/t12.js
 .vscode/launch.json
 
 fastify/NKSHOP-204503-d0f45f50664e.json
+
+fastify/public/img/

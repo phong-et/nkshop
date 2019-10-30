@@ -135,7 +135,8 @@ span.productIndex{position: absolute;
 #btnSearch, #btnUpdateReviewsAllProducts{margin: 10px;}
 #cbFocusProductItem{margin: 0 5px}
 #txtStartIndexUpdateReviews{width:80px;}
-
+#btnDeleteAllProducts{margin: 5px;}
+.inputSettings{ margin: 5px !important;}
 div.active {
     animation-duration: 900ms;
     animation-name: blink;
