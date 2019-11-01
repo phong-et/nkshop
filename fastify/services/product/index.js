@@ -114,6 +114,36 @@ module.exports = async function (fastify, opts, next) {
             })
         }
     })
+    fastify.get('/products/currentreviews/:productId', async function (request, reply) {
+        log('----request.query----')
+        log(request.params)
+        try {
+            let productId = request.params.productId,
+                product = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
+                currentReviewIds = await nk.fetchReviewListOfProduct(cfg.reviewUrl, productId, product.ratingCount)
+            productDetail.update(productId, product, currentReviewIds.length)
+            nk.fetchImagesOfProduct(product)
+            log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
+            if (currentReviewIds.length > 0) {
+                log(`Fetch all images ${currentReviewIds.length} reviews`)
+                await Promise.all(currentReviewIds.map(async reviewId => {
+                    try {
+                        await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId, true, true)
+                    } catch (error) {
+                        log(error)
+                    }
+                }))
+            }
+            currentReviewIds.sort((a, b) => a - b)
+            reply.send({
+                currentReviewIds: currentReviewIds,
+            })
+        } catch (error) {
+            reply.send({
+                error
+            })
+        }
+    })
 
     fastify.get('/products/latest/', function (request, reply) {
         log('fetch latest product')

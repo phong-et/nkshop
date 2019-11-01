@@ -320,7 +320,8 @@ function drawProduct(products) {
                 <a class="btnUpdateReviews action" href="#" onclick="updateReviews('${product.id}',this); return false;">Update Reviews</a></span><br />
                 <i class="far fa-folder-open"></i><span><a class="action" href="#" onclick="openProductFolder('${product.id}'); return false">Open Folder</a></span>
                 <i class="fa fa-external-link-alt"></i><span><a class="action" href="#" onclick="openWeb('${product.id}'); return false;">Open Web</a></span><br />
-                <i class="fa fa-cloud-download-alt"></i><span><a class="action" href="#" onclick="fetchAllReviews('${product.id}'); return false;">Fetch All Reviews</a></span>
+                <i class="fa fa-cloud-download-alt"></i><span>
+                <a class="btnUpdateReviews action" href="#" onclick="fetchAllImagesReviews('${product.id}', this); return false;">Fetch All Reviews</a></span>
                 <i class="fa fa-trash-alt"></i><span><a class="action-delete btnDelete" href="#" onclick="deleteProduct('${product.id}', this); return false;">Delete</a></span><br />
             </div>
             </div>
@@ -439,6 +440,30 @@ function updateReviews(productId, e) {
                     $(e).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
                 } else {
                     $(e).html(`Updated<span>(${data.newReviewIds.length})</span>`)
+                }
+                console.log(data)
+            } catch (e) {
+                console.log(e)
+            }
+        },
+        error: function (err) {
+            console.log(err)
+        }
+    });
+}
+function fetchAllImagesReviews(productId, e) {
+    let spiner = $(e).parent().prev()
+    spiner.prop('class', 'fas fa-sync fa-spin')
+    $.ajax({
+        url: '/products/currentreviews/' + productId,
+        type: 'GET',
+        success: function (data) {
+            try {
+                spiner.prop('class', 'fa fa-refresh')
+                if (data.currentReviewIds.length > 0) {
+                    $(e).html(`Updated<span class="newReview">(${data.currentReviewIds.length})</span>`)
+                } else {
+                    $(e).html(`Updated<span>(${data.currentReviewIds.length})</span>`)
                 }
                 console.log(data)
             } catch (e) {
