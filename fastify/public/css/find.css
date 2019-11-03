@@ -21,8 +21,8 @@ form#form-search label {
 
 fieldset {
     border: 1px groove #ddd !important;
-    padding: 0 1.4em 1.4em 1.4em !important;
-    margin: 0 0 1.5em 0 !important;
+    padding: 0 1em 0 1em !important;
+    margin: 0 1em 1em 1em !important;
     -webkit-box-shadow: 0px 0px 0px 0px #000;
     box-shadow: 0px 0px 0px 0px #000;
 }
@@ -40,10 +40,11 @@ legend {
 }
 
 #form-search-control label {
-    padding: 5px;
-    margin-right: 30px;
+    padding: 2px;
+    margin-right: 10px;
 }
 
+fieldset.controller-group label{ display: inline;}
 
 /* ============== End Find Form ============== */
 

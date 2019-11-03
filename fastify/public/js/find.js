@@ -299,25 +299,7 @@ function drawProduct(products) {
             _t = product.attributes && product.attributes['46'] || 'N',
             _author = product.author && product.author.displayName || 'N',
             _cover = product.cover && product.cover.dimensions && product.cover.dimensions && product.cover.dimensions.small && product.cover.dimensions.small.file || 'NULL'
-        // strHtml = strHtml + `
-        // <div class="productItem">
-        //     <span class="productIndex rounded-circle">${index + 1}</span>
-        //     <i class="fa fa-user"></i><span class="productName"><a href="#" onclick="openWebProduct('${product.id}'); return false;">${product.name}</a></span><i class="fa fa-film"></i><span class="productId">${product.id}</span><br />
-        //     <i class="fa fa-money"></i><span class="productPrice ">${product.price}</span>
-        //     <i class="fa fa-bolt"></i><span class="productStatus">${globalStatus[product.status]}</span>
-        //     <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}(${product.ratingCountTotal || 0})</span>
-        //     <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span><br/>
-        //     <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString() + ' ' + productLastUpdateTime.toLocaleTimeString()}</span>
-        //     <i class="fas fa-globe"></i><span class="productPlace">${globalDistricts['"' + product.districtId + '"']}</span><br />
-        //     <i class="fa fa-heartbeat"></i><span class="productAge">${new Date(_age * 1000).getFullYear()}</span>
-        //     <!-- <i class="fa fa-american-sign-language-interpreting"></i> -->
-        //     <i class="fa fa-stethoscope"></i><span class="productV1">${_1v}</span>
-        //     <i class="fa fa-wheelchair"></i><span class="productV3">${_3v}</span>
-        //     <i class="fa fa-child"></i><span>${_t}</span><br />
-        //     <i class="far fa-folder-open"></i><span><a href="#" onclick="openProductFolder('${product.id}'); return false">Open</a></span>
-        //     <i class="fa fa-refresh"></i><span><a href="#" class="btnUpdateReviews" onclick="updateReviews('${product.id}',this); return false;">Update Reviews</a></span>
-        //     <i class="fa fa-cloud-download"></i><span><a href="#" onclick="fetchAllReviews('${product.id}'); return false;">Fetch All Reviews</a></span>
-        // </div>`
+            
         strHtml = strHtml + `
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
@@ -504,7 +486,7 @@ function fetchAllImagesReviews(productId, e) {
 
 function genDistrict(cityId) {
     $.ajax({
-        url: '/products/fetchDistrict/' + cityId,
+        url: '/products/districts/' + cityId,
         type: 'GET',
         success: function (districts) {
             let html = ''

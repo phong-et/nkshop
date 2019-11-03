@@ -2,41 +2,17 @@
 let log = console.log,
     productDetail = require('../../models/productDetail'),
     Review = require('../../models/review'),
+    District = require('../../models/district'),
     cfg = require('../../../nk.cfg'),
     nk = require('../../../nk'),
     rimraf = require('rimraf')
 module.exports = async function (fastify, opts, next) {
-    fastify.get('/products/fetchDistrict/:cityId', async function (request, reply) {
+    fastify.get('/products/districts/:cityId', async function (request, reply) {
         log('----request.query----')
-        log(request.params.cityId)
+        let cityId = request.params.cityId
+        log(cityId)
         try {
-            var GoogleSpreadsheet = require('google-spreadsheet')
-            var creds = require('../../NKSHOP-204503-d0f45f50664e.json')
-            var doc = new GoogleSpreadsheet('1_zZAxM2IHrVLxmnVeiwVCkOPybgyxCVwBKuhygPfqbo')
-            function getData() {
-                return new Promise((resolve, reject) => {
-                    doc.useServiceAccountAuth(creds, function (err) {
-                        doc.getRows(1, function (err, rows) {
-                            if (err) reject(err)
-                            else {
-                                resolve(rows.map(row => {
-                                    // delete row._links
-                                    // delete row._xml
-                                    // delete row['app:edited']
-                                    // return row
-                                    let data = {}
-                                    data.cityId = row.cityid
-                                    data.id = row.id
-                                    data.name = row.name
-                                    return data
-                                }))
-                            }
-                        })
-                    })
-                })
-            }
-            let discstrict = await getData().catch(err => console.log(err))
-            reply.send(discstrict.sort())
+            reply.send(await District.fetchDistricts(cityId))
         } catch (error) {
             reply.send(error)
         }
