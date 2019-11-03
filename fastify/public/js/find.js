@@ -169,7 +169,9 @@ function updateReiewsProducts(index, limitIndex) {
                 if (index < limitIndex)
                     updateReiewsProducts(index, limitIndex)
                 else {
-                    log('Done Update Reviews All Product')
+                    log('Done Update Reviews All Product')                    
+                    // use for sorting after updated reviews
+                    globalProducts = globalUpdatedReviewProducts
                     drawProduct(globalUpdatedReviewProducts)
                 }
             } catch (error) {
