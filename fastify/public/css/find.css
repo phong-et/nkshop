@@ -77,7 +77,7 @@ label{color: #000;}
 
 .productItem span {
     margin-left: 5px;
-    margin-right: 20px !important;
+    margin-right: 16px !important;
     color: #7ce6fe;
     width: 150px;
 }
@@ -88,6 +88,7 @@ i.fa, i.fas, i.far{color: #d7eee5;}
 .productInfo{
     margin-left: 5px;
     float: left;
+    width: 259px;
 }
 
 .productName a, span.productName {
@@ -106,7 +107,8 @@ span.productStatus-FAKE{color:#ff0000;font-weight: bold;}
 span.productStatus-PENDING{color:#b19b01;font-weight: bold;}
 span.productAge{color:#2be82b}
 span a.btnUpdateReviews {color:#03ff22 !important;}
-
+span.productAuthor{color: #eeeccc;}
+i.fa-user-secret{color: #e25afb;}
 .newReview{color: red !important;}
 .reviewUpdated{background:#ffc4c4 !important;}
 .errorTry{color: red;}

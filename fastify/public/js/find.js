@@ -43,8 +43,9 @@ $().ready(function () {
             success: function (products) {
                 try {
                     globalProducts = products
-                    drawProduct(products)
-                    log(`[${products.map(product => product.id).sort((a, b) => a - b).toString()}]`)
+                    var typeSorting = $('#ddlSorting option:selected').val()
+                    drawProduct(sort(typeSorting))
+                    //log(`[${products.map(product => product.id).sort((a, b) => a - b).toString()}]`)
                 } catch (e) {
                     log(e)
                 }
@@ -59,7 +60,7 @@ $().ready(function () {
     })
     $('#btnDeleteAllProducts').click(function () {
         var isDeleted = confirm('Are you sure delete all product ?')
-        if(isDeleted) deleteProducts($('#txtStartIndexUpdateReviews').val(), globalProducts.length)
+        if (isDeleted) deleteProducts($('#txtStartIndexUpdateReviews').val(), globalProducts.length)
     })
     $('#cbHideProductCover').change(function () {
         if ($(this).is(':checked')) {
@@ -79,7 +80,29 @@ $().ready(function () {
             $('.productName').css('display', '')
         }
     })
+    $('#ddlSorting').change(function () {
+        var typeSorting = $('#ddlSorting option:selected').val()
+        drawProduct(sort(typeSorting))
+    })
 })
+function sort(type) {
+    log(type)
+    var sortedProducts = []
+    switch (type) {
+        case "price":
+            sortedProducts = _u.orderBy(globalProducts, ['price'])
+            break
+        case "time":
+            sortedProducts = _u.orderBy(globalProducts, ['lastUpdateStamp'])
+            break
+        case "rating":
+            sortedProducts = _u.orderBy(globalProducts, ['ratingCount'])
+            break
+        default: sortedProducts = globalProducts
+            break
+    }
+    return sortedProducts.reverse()
+}
 function genBackground() {
     //src : http://wallpaperswide.com
     let bgRandomNumber = Math.floor(Math.random() * 17)
@@ -181,9 +204,9 @@ function getQueryConditions() {
         query.push(`districtId == ${$('#ddlDisctrict option:selected').val()}`)
     if ($('#cbRatingCount').is(':checked'))
         query.push(`ratingCount ${$('#conditionsRatingCount option:selected').text()} ${$('#txtRatingCount').val()}`)
-    if ($('#cbStatus').is(':checked')){
+    if ($('#cbStatus').is(':checked')) {
         var status = parseInt($('#ddlStatus option:selected').val())
-        if(status === 3){
+        if (status === 3) {
             query.push('meta !== undefined')
             query.push(`meta.onLeave === true`)
         }
@@ -245,7 +268,7 @@ function configureConditionsController() {
             //case 'cbAge':
             case 'cbYear':
             case 'cbStatus':
-            //case 'cbMonth':
+                //case 'cbMonth':
                 $('#' + checkboxId).prop('checked', true).change();
                 break
             default:
@@ -271,9 +294,10 @@ function drawProduct(products) {
     products.forEach((product, index) => {
         let productLastUpdateTime = new Date(product.lastUpdateStamp * 1000),
             _age = product.attributes && product.attributes['42'] || 1,
-            _1v = product.attributes && product.attributes['51'] || 'NULL',
-            _3v = product.attributes && product.attributes['49'] || 'NULL',
-            _t = product.attributes && product.attributes['46'] || 'NULL',
+            _1v = product.attributes && product.attributes['51'] || 'N',
+            _3v = product.attributes && product.attributes['49'] || 'N',
+            _t = product.attributes && product.attributes['46'] || 'N',
+            _author = product.author && product.author.displayName || 'N',
             _cover = product.cover && product.cover.dimensions && product.cover.dimensions && product.cover.dimensions.small && product.cover.dimensions.small.file || 'NULL'
         // strHtml = strHtml + `
         // <div class="productItem">
@@ -310,8 +334,10 @@ function drawProduct(products) {
                 <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalStatus[product.status] || ''}">${globalStatus[product.status]}</span><br />
                 <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span><br />
                 <i class="fas fa-globe"></i><span class="productPlace">${globalDistricts['"' + product.districtId + '"']}</span>
-                <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}(${product.ratingCountTotal || 'NULL'})</span><br />
-                <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString()}</span><br />
+                <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}(${product.ratingCountTotal || 'N'})</span>
+                <i class="fa fa-trophy"></i><span class="productRatingScore">${product.ratingScore}</span><br />
+                <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString()}</span>
+                <i class="fa fa-user-secret"></i><span class="productAuthor">${_author}</span><br />
                 <i class="fa fa-stethoscope"></i><span class="productV1">${_1v}</span>
                 <i class="fa fa-wheelchair"></i><span class="productV3">${_3v}</span>
                 <i class="fa fa-child"></i><span>${_t}</span><br />
@@ -321,7 +347,7 @@ function drawProduct(products) {
                 <i class="far fa-folder-open"></i><span><a class="action" href="#" onclick="openProductFolder('${product.id}'); return false">Open Folder</a></span>
                 <i class="fa fa-external-link-alt"></i><span><a class="action" href="#" onclick="openWeb('${product.id}'); return false;">Open Web</a></span><br />
                 <i class="fa fa-cloud-download-alt"></i><span>
-                <a class="btnUpdateReviews action" href="#" onclick="fetchAllImagesReviews('${product.id}', this); return false;">Fetch All Reviews</a></span>
+                <a class="btnFetchAllReviews action" href="#" onclick="fetchAllImagesReviews('${product.id}', this); return false;">Fetch All Reviews</a></span>
                 <i class="fa fa-trash-alt"></i><span><a class="action-delete btnDelete" href="#" onclick="deleteProduct('${product.id}', this); return false;">Delete</a></span><br />
             </div>
             </div>
@@ -510,12 +536,12 @@ function deleteProduct(productId, btnDelete) {
         $.ajax({
             url: '/products/delete/' + productId,
             type: 'GET',
-            data:{
-                isDeleteAtDatabase:$('#cbDeleteProductAtDatabase').is(':checked')
+            data: {
+                isDeleteAtDatabase: $('#cbDeleteProductAtDatabase').is(':checked')
             },
             success: function (res) {
                 try {
-                    if (res.success){
+                    if (res.success) {
                         alert('deleted')
                         $(btnDelete).parent().parent().parent().detach()
                     }
@@ -542,12 +568,12 @@ function deleteProducts(index, limitIndex) {
     $.ajax({
         url: '/products/delete/' + productId,
         type: 'GET',
-        data:{
-            isDeleteAtDatabase:$('#cbDeleteProductAtDatabase').is(':checked')
+        data: {
+            isDeleteAtDatabase: $('#cbDeleteProductAtDatabase').is(':checked')
         },
         success: function (res) {
             try {
-                if (res.success){
+                if (res.success) {
                     $(btnDelete).parent().parent().parent().detach()
                 }
                 console.log(res)

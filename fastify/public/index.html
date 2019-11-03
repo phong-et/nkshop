@@ -115,20 +115,29 @@
                     class="fa fa-refresh"></i><span></span> Update Reviews
                 All Products</button>
             <input type="number" class="form-control" value="0" id="txtStartIndexUpdateReviews" placeholder="number">
-            <button id="btnDeleteAllProducts" type="button" class="btn btn-primary btn-small"><i
-                    class="fa fa-refresh"></i><span></span> Delete
-                All Products</button>
 
-        </form>
-        <div>
-            <input class="inputSettings" type="checkbox" checked id="cbFocusProductItem">
-            <label>Focus to .productItem</label>
-            <input class="inputSettings" type="checkbox" checked id="cbHideProductCover">
-            <label>Hide cover</label>
-            <input class="inputSettings" type="checkbox" checked id="cbDeleteProductAtDatabase">
+            <button style="margin-left: 20px;" id="btnDeleteAllProducts" type="button"
+                class="btn btn-primary btn-small"><i class="fa fa-refresh"></i><span></span> Delete
+                All Products</button>
+            <input class="inputSettings" type="checkbox" id="cbDeleteProductAtDatabase">
             <label>Delete product at db</label>
+        </form>
+
+        <div class="quick-controller" style="position: fixed; bottom: 0; right: 0; background: #eee;">
+            <a onclick="" href="#form-search-control"><i class="fa fa-arrow-up" aria-hidden="true"
+                    style="color: green; margin-left:5px;"></i></a><br />
+            <select class="form-control" id="ddlSorting" style="margin: 5px 5px; width: 150px;">
+                <option value="sort" selected>Sort by :</option>
+                <option value="price">Price</option>
+                <option value="time">Time</option>
+                <option value="rating">Rating Count</option>
+            </select>
+            <input class="inputSettings" type="checkbox" checked id="cbFocusProductItem">
+            <label>Focus to .productItem</label><br />
+            <input class="inputSettings" type="checkbox" checked id="cbHideProductCover">
+            <label>Hide cover</label><br />
             <input class="inputSettings" type="checkbox" id="cbHideProductName">
-            <label>Hide product name</label>
+            <label>Hide product name</label><br />
         </div>
     </fieldset>
     <fieldset>
@@ -140,12 +149,16 @@
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
         integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
-        </script>
+        </script> -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
         </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+    <script>
+        _u = _.noConflict(); // lets call ourselves _u
+    </script>
     <script src="js/find.js"></script>
 </body>
 
