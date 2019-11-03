@@ -15,7 +15,7 @@
 <body>
     <fieldset>
         <legend>
-            <h6>Conditions Controller</h6>
+            <h6><a data-toggle="collapse" data-target="#demo" href="#">Conditions Controller</a></h6>
         </legend>
         <form id="form-search-control" class="form-inline">
             <fieldset class="controller-group">
@@ -24,7 +24,7 @@
                 </legend>
                 <input type="checkbox" checked id="cbName">
                 <label>Name</label>
-                <input type="checkbox" checked id="cbId">
+                <input type="checkbox" id="cbId">
                 <label>Id</label>
             </fieldset>
 
@@ -80,83 +80,127 @@
             </fieldset>
         </form>
     </fieldset>
-    <form id="form-search" class="form-inline">
-        <label style="margin-left:0;" id="lbName">Name: </label>
-        <input style="width:200px !important;" type="text" class="form-control" id="txtName" placeholder="name">
-        <!--price specification-->
-        <label id="lbPrice">Price: </label>
-        <select class="form-control conditions" id="conditionsPrice"></select>
-        <select class="form-control" id="ddlPrice"></select>
-        <!--price range-->
-        <select class="form-control" id="ddlPriceFrom"></select>
-        <select class="form-control conditions" id="conditionsPriceFrom">
-            <option value="&gt;=">&lt;=</option>
-            <option value="&gt;">&lt;</option>
-        </select>
-        </select>
-        <label id="lbPriceRange">Price &nbsp; </label>
-        <select class="form-control conditions" id="conditionsPriceTo">
-            <option value="&lt;=">&lt;=</option>
-            <option value="&lt;">&lt;</option>
-        </select>
-        <select class="form-control" id="ddlPriceTo"></select>
 
-        <select class="form-control" id="ddlDisctrict"></select>
-        <label id="lbRatingCount">Rating: </label>
-        <select class="form-control conditions" id="conditionsRatingCount"></select>
-        <input type="number" class="form-control" id="txtRatingCount" placeholder="number">
-        <select class="form-control" id="ddlStatus">
-            <option value="0">Status</option>
-            <option value="1" selected>Active</option>
-            <option value="3">On Leave</option>
-            <option value="2">Off</option>
-            <option value="4">Fake</option>
-            <option value="8">Pending</option>
-        </select>
-        <label id="lbPhotoCount">Photo: </label>
-        <select class="form-control conditions" id="conditionsPhotoCount"></select>
-        <select class="form-control" id="ddlPhotoCount">
-            <option>Photo</option>
-            <option>0</option>
-            <option>1</option>
-        </select>
+    <fieldset class="conditions-query">
+        <legend>
+            <h6>Conditions Query</h6>
+        </legend>
+        <form id="form-search" class="form-inline">
+            <fieldset class="query-group">
+                <legend>
+                    <h6>Id - Name</h6>
+                </legend>
+                <label style="margin-left:0;" id="lbName">Name: </label>
+                <input style="width:200px !important;" type="text" class="form-control" id="txtName" placeholder="name">
+            </fieldset>
 
-        <label id="lbMonth">Month: </label>
-        <select class="form-control" id="conditionsMonth"></select>
-        <select class="form-control" id="ddlMonth"></select>
+            <fieldset class="query-group">
+                <legend>
+                    <h6>Price</h6>
+                </legend>
+                <!--price specification-->
+                <label id="lbPrice">Price: </label>
+                <select class="form-control conditions" id="conditionsPrice"></select>
+                <select class="form-control" id="ddlPrice"></select>
+                <!--price range-->
+                <select class="form-control" id="ddlPriceFrom"></select>
+                <select class="form-control conditions" id="conditionsPriceFrom">
+                    <option value="&gt;=">&lt;=</option>
+                    <option value="&gt;">&lt;</option>
+                </select>
+                </select>
+                <label id="lbPriceRange">Price &nbsp; </label>
+                <select class="form-control conditions" id="conditionsPriceTo">
+                    <option value="&lt;=">&lt;=</option>
+                    <option value="&lt;">&lt;</option>
+                </select>
+                <select class="form-control" id="ddlPriceTo"></select>
+            </fieldset>
 
-        <label id="lbYear">Year: </label>
-        <select class="form-control" id="conditionsYear"></select>
-        <select class="form-control" id="ddlYear"></select>
+            <fieldset class="query-group">
+                <legend>
+                    <h6>Status - Place</h6>
+                </legend>
+                <select class="form-control" id="ddlDisctrict"></select>
+                <select class="form-control" id="ddlStatus">
+                    <option value="0">Status</option>
+                    <option value="1" selected>Active</option>
+                    <option value="3">On Leave</option>
+                    <option value="2">Off</option>
+                    <option value="4">Fake</option>
+                    <option value="8">Pending</option>
+                </select>
+            </fieldset>
 
-        <label id="lbV1">1V: </label>
-        <select class="form-control" id="conditionsV1"></select>
-        <input type="number" class="form-control" id="txtV1" placeholder="number">
+            <fieldset class="query-group">
+                <legend>
+                    <h6>Count</h6>
+                </legend>
+                <label id="lbRatingCount">Rating: </label>
+                <select class="form-control conditions" id="conditionsRatingCount"></select>
+                <input type="number" class="form-control" id="txtRatingCount" placeholder="number">
+                <label id="lbPhotoCount">Photo: </label>
+                <select class="form-control conditions" id="conditionsPhotoCount"></select>
+                <select class="form-control" id="ddlPhotoCount">
+                    <option>Photo</option>
+                    <option>0</option>
+                    <option>1</option>
+                </select>
+            </fieldset>
 
-        <label id="lbV3">3V: </label>
-        <select class="form-control" id="conditionsV3"></select>
-        <input type="number" class="form-control" id="txtV3" placeholder="number">
+            <fieldset class="query-group">
+                <legend>
+                    <h6>Time</h6>
+                </legend>
+                <label id="lbMonth">Month: </label>
+                <select class="form-control" id="conditionsMonth"></select>
+                <select class="form-control" id="ddlMonth"></select>
 
-        <label id="lbAge">Age: </label>
-        <select class="form-control" id="conditionsAge"></select>
-        <select class="form-control" id="ddlAge">
-            <option>Year</option>
-        </select>
-    </form>
-    <form class="form-inline">
-        <button id="btnSearch" type="button" class="btn btn-primary btn-small"><i class="fab fa-searchengin"></i>
-            Search</button>
-        <button id="btnUpdateReviewsAllProducts" type="button" class="btn btn-primary btn-small"><i
-                class="fa fa-refresh"></i><span></span> Update Reviews
-            All Products</button>
-        <input type="number" class="form-control" value="0" id="txtStartIndexUpdateReviews" placeholder="number">
+                <label id="lbYear">Year: </label>
+                <select class="form-control" id="conditionsYear"></select>
+                <select class="form-control" id="ddlYear"></select>
+            </fieldset>
 
-        <button style="margin-left: 20px;" id="btnDeleteAllProducts" type="button" class="btn btn-primary btn-small"><i
-                class="fa fa-refresh"></i><span></span> Delete
-            All Products</button>
-        <input class="inputSettings" type="checkbox" id="cbDeleteProductAtDatabase">
-        <label>Delete product at db</label>
-    </form>
+            <fieldset class="query-group">
+                <legend>
+                    <h6>Number</h6>
+                </legend>
+                <label id="lbV1">1V: </label>
+                <select class="form-control" id="conditionsV1"></select>
+                <input type="number" class="form-control" id="txtV1" placeholder="number">
+
+                <label id="lbV3">3V: </label>
+                <select class="form-control" id="conditionsV3"></select>
+                <input type="number" class="form-control" id="txtV3" placeholder="number">
+
+                <label id="lbAge">Age: </label>
+                <select class="form-control" id="conditionsAge"></select>
+                <select class="form-control" id="ddlAge">
+                    <option>Year</option>
+                </select>
+            </fieldset>
+        </form>
+    </fieldset>
+
+    <fieldset class="action-group">
+        <legend>
+            <h6>Action Buttons</h6>
+        </legend>
+        <form class="form-inline">
+            <button id="btnSearch" type="button" class="btn btn-primary btn-small"><i class="fab fa-searchengin"></i>
+                Search</button>
+            <button id="btnUpdateReviewsAllProducts" type="button" class="btn btn-primary btn-small"><i
+                    class="fa fa-refresh"></i><span></span> Update Reviews
+                All Products</button>
+            <input type="number" class="form-control" value="0" id="txtStartIndexUpdateReviews" placeholder="number">
+
+            <button style="margin-left: 20px;" id="btnDeleteAllProducts" type="button"
+                class="btn btn-primary btn-small"><i class="fa fa-refresh"></i><span></span> Delete
+                All Products</button>
+            <input class="inputSettings" type="checkbox" id="cbDeleteProductAtDatabase">
+            <label>Delete product at db</label>
+        </form>
+    </fieldset>
 
     <div class="quick-controller" style="position: fixed; bottom: 0; right: 0; background: #eee;">
         <a onclick="" href="#form-search-control"><i class="fa fa-arrow-up" aria-hidden="true"
