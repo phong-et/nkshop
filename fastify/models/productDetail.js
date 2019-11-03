@@ -148,7 +148,7 @@ function findProductByConditions(conditions, callback) {
     db.connect(dbURL, { useNewUrlParser: true });
     return ProductDetail.find(
       query,
-      'id name price ratingCount lastUpdateStamp status attributes phone districtId cover ratingCountTotal')
+      'id name price ratingCount ratingScore lastUpdateStamp status attributes phone districtId cover ratingCountTotal author')
       //.sort({ lastUpdateStamp: -1 })
       .exec((err, data) => {
         if (err) log(err)
