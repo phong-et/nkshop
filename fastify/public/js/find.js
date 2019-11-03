@@ -34,17 +34,20 @@ $().ready(function () {
     genAges()
     configureConditionsController()
     $('#btnSearch').click(function () {
-
+        let spiner = $(this).children()
+        spiner.prop('class', 'fas fa-sync fa-spin')
         var query = getQueryConditions()
         $.ajax({
             url: '/products/findConditions',
             type: 'GET',
             data: { query: JSON.stringify(query) },
             success: function (products) {
+                spiner.prop('class', 'fab fa-searchengin')
                 try {
                     globalProducts = products
                     var typeSorting = $('#ddlSorting option:selected').val()
-                    drawProduct(sort(typeSorting))
+                    $('#productTitleCount').text(`Product Result [${products.length}]`)
+                    drawProduct(sort(typeSorting, products))
                     //log(`[${products.map(product => product.id).sort((a, b) => a - b).toString()}]`)
                 } catch (e) {
                     log(e)
@@ -82,23 +85,23 @@ $().ready(function () {
     })
     $('#ddlSorting').change(function () {
         var typeSorting = $('#ddlSorting option:selected').val()
-        drawProduct(sort(typeSorting))
+        drawProduct(sort(typeSorting, globalProducts))
     })
 })
-function sort(type) {
+function sort(type, products) {
     log(type)
     var sortedProducts = []
     switch (type) {
         case "price":
-            sortedProducts = _u.orderBy(globalProducts, ['price'])
+            sortedProducts = _u.orderBy(products, ['price'])
             break
         case "time":
-            sortedProducts = _u.orderBy(globalProducts, ['lastUpdateStamp'])
+            sortedProducts = _u.orderBy(products, ['lastUpdateStamp'])
             break
         case "rating":
-            sortedProducts = _u.orderBy(globalProducts, ['ratingCount'])
+            sortedProducts = _u.orderBy(products, ['ratingCount'])
             break
-        default: sortedProducts = globalProducts
+        default: sortedProducts = products
             break
     }
     return sortedProducts.reverse()
