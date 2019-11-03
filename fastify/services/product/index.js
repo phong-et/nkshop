@@ -1,6 +1,6 @@
 'use strict'
 let log = console.log,
-    productDetail = require('../../models/productDetail'),
+    ProductDetail = require('../../models/productDetail'),
     Review = require('../../models/review'),
     District = require('../../models/district'),
     cfg = require('../../../nk.cfg'),
@@ -22,7 +22,7 @@ module.exports = async function (fastify, opts, next) {
         log('----request.query----')
         log(request.query['query'])
         try {
-            productDetail.findProductByConditions(JSON.parse(request.query['query']), products => {
+            ProductDetail.findProductByConditions(JSON.parse(request.query['query']), products => {
                 log(products.length)
                 reply.send(products)
             })
@@ -54,7 +54,7 @@ module.exports = async function (fastify, opts, next) {
                 totalReviewIds = currentReviewIds.concat(oldReviewIds)
 
             totalReviewIds = [...new Set(totalReviewIds)]
-            productDetail.update(productId, product, totalReviewIds.length)
+            ProductDetail.update(productId, product, totalReviewIds.length)
             nk.fetchImagesOfProduct(product)
             log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
@@ -97,7 +97,7 @@ module.exports = async function (fastify, opts, next) {
             let productId = request.params.productId,
                 product = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
                 currentReviewIds = await nk.fetchReviewListOfProduct(cfg.reviewUrl, productId, product.ratingCount)
-            productDetail.update(productId, product, currentReviewIds.length)
+            ProductDetail.update(productId, product, currentReviewIds.length)
             nk.fetchImagesOfProduct(product)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
             if (currentReviewIds.length > 0) {
@@ -123,7 +123,7 @@ module.exports = async function (fastify, opts, next) {
 
     fastify.get('/products/latest/', function (request, reply) {
         log('fetch latest product')
-        let product = productDetail.fetchLatestProduct()
+        let product = ProductDetail.fetchLatestProduct()
         reply.send({ product: product })
     })
 
@@ -138,7 +138,7 @@ module.exports = async function (fastify, opts, next) {
             })
             log(request.query.isDeleteAtDatabase)
             if (request.query.isDeleteAtDatabase) {
-                await productDetail.deleteProduct(productId)
+                await ProductDetail.deleteProduct(productId)
             }
             reply.send({ success: true })
         } catch (error) {
