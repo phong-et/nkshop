@@ -2,9 +2,10 @@ const db = require('../db')
 const dbURL = require('../../nk.cfg').dbUrl
 const Schema = db.Schema
 const log = console.log
-const autoIncrement = require('mongoose-sequence')(db);
+const autoIncrement = require('mongoose-sequence')(db)
 const common = require('./common')
 const COLLECTION_NAME = 'product_details'
+const _  = require('lodash')
 const productDetailSchema = new Schema({
   _id: Number,
   id: Number,
@@ -169,12 +170,12 @@ function findProductByConditions(conditions, callback) {
   }
 
 }
-async function fetchLatestProduct() {
+async function fetchLatestProductId() {
   try {
     db.connect(dbURL, { useNewUrlParser: true });
-    let product = await ProductDetail.findOne({}).sort({ id: -1 }).exec()
-    await db.connection.close()
-    return product
+    let products = await ProductDetail.find({}, 'id').exec()
+    db.connection.close()
+    return _.maxBy(products,'id').id
   } catch (error) {
     log(error)
   }
@@ -184,7 +185,7 @@ async function fetchLatestProduct() {
 module.exports = {
   insert: insert,
   findProductByConditions: findProductByConditions,
-  fetchLatestProduct: fetchLatestProduct,
+  fetchLatestProductId: fetchLatestProductId,
   update: update,
   deleteProduct: deleteProduct
 };

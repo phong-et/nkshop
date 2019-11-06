@@ -87,6 +87,28 @@ $().ready(function () {
         var typeSorting = $('#ddlSorting option:selected').val()
         drawProduct(sort(typeSorting, globalProducts))
     })
+
+    $('#btnFetchListId').click(function () {
+        let spiner = $(this).children()
+        spiner.prop('class', 'fas fa-sync fa-spin')
+        var pageRange = $('#txtListId').val()
+        $.ajax({
+            url: '/products/new/listid/' + pageRange,
+            type: 'GET',
+            //data: { pageRange: pageRange },
+            success: function (data) {
+                spiner.prop('class', 'fa fa-cloud-download-alt')
+                try {
+                    log(data)
+                } catch (e) {
+                    log(e)
+                }
+            },
+            error: function (err) {
+                log(err)
+            }
+        })
+    })
 })
 function sort(type, products) {
     log(type)
@@ -169,7 +191,7 @@ function updateReiewsProducts(index, limitIndex) {
                 if (index < limitIndex)
                     updateReiewsProducts(index, limitIndex)
                 else {
-                    log('Done Update Reviews All Product')                    
+                    log('Done Update Reviews All Product')
                     // use for sorting after updated reviews
                     globalProducts = globalUpdatedReviewProducts
                     drawProduct(globalUpdatedReviewProducts)
@@ -305,7 +327,7 @@ function drawProduct(products) {
             _author = product.author && product.author.displayName || 'N',
             _authorName = product.author && product.author.username || 'N',
             _cover = product.cover && product.cover.dimensions && product.cover.dimensions && product.cover.dimensions.small && product.cover.dimensions.small.file || 'NULL'
-            
+
         strHtml = strHtml + `
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
@@ -588,7 +610,7 @@ function deleteProducts(index, limitIndex) {
                 //     deleteProducts(index, limitIndex)
                 // else
                 // log('Done Delete All Products')
-                // log(error)
+                log(error)
             }
         },
         error: function (err) {
@@ -598,7 +620,7 @@ function deleteProducts(index, limitIndex) {
             //     deleteProducts(index, limitIndex)
             // else
             // log('Done Delete All Products')
-            // console.log(err)
+            log(err)
         }
     });
 }

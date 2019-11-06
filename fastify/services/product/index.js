@@ -5,8 +5,31 @@ let log = console.log,
     District = require('../../models/district'),
     cfg = require('../../../nk.cfg'),
     nk = require('../../../nk'),
-    rimraf = require('rimraf')
-
+    rimraf = require('rimraf'),
+    newProductIds = []
+function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, callback) {
+    try {
+        return nk.fetchProductByCTOnePage(cityId, orderBy, fromPage, products => {
+            newProductIds = newProductIds.concat(products.map(product => parseInt(product.id)))
+            log('products:%s', products.length)
+            //log(products.map(product => product.id))
+            fromPage++
+            if (fromPage <= toPage) {
+                log('====> Current page = ', fromPage)
+                return fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, callback)
+            }
+            else {
+                log('Done fetching product all %s page', toPage)
+                log(newProductIds.length)
+                log(JSON.stringify(newProductIds))
+                callback(newProductIds)
+            }
+        })
+    } catch (error) {
+        log('fetchProductsByCTByPageRange')
+        log(error)
+    }
+}
 module.exports = async function (fastify, opts, next) {
     fastify.get('/products/districts/:cityId', async function (request, reply) {
         log('----request.query----')
@@ -142,10 +165,19 @@ module.exports = async function (fastify, opts, next) {
         }
     })
 
-    fastify.get('/products/new/listid', async function (_, reply) {
+    fastify.get('/products/new/listid/:pageRange', async function (request, reply) {
         try {
-
-            reply.send({ success: true })
+            newProductIds = []
+            let latestId = await ProductDetail.fetchLatestProductId(),
+                pageRange = request.params.pageRange.split(','),
+                fromPage = pageRange[0], toPage = pageRange[1]
+            fetchProductsByCTByPageRange(cfg.cities[0], cfg.orderBy[0], fromPage, toPage, ids => {
+                log(ids)
+                reply.send(ids.map(id => {
+                    if (id > latestId)
+                        return id
+                }))
+            })
         } catch (error) {
             log(error)
             reply.send({ success: false, msg: error.message })
