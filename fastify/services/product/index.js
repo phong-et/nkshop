@@ -7,27 +7,45 @@ let log = console.log,
     nk = require('../../../nk'),
     rimraf = require('rimraf'),
     newProductIds = []
-function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, callback) {
+function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, productIds, callback) {
     try {
         return nk.fetchProductByCTOnePage(cityId, orderBy, fromPage, products => {
-            newProductIds = newProductIds.concat(products.map(product => parseInt(product.id)))
+            productIds = productIds.concat(products.map(product => parseInt(product.id)))
             log('products:%s', products.length)
             //log(products.map(product => product.id))
             fromPage++
             if (fromPage <= toPage) {
                 log('====> Current page = ', fromPage)
-                return fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, callback)
+                return fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, productIds, callback)
             }
             else {
                 log('Done fetching product all %s page', toPage)
-                log(newProductIds.length)
-                log(JSON.stringify(newProductIds))
-                callback(newProductIds)
+                log(`Products :${productIds.length}`)
+                //log(JSON.stringify(productIds))
+                callback(productIds)
             }
         })
     } catch (error) {
         log('fetchProductsByCTByPageRange')
         log(error)
+    }
+}
+async function fetchProductsDetailByListId(url, productIdList, acceptedMinPrice) {
+    try {
+        for (let i = 0; i < productIdList.length; i++) {
+            await nk.delay(nk.wait('product', i, productIdList[i]))
+            var jsonProduct = await nk.fetchJsonOfProduct(url, productIdList[i])
+            if (jsonProduct && jsonProduct.price >= acceptedMinPrice) {
+                log(`price:${jsonProduct.price} || ratingCount:${jsonProduct.ratingCount}`)
+                await ProductDetail.insert(jsonProduct)
+                await nk.fetchProduct(url, productIdList[i], jsonProduct)
+                await Review.insertMany(await nk.fetchReviewListOfProductSaveDb(cfg.reviewUrl, jsonProduct.id, jsonProduct.ratingCount))
+            }
+            else
+                log(`Rejected Product Price: ${jsonProduct.price || 'NULL'}`)
+        }
+    } catch (error) {
+        log(error.message)
     }
 }
 module.exports = async function (fastify, opts, next) {
@@ -155,9 +173,10 @@ module.exports = async function (fastify, opts, next) {
 
     fastify.get('/products/add', async function (request, reply) {
         try {
-            let listId = JSON.parse(request.query['listId'])
+            let listId = JSON.parse(request.query['listId']).map(id => parseInt(id)),
+            acceptedMinPrice = request.query['acceptedMinPrice']
             log(listId)
-
+            fetchProductsDetailByListId(cfg.productUrl, listId, parseInt(acceptedMinPrice))
             reply.send({ success: true })
         } catch (error) {
             log(error)
@@ -167,16 +186,16 @@ module.exports = async function (fastify, opts, next) {
 
     fastify.get('/products/new/listid/:pageRange', async function (request, reply) {
         try {
-            newProductIds = []
             let latestId = await ProductDetail.fetchLatestProductId(),
                 pageRange = request.params.pageRange.split(','),
                 fromPage = pageRange[0], toPage = pageRange[1]
-            fetchProductsByCTByPageRange(cfg.cities[0], cfg.orderBy[0], fromPage, toPage, ids => {
-                log(ids)
-                reply.send(ids.map(id => {
+            fetchProductsByCTByPageRange(cfg.cities[0], cfg.orderBy[0], fromPage, toPage, [], ids => {
+                let newIds = []
+                ids.forEach(id => {
                     if (id > latestId)
-                        return id
-                }))
+                        newIds.push(id)
+                })
+                reply.send(newIds.sort((a, b) => a - b))
             })
         } catch (error) {
             log(error)

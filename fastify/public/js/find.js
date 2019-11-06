@@ -89,13 +89,40 @@ $().ready(function () {
     })
 
     $('#btnFetchListId').click(function () {
-        let spiner = $(this).children()
+
+        let btnFetchLastIds = $(this),
+            spiner = btnFetchLastIds.children(),
+            txtListId = $('#txtListId')
         spiner.prop('class', 'fas fa-sync fa-spin')
-        var pageRange = $('#txtListId').val()
+        var pageRange = txtListId.val()
         $.ajax({
             url: '/products/new/listid/' + pageRange,
             type: 'GET',
-            //data: { pageRange: pageRange },
+            success: function (data) {
+                btnFetchLastIds.html(`<i class="fa fa-cloud-download-alt"></i> Fetch New Products (${data.length})`)
+                txtListId.val(data)
+                try {
+                    log(data)
+                } catch (e) {
+                    log(e)
+                }
+            },
+            error: function (err) {
+                spiner.prop('class', 'fa fa-cloud-download-alt')
+                log(err)
+            }
+        })
+    })
+    $('#btnFetchNewProducts').click(function () {
+        let btnFetchNewProduct = $(this),
+            spiner = btnFetchNewProduct.children(),
+            data = { listId: JSON.stringify($('#txtListId').val().split(',')), acceptedMinPrice:$('#txtAcceptedMinPrice').val()}
+        spiner.prop('class', 'fas fa-sync fa-spin')
+
+        $.ajax({
+            url: '/products/add',
+            type: 'GET',
+            data: data,
             success: function (data) {
                 spiner.prop('class', 'fa fa-cloud-download-alt')
                 try {
@@ -105,10 +132,12 @@ $().ready(function () {
                 }
             },
             error: function (err) {
+                spiner.prop('class', 'fa fa-cloud-download-alt')
                 log(err)
             }
         })
     })
+
 })
 function sort(type, products) {
     log(type)
