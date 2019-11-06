@@ -303,6 +303,7 @@ function drawProduct(products) {
             _3v = product.attributes && product.attributes['49'] || 'N',
             _t = product.attributes && product.attributes['46'] || 'N',
             _author = product.author && product.author.displayName || 'N',
+            _authorName = product.author && product.author.username || 'N',
             _cover = product.cover && product.cover.dimensions && product.cover.dimensions && product.cover.dimensions.small && product.cover.dimensions.small.file || 'NULL'
             
         strHtml = strHtml + `
@@ -310,7 +311,7 @@ function drawProduct(products) {
             <span class="productIndex rounded-circle">${index + 1}</span>
             <div>
             <i class="fa fa-user"></i>
-            <a href="#" onclick="openTab('${product.id}'); return false;">[${product.id}]</a>
+            <a href="#" onclick="openTabProduct('${product.id}'); return false;">[${product.id}]</a>
             <span class="productName"> ${product.name}</span>
             </div>
             <div class="productCover">
@@ -324,18 +325,24 @@ function drawProduct(products) {
                 <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}(${product.ratingCountTotal || 'N'})</span>
                 <i class="fa fa-trophy"></i><span class="productRatingScore">${product.ratingScore}</span><br />
                 <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString()}</span>
-                <i class="fa fa-user-secret"></i><span class="productAuthor">${_author}</span><br />
+                <i class="fa fa-user-secret"></i>
+                <span class="productAuthor">
+                    <a href="#" onclick="openTabAuthor('${_authorName}'); return false;">${_author}</a>
+                </span><br />
                 <i class="fa fa-stethoscope"></i><span class="productV1">${_1v}</span>
                 <i class="fa fa-wheelchair"></i><span class="productV3">${_3v}</span>
                 <i class="fa fa-child"></i><span>${_t}</span><br />
                 <i class="fa fa-heartbeat"></i><span class="productAge">${new Date(_age * 1000).getFullYear()}</span>
                 <i class="fa fa-refresh"></i><span style="margin-right: 0!important;">
                 <a class="btnUpdateReviews action" href="#" onclick="updateReviews('${product.id}',this); return false;">Update Reviews</a></span><br />
-                <i class="far fa-folder-open"></i><span><a class="action" href="#" onclick="openProductFolder('${product.id}'); return false">Open Folder</a></span>
-                <i class="fa fa-external-link-alt"></i><span><a class="action" href="#" onclick="openWeb('${product.id}'); return false;">Open Web</a></span><br />
+                <i class="far fa-folder-open"></i>
+                <span><a class="action" href="#" onclick="openProductFolder('${product.id}'); return false">Open Folder</a></span>
+                <i class="fa fa-external-link-alt"></i>
+                <span><a class="action" href="#" onclick="openWeb('${product.id}'); return false;">Open Web</a></span><br />
                 <i class="fa fa-cloud-download-alt"></i><span>
                 <a class="btnFetchAllReviews action" href="#" onclick="fetchAllImagesReviews('${product.id}', this); return false;">Fetch All Reviews</a></span>
-                <i class="fa fa-trash-alt"></i><span><a class="action-delete btnDelete" href="#" onclick="deleteProduct('${product.id}', this); return false;">Delete</a></span><br />
+                <i class="fa fa-trash-alt"></i>
+                <span><a class="action-delete btnDelete" href="#" onclick="deleteProduct('${product.id}', this); return false;">Delete</a></span><br />
             </div>
             </div>
         `
@@ -418,8 +425,11 @@ function openProductFolder(productId) {
         }
     });
 }
-function openTab(id) {
+function openTabProduct(id) {
     window.open(globalConfiguration.productDetailUrl + id, '_blank')
+}
+function openTabAuthor(authorName) {
+    window.open(globalConfiguration.authorUrl + authorName, '_blank')
 }
 function fetchConfiguration() {
     $.ajax({

@@ -114,10 +114,10 @@ span.productStatus-FAKE{color:#ff0000;font-weight: bold;}
 span.productStatus-PENDING{color:#b19b01;font-weight: bold;}
 span.productAge{color:#2be82b}
 span a.btnUpdateReviews {color:#03ff22 !important;}
-span.productAuthor{color: #eeeccc;}
+span.productAuthor a{color: #eeeccc;}
 i.fa-user-secret{color: #e25afb;}
 .newReview{color: red !important;}
-.reviewUpdated{background:#ffc4c4 !important;}
+.reviewUpdated{background:#71457f  !important;}
 .errorTry{color: red;}
 .errorAjax{color: palevioletred;}
 

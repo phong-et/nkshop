@@ -6,6 +6,7 @@ let log = console.log,
     cfg = require('../../../nk.cfg'),
     nk = require('../../../nk'),
     rimraf = require('rimraf')
+
 module.exports = async function (fastify, opts, next) {
     fastify.get('/products/districts/:cityId', async function (request, reply) {
         log('----request.query----')
@@ -30,6 +31,7 @@ module.exports = async function (fastify, opts, next) {
             reply.send(error)
         }
     })
+
     fastify.get('/products/openFolder/:productId', function (request, reply) {
         log('------ request.params ------------')
         log(request.params)
@@ -37,9 +39,9 @@ module.exports = async function (fastify, opts, next) {
         reply.send(true)
     })
 
-    fastify.get('/products/configurations/', function (request, reply) {
-        log('load config')
-        reply.send({ productDetailUrl: cfg.productDetailUrl })
+    fastify.get('/products/configurations/', function (_, reply) {
+        log('/products/configurations/')
+        reply.send({ productDetailUrl: cfg.productDetailUrl, authorUrl: cfg.authorUrl })
     })
 
     fastify.get('/products/updateReview/:productId', async function (request, reply) {
@@ -90,6 +92,7 @@ module.exports = async function (fastify, opts, next) {
             })
         }
     })
+
     fastify.get('/products/currentreviews/:productId', async function (request, reply) {
         log('----request.query----')
         log(request.params)
@@ -121,10 +124,32 @@ module.exports = async function (fastify, opts, next) {
         }
     })
 
-    fastify.get('/products/latest/', function (request, reply) {
+    fastify.get('/products/latest/', function (_, reply) {
         log('fetch latest product')
         let product = ProductDetail.fetchLatestProduct()
         reply.send({ product: product })
+    })
+
+    fastify.get('/products/add', async function (request, reply) {
+        try {
+            let listId = JSON.parse(request.query['listId'])
+            log(listId)
+
+            reply.send({ success: true })
+        } catch (error) {
+            log(error)
+            reply.send({ success: false, msg: error.message })
+        }
+    })
+
+    fastify.get('/products/new/listid', async function (_, reply) {
+        try {
+
+            reply.send({ success: true })
+        } catch (error) {
+            log(error)
+            reply.send({ success: false, msg: error.message })
+        }
     })
 
     fastify.get('/products/delete/:productId', async function (request, reply) {
@@ -146,5 +171,6 @@ module.exports = async function (fastify, opts, next) {
             reply.send({ success: false, msg: error.message })
         }
     })
+
     next()
 }
