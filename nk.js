@@ -1,6 +1,5 @@
 let rp = require('request-promise'),
     request = require('request'),
-    cheerio = require('cheerio'),
     fs = require('fs'),
     cfg = require('./nk.cfg.js'),
     log = console.log,
@@ -423,7 +422,7 @@ function fetchProductsSGByPriceDescAllPage(fromPage, toPage) {
 }
 
 // save to db version 
-async function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
+function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
     let offset = currentPage == 1 ? 0 : currentPage * 20
     log(`offset = ${offset} || currentPage = ${currentPage}`)
 
@@ -474,7 +473,9 @@ module.exports = {
     fetchReviewListOfProductSaveDb: fetchReviewListOfProductSaveDb,
     fetchReviewListOfProduct: fetchReviewListOfProduct,
     fetchReviewOfProduct: fetchReviewOfProduct,
-    fetchImagesOfProduct: fetchImagesOfProduct
+    fetchImagesOfProduct: fetchImagesOfProduct,
+    wait: wait,
+    delay: delay
     //fetchJsonOfProduct: fetchJsonOfProduct
     // requestChkJschl: requestChkJschl,
     // fetchProductsSGByPriceDescOnePage: fetchProductsSGByPriceDescOnePage
