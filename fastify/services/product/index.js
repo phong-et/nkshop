@@ -85,9 +85,11 @@ module.exports = async function (fastify, opts, next) {
         reply.send({ productDetailUrl: cfg.productDetailUrl, authorUrl: cfg.authorUrl })
     })
 
-    fastify.get('/products/updateReview/:productId', async function (request, reply) {
-        log('----request.query----')
+    fastify.get('/products/review/update/:productId', async function (request, reply) {
+        log('----request.params----')
         log(request.params)
+        let isFetchImage =  JSON.parse(request.query.isFetchImage.toLowerCase())
+        log(`isFetchImage = ${isFetchImage}`)
         try {
             let productId = request.params.productId,
                 oldReviewIds = await Review.findReviewsOfProduct(productId),
@@ -98,7 +100,7 @@ module.exports = async function (fastify, opts, next) {
 
             totalReviewIds = [...new Set(totalReviewIds)]
             ProductDetail.update(productId, product, totalReviewIds.length)
-            nk.fetchImagesOfProduct(product)
+            if (isFetchImage) nk.fetchImagesOfProduct(product)
             log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
             log(`newReviewIds: ${JSON.stringify(newReviewIds)}`)
@@ -182,7 +184,7 @@ module.exports = async function (fastify, opts, next) {
     fastify.get('/products/adds/', async function (request, reply) {
         try {
             let listId = JSON.parse(request.query['listId']).map(id => parseInt(id)),
-            acceptedMinPrice = request.query['acceptedMinPrice']
+                acceptedMinPrice = request.query['acceptedMinPrice']
             log(listId)
             fetchProductsDetailByListId(cfg.productUrl, listId, parseInt(acceptedMinPrice))
             reply.send({ success: true })

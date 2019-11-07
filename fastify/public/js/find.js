@@ -89,7 +89,6 @@ $().ready(function () {
     })
 
     $('#btnFetchListId').click(function () {
-
         let btnFetchLastIds = $(this),
             spiner = btnFetchLastIds.children(),
             txtListId = $('#txtListId')
@@ -199,8 +198,9 @@ function updateReiewsProducts(index, limitIndex) {
     let spiner = $(btnUpdateReview).parent().prev()
     spiner.prop('class', 'fas fa-sync fa-spin')
     $.ajax({
-        url: '/products/updateReview/' + productId,
+        url: '/products/review/update/' + productId,
         type: 'GET',
+        data:{isFetchImage: $('#cbIsFetchImage').is(':checked')},
         success: function (data) {
             try {
                 $(btnUpdateReview).parent().parent().parent().removeClass('active')
@@ -504,8 +504,9 @@ function updateReviews(productId, e) {
     let spiner = $(e).parent().prev()
     spiner.prop('class', 'fas fa-sync fa-spin')
     $.ajax({
-        url: '/products/updateReview/' + productId,
+        url: '/products/review/update/' + productId,
         type: 'GET',
+        data:{isFetchImage: $('#cbIsFetchImage').is(':checked')},
         success: function (data) {
             try {
                 spiner.prop('class', 'fa fa-refresh')
