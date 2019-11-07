@@ -39,7 +39,7 @@ async function fetchProductsDetailByListId(url, productIdList, acceptedMinPrice)
                 log(`price:${jsonProduct.price} || ratingCount:${jsonProduct.ratingCount}`)
                 await ProductDetail.insert(jsonProduct)
                 await nk.fetchProduct(url, productIdList[i], jsonProduct)
-                await Review.insertMany(await nk.fetchReviewListOfProductSaveDb(cfg.reviewUrl, jsonProduct.id, jsonProduct.ratingCount))
+                await Review.insertMany(await nk.fetchReviewsOfProduct(cfg.reviewUrl, jsonProduct.id, jsonProduct.ratingCount))
             }
             else
                 log(`Rejected Product Price: ${jsonProduct.price || 'NULL'}`)
@@ -92,7 +92,7 @@ module.exports = async function (fastify, opts, next) {
             let productId = request.params.productId,
                 oldReviewIds = await Review.findReviewsOfProduct(productId),
                 product = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
-                currentReviewIds = await nk.fetchReviewListOfProduct(cfg.reviewUrl, productId, product.ratingCount),
+                currentReviewIds = await nk.fetchReviewIdsOfProduct(cfg.reviewUrl, productId, product.ratingCount),
                 newReviewIds = currentReviewIds.filter(value => !oldReviewIds.includes(value)),
                 totalReviewIds = currentReviewIds.concat(oldReviewIds)
 
@@ -103,14 +103,10 @@ module.exports = async function (fastify, opts, next) {
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
             log(`newReviewIds: ${JSON.stringify(newReviewIds)}`)
             if (newReviewIds.length > 0) {
-                // newReviewIds.forEach(async reviewId => {
-                //     let reviewJson = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId, true, true)
-                //     Review.insert(reviewJson)
-                // });
                 log(`Update images & json ${newReviewIds.length} review`)
                 let reviews = await Promise.all(newReviewIds.map(async reviewId => {
                     try {
-                        let review = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId, true, true)
+                        let review = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
                         review.data.review["productId"] = productId
                         return review.data.review
                     } catch (error) {
@@ -140,7 +136,7 @@ module.exports = async function (fastify, opts, next) {
         try {
             let productId = request.params.productId,
                 product = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
-                currentReviewIds = await nk.fetchReviewListOfProduct(cfg.reviewUrl, productId, product.ratingCount)
+                currentReviewIds = await nk.fetchReviewIdsOfProduct(cfg.reviewUrl, productId, product.ratingCount)
             ProductDetail.update(productId, product, currentReviewIds.length)
             nk.fetchImagesOfProduct(product)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
@@ -148,7 +144,7 @@ module.exports = async function (fastify, opts, next) {
                 log(`Fetch all images ${currentReviewIds.length} reviews`)
                 await Promise.all(currentReviewIds.map(async reviewId => {
                     try {
-                        await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId, true, true)
+                        await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
                     } catch (error) {
                         log(error)
                     }
@@ -171,7 +167,19 @@ module.exports = async function (fastify, opts, next) {
         reply.send({ product: product })
     })
 
-    fastify.get('/products/add', async function (request, reply) {
+    fastify.get('/products/add/:id', async function (request, reply) {
+        try {
+            let id = request.params.id
+            log(id)
+            nk.fetchProduct()
+            fetchProductsDetailByListId(cfg.productUrl, listId, parseInt(acceptedMinPrice))
+            reply.send({ success: true })
+        } catch (error) {
+            log(error)
+            reply.send({ success: false, msg: error.message })
+        }
+    })
+    fastify.get('/products/adds/', async function (request, reply) {
         try {
             let listId = JSON.parse(request.query['listId']).map(id => parseInt(id)),
             acceptedMinPrice = request.query['acceptedMinPrice']
