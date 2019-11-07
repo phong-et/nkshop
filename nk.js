@@ -5,7 +5,7 @@ let rp = require('request-promise'),
     log = console.log,
     shell = require("shelljs"),
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'
     }
 const DIR_PRODUCTS = cfg.productFolder + '\\'
 const DIR_REVIEWS = 'reviews/'
@@ -18,97 +18,6 @@ function appendFile(fileName, content) {
             log(statusText)
             resolve(statusText)
         })
-    })
-}
-
-///////////////////////// FETCH PRODUCT /////////////////////////
-async function fetchProductList(url, params) {
-    var options = {
-        url: url,
-        qs: params,
-        headers: headers,
-    }
-    let json = await rp(options)
-    log(json)
-    return json
-}
-// Test 0
-
-async function fetchDirectories(url) { }
-
-///////////////////////// WRITE FILE /////////////////////////////
-function writeProduct(productId, content) {
-    content = JSON.stringify(content)
-    return new Promise((resolve, reject) => {
-        let dir = DIR_PRODUCTS + productId,
-            fileName = dir + '/' + productId + '.json'
-
-        if (!fs.existsSync(DIR_PRODUCTS)) {
-            fs.mkdirSync(DIR_PRODUCTS)
-        }
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
-        // fs.writeFile(fileName, content, function (err) {
-        //   if (err) reject(err)
-        //   var statusText = 'write file > ' + fileName + ' success'
-        //   //log(statusText)
-        //   resolve(statusText)
-        // })
-    })
-}
-// folder = SGBP/
-function writeProductsCity(fileName, folder, content) {
-    return new Promise((resolve, reject) => {
-        let dir = DIR_PRODUCTS + folder
-        fileName = dir + '/' + fileName + '.json'
-
-        if (!fs.existsSync(DIR_PRODUCTS)) {
-            fs.mkdirSync(DIR_PRODUCTS)
-        }
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
-        // fs.writeFile(fileName, content, function (err) {
-        //   if (err) reject(err)
-        //   var statusText = 'write file > ' + fileName + ' success'
-        //   //log(statusText)
-        //   resolve(statusText)
-        // })
-    })
-}
-
-function writeReviews(productId, content) {
-    return new Promise((resolve, reject) => {
-        let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS,
-            fileName = dir + productId + '.json'
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
-        // fs.writeFile(fileName, content, function (err) {
-        //   if (err) reject(err)
-        //   var statusText = 'write file > ' + fileName + ' success'
-        //   //log(statusText)
-        //   resolve(statusText)
-        // })
-    })
-}
-
-function writeReview(productId, reviewId, content) {
-    return new Promise((resolve, reject) => {
-        let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS
-
-        shell.mkdir("-p", dir);
-        //  fileName = dir + reviewId + '.json'
-        // if (!fs.existsSync(dir)) {
-        //   fs.mkdirSync(dir)
-        // }
-        // fs.writeFile(fileName, content, function (err) {
-        //   if (err) reject(err)
-        //   var statusText = 'write file > ' + fileName + ' success'
-        //   //log(statusText)
-        //   resolve(statusText)
-        // })
     })
 }
 ///////////////////////// FETCH Product /////////////////////////
@@ -127,9 +36,10 @@ async function fetchProduct(url, productId, jsonProduct) {
     try {
         if (jsonProduct === undefined)
             jsonProduct = await fetchJsonOfProduct(url, productId)
-        writeProduct(productId, jsonProduct)
+        //writeProduct(productId, jsonProduct)
+        shell.mkdir("-p", DIR_PRODUCTS + productId)
         fetchImagesOfProduct(jsonProduct)
-        let reviewIds = await fetchReviewListOfProduct(cfg.reviewUrl, productId, jsonProduct.ratingCount)
+        let reviewIds = await fetchReviewIdsOfProduct(cfg.reviewUrl, productId, jsonProduct.ratingCount)
         await fetchReviewsOfProduct(cfg.reviewUrl, productId, reviewIds)
     } catch (error) {
         log('error at fetchProduct')
@@ -156,7 +66,6 @@ async function fetchImagesOfProduct(nkJson) {
                     url = e.data.dimensions.small.url,
                     fileName = dir + url.substring(url.lastIndexOf('/') + 1)
                 log(fileName)
-                shell.mkdir("-p", dir);
                 downloadImage(fileName, url, () => { })
             }
         })
@@ -205,7 +114,7 @@ function downloadImage(fileName, url, callback) {
     })
 }
 
-async function fetchReviewListOfProduct(url, productId, reviewPerPageNumber, saveDiskReview) {
+async function fetchReviewIdsOfProduct(url, productId, reviewPerPageNumber) {
     try {
         log(`productId=${productId} reviewPerPageNumber=${reviewPerPageNumber}`)
         var options = {
@@ -222,68 +131,26 @@ async function fetchReviewListOfProduct(url, productId, reviewPerPageNumber, sav
             },
         }
         let json = await rp(options)
-        if (saveDiskReview === true) writeReviews(productId, json)
         reviewIds = JSON.parse(json).map(review => parseInt(review.id))
         // log(reviewIds);
         log('reviewIds.length = %s', reviewIds.length)
         return reviewIds
     } catch (error) {
-        log('fetchReviewListOfProduct:')
+        log('fetchReviewIdsOfProduct:')
         log(error.message)
     }
 }
 
-async function fetchReviewListOfProductSaveDb(url, productId, reviewPerPageNumber) {
-    try {
-        var options = {
-            url: url,
-            headers: headers,
-            qs: {
-                entityId: productId,
-                entityType: 'product',
-                includeAuthor: true,
-                orderBy: 'latest',
-                page: 1,
-                plugin: 'escort',
-                rpp: reviewPerPageNumber,
-            },
-        }
-        let json = await rp(options)
-        let arrReview = JSON.parse(json)
-        // FOREACH can not apply async await
-        // arrReview.forEach( async review => {
-        //   review.survey = JSON.parse(review.survey)
-        //   review.productId = productId
-        //   let reviewDetail = await fetchReviewOfProduct(url, review.id, productId)
-        //   review.photos = [];
-        //   review.photos = review.photos.concat(reviewDetail.data.review.photos)
-        //   //log(review.photos)
-        // })
-
-        await Promise.all(arrReview.map(async review => {
-            review.survey = JSON.parse(review.survey)
-            review.productId = productId
-            let reviewDetail = await fetchReviewOfProduct(url, review.id, productId)
-            review.photos = reviewDetail.data.review.photos
-        }))
-        log('arrReview.length = %s', arrReview.length)
-        return arrReview
-    } catch (error) {
-        log(error.message)
-    }
-}
-
-async function fetchReviewOfProduct(url, reviewId, productId, saveToDisk, isFetchImage) {
+async function fetchReviewOfProduct(url, reviewId, productId) {
     try {
         var options = {
             url: url + '/' + reviewId,
             headers: headers,
         }
         let json = await rp(options)
-        //log(json)
-        if (saveToDisk) writeReview(productId, reviewId, json)
+        shell.mkdir("-p",  DIR_PRODUCTS + productId + '/' + DIR_REVIEWS);
         let nkJson = JSON.parse(json)
-        if (isFetchImage) await fetchImagesOfReview(nkJson, productId)
+        fetchImagesOfReview(nkJson, productId)
         return nkJson
     } catch (error) {
         log('fetchReviewOfProduct:')
@@ -303,18 +170,56 @@ function wait(label, i, val) {
     log('%sId[%s] = %s, wait : ', label, i, val, second)
     return second
 }
-async function fetchReviewsOfProduct(url, productId, reviewIds) {
+// async function fetchReviewsOfProduct(url, productId, reviewIds) {
+//     try {
+//         for (let i = 0; i < reviewIds.length; i++) {
+//             await delay(wait('review', i, reviewIds[i]))
+//             await fetchReviewOfProduct(url, reviewIds[i], productId)
+//         }
+//     } catch (error) {
+//         log('fetchReviewsOfProduct:')
+//         log(error.message)
+//     }
+// }
+async function fetchReviewsOfProduct(url, productId, reviewPerPageNumber) {
     try {
-        for (let i = 0; i < reviewIds.length; i++) {
-            await delay(wait('review', i, reviewIds[i]))
-            await fetchReviewOfProduct(url, reviewIds[i], productId, true, true)
+        var options = {
+            url: url,
+            headers: headers,
+            qs: {
+                entityId: productId,
+                entityType: 'product',
+                includeAuthor: true,
+                orderBy: 'latest',
+                page: 1,
+                plugin: 'escort',
+                rpp: reviewPerPageNumber,
+            },
         }
+        let json = await rp(options)
+        let reviews = JSON.parse(json)
+        // FOREACH can not apply async await
+        // reviews.forEach( async review => {
+        //   review.survey = JSON.parse(review.survey)
+        //   review.productId = productId
+        //   let reviewDetail = await fetchReviewOfProduct(url, review.id, productId)
+        //   review.photos = [];
+        //   review.photos = review.photos.concat(reviewDetail.data.review.photos)
+        //   //log(review.photos)
+        // })
+
+        await Promise.all(reviews.map(async review => {
+            review.survey = JSON.parse(review.survey)
+            review.productId = productId
+            let reviewDetail = await fetchReviewOfProduct(url, review.id, productId)
+            review.photos = reviewDetail.data.review.photos
+        }))
+        log('reviews.length = %s', reviews.length)
+        return reviews
     } catch (error) {
-        log('fetchReviewsOfProduct:')
         log(error.message)
     }
 }
-/////////////////  MAIN /////////////
 async function fetchProducts(url, productIds) {
     try {
         for (let i = 0; i < productIds.length; i++) {
@@ -336,7 +241,7 @@ async function fetchProductsByIdRange(url, fromProductId, toProductId, condition
                         log(`Product[${i}] price:${jsonProduct.price} || ratingCount:${jsonProduct.ratingCount}`)
                         var price = parseInt(jsonProduct.price)
                         var ratingCount = parseInt(jsonProduct.ratingCount)
-                        log(`price:${price} || ratingCount:${jsonProduct.ratingCount}`)
+                        log(`price:${price} || ratingCount:${ratingCount}`)
                         if (price >= condition.price)
                             await fetchProduct(url, i, jsonProduct)
                         else
@@ -353,74 +258,6 @@ async function fetchProductsByIdRange(url, fromProductId, toProductId, condition
         log(error.message)
     }
 }
-// let ProductDetail = require('./api/model/productDetail')
-// async function fetchProductDetailByListId(url, productIdList) {
-//   try {
-//     for (let i = 0; i < productIdList.length; i++) {
-//       await delay(wait('product', i, productIdList[i]))
-//       var jsonProduct = await fetchJsonOfProduct(url, productIdList[i])
-//       if (jsonProduct) {
-//         log(`price:${jsonProduct.price} || ratingCount:${jsonProduct.ratingCount}`)
-//         await ProductDetail.insert(jsonProduct)       
-//         await fetchProduct(url, productIdList[i], jsonProduct)
-//       }
-//       else
-//         log('Product is null')
-//     }
-//   } catch (error) {
-//     log(error.message)
-//   }
-// }
-
-// save file to disk
-function fetchProductsSGByPriceDescOnePage(pageNumber, callback) {
-    let offset = pageNumber == 1 ? 0 : pageNumber * 20
-    log(`offset = ${offset} || pageNumber = ${pageNumber}`);
-    request(cfg.productUrl + '?cityCode=' + cfg.cities[0] + '&mode=directory&offset=' + offset + '&orderBy=byPriceDesc', function (error, response, body) {
-        //log('error:', error);
-        log('statusCode:', response && response.statusCode);
-        log('headers:', response && response.headers);
-        //console.log('body:', body);
-        //writeProduct('fetchProductsSGByPriceDescOnePage' + new Date().getTime(), body)
-        if (response && response.statusCode === 503) {
-            requestChkJschl(body, response.headers['set-cookie'])
-        } else {
-            callback(body);
-        }
-    })
-}
-
-/////////////////////// Recursive load all pages ///////////////////////
-let nkProducts = []
-
-function fetchProductsSGByPriceDescAllPage(fromPage, toPage) {
-    var startPage = fromPage
-    try {
-        fetchProductsSGByPriceDescOnePage(fromPage, (data) => {
-            //log(data);
-            nkProducts = nkProducts.concat(JSON.parse(data))
-            writeProductsCity('P' + fromPage, 'SGBPD/', data)
-            fromPage = fromPage + 1
-            log('fromPage=%s toPage=%s', fromPage, toPage)
-            if (fromPage <= toPage) {
-                setTimeout(() => {
-                    fetchProductsSGByPriceDescAllPage(fromPage, toPage)
-                }, 1000)
-            } else {
-                log('ProductIds is loaded')
-                log(nkProducts.length);
-                var nkProductIds = nkProducts.map(product => product.id)
-                log(nkProductIds);
-                //fetchProducts(cfg.productUrl, nkProductIds)
-                writeProductsCity('P_ALL_' + startPage + '_' + toPage, 'SGBPD/', JSON.stringify(nkProducts))
-            }
-        })
-    } catch (error) {
-        log('fetchProductsSGByPriceDescAllPage')
-        log(error)
-    }
-}
-
 // save to db version 
 function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
     let offset = currentPage == 1 ? 0 : currentPage * 20
@@ -434,8 +271,6 @@ function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
             log(error)
         log('statusCode:', response && response.statusCode);
         log('headers:', response && response.headers);
-        //log('body:', body);
-        //writeProduct('fetchProductsSGByPriceDescOnePage' + new Date().getTime(), body)
         if (response && response.statusCode === 503) {
             callback(503)
         } else {
@@ -461,26 +296,67 @@ function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
     // log(products)
     // return products
 }
+
+/////////////////////// Recursive load all pages ///////////////////////
+// function fetchProductsSGByPriceDescOnePage(pageNumber, callback) {
+//     let offset = pageNumber == 1 ? 0 : pageNumber * 20
+//     log(`offset = ${offset} || pageNumber = ${pageNumber}`);
+//     request(cfg.productUrl + '?cityCode=' + cfg.cities[0] + '&mode=directory&offset=' + offset + '&orderBy=byPriceDesc', function (error, response, body) {
+//         //log('error:', error);
+//         log('statusCode:', response && response.statusCode);
+//         log('headers:', response && response.headers);
+//         //console.log('body:', body);
+//         //writeProduct('fetchProductsSGByPriceDescOnePage' + new Date().getTime(), body)
+//         if (response && response.statusCode === 503) {
+//             requestChkJschl(body, response.headers['set-cookie'])
+//         } else {
+//             callback(body);
+//         }
+//     })
+// }
+// let nkProducts = []
+// function fetchProductsSGByPriceDescAllPage(fromPage, toPage) {
+//     var startPage = fromPage
+//     try {
+//         fetchProductsSGByPriceDescOnePage(fromPage, (data) => {
+//             //log(data);
+//             nkProducts = nkProducts.concat(JSON.parse(data))
+//             writeProductsCity('P' + fromPage, 'SGBPD/', data)
+//             fromPage = fromPage + 1
+//             log('fromPage=%s toPage=%s', fromPage, toPage)
+//             if (fromPage <= toPage) {
+//                 setTimeout(() => {
+//                     fetchProductsSGByPriceDescAllPage(fromPage, toPage)
+//                 }, 1000)
+//             } else {
+//                 log('ProductIds is loaded')
+//                 log(nkProducts.length);
+//                 var nkProductIds = nkProducts.map(product => product.id)
+//                 log(nkProductIds);
+//                 //fetchProducts(cfg.productUrl, nkProductIds)
+//                 writeProductsCity('P_ALL_' + startPage + '_' + toPage, 'SGBPD/', JSON.stringify(nkProducts))
+//             }
+//         })
+//     } catch (error) {
+//         log('fetchProductsSGByPriceDescAllPage')
+//         log(error)
+//     }
+// }
 module.exports = {
     downloadImage: downloadImage,
     fetchProduct: fetchProduct,
     fetchProducts: fetchProducts,
     fetchJsonOfProduct: fetchJsonOfProduct,
-    fetchProductsSGByPriceDescAllPage: fetchProductsSGByPriceDescAllPage,
     fetchProductsByIdRange: fetchProductsByIdRange,
-    //fetchProductDetailByListId: fetchProductDetailByListId,
     fetchProductByCTOnePage: fetchProductByCTOnePage,
-    fetchReviewListOfProductSaveDb: fetchReviewListOfProductSaveDb,
-    fetchReviewListOfProduct: fetchReviewListOfProduct,
+    fetchReviewIdsOfProduct: fetchReviewIdsOfProduct,
     fetchReviewOfProduct: fetchReviewOfProduct,
+    fetchReviewsOfProduct: fetchReviewsOfProduct,
     fetchImagesOfProduct: fetchImagesOfProduct,
     wait: wait,
     delay: delay
-    //fetchJsonOfProduct: fetchJsonOfProduct
-    // requestChkJschl: requestChkJschl,
-    // fetchProductsSGByPriceDescOnePage: fetchProductsSGByPriceDescOnePage
 };
 // (async function () {
 //   //{"data":null,"type":"exception","message":"review not found"}
-//   await fetchReviewOfProduct(cfg.reviewUrl, 89009, 24842, true, true)
+//   await fetchReviewOfProduct(cfg.reviewUrl, 89009, 24842)
 // }())
