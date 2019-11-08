@@ -140,17 +140,19 @@ module.exports = async function (fastify, opts, next) {
                 product = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
                 currentReviewIds = await nk.fetchReviewIdsOfProduct(cfg.reviewUrl, productId, product.ratingCount)
             ProductDetail.update(productId, product, currentReviewIds.length)
-            nk.fetchImagesOfProduct(product)
+            //nk.fetchImagesOfProduct(product)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
             if (currentReviewIds.length > 0) {
                 log(`Fetch all images ${currentReviewIds.length} reviews`)
-                await Promise.all(currentReviewIds.map(async reviewId => {
-                    try {
-                        await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
-                    } catch (error) {
-                        log(error)
-                    }
-                }))
+                // await Promise.all(currentReviewIds.map(async (reviewId, index) => {
+                //     try {
+                //         await nk.delay(nk.wait('reivew', index, reviewId))
+                //         await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
+                //     } catch (error) {
+                //         log(error)
+                //     }
+                // }))
+                nk.fetchReviewsOfProductSafe(cfg.reviewUrl, productId, currentReviewIds)
             }
             currentReviewIds.sort((a, b) => a - b)
             reply.send({
