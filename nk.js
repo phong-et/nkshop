@@ -10,6 +10,7 @@ let rp = require('request-promise'),
 const DIR_PRODUCTS = cfg.productFolder + '\\'
 const DIR_REVIEWS = 'reviews/'
 
+//////////////////////////////////////////// UTIL ///////////////////////////////////////////
 function appendFile(fileName, content) {
     return new Promise((resolve, reject) => {
         fs.appendFile(fileName, content, function (err) {
@@ -20,7 +21,46 @@ function appendFile(fileName, content) {
         })
     })
 }
-///////////////////////// FETCH Product /////////////////////////
+function downloadImage(fileName, url, callback) {
+    request.head(url, (error, response, body) => {
+        if (error) log('downloadImage.request.head:' + error)
+        else {
+            try {
+                request(url, (error, response, body) => {
+                    try {
+                        if (error) log('downloadImage.request.head.request:' + error)
+                    } catch (error) {
+                        log('downloadImage.request.head.request.catch:' + error)
+                    }
+                })
+                    .pipe(fs.createWriteStream(fileName)
+                        .on("error", (err) => log('downloadImage.request.head.request.fs.createWriteStream' + err))
+                    )
+                    .on("error", (err) => log('downloadImage.request.head.request.pipe' + err))
+                    .on('close', callback)
+            } catch (error) {
+                log('downloadImage %s error fs.createWriteStream :%s', fileName, error.message)
+                log(error)
+            }
+        }
+    })
+}
+
+async function delay(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms)
+    })
+}
+
+function wait(label, i, val) {
+    var seconds = Array(1000, 2000, 3000, 1500)
+    second = seconds[Math.floor(Math.random() * seconds.length)]
+    log('%sId[%s] = %s, wait : ', label, i, val, second)
+    return second
+}
+
+
+///////////////////////// PRODUCT /////////////////////////
 async function fetchJsonOfProduct(url, productId) {
     try {
         var options = {
@@ -47,7 +87,6 @@ async function fetchProduct(url, productId, jsonProduct) {
     }
 }
 
-///////////////////////// FETCH Image Product Detail /////////////////////////
 async function fetchImagesOfProduct(nkJson) {
     try {
         nkJson.photos.forEach(e => {
@@ -71,153 +110,6 @@ async function fetchImagesOfProduct(nkJson) {
         })
     } catch (error) {
         log(error)
-    }
-}
-async function fetchImagesOfReview(nkJson, productId) {
-    try {
-        nkJson.data.review.photos.forEach(e => {
-            let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS
-            let url = e.data.dimensions.original.url
-            let encodeUrl = url.substring(0, url.lastIndexOf('review-of-') + 1) + encodeURIComponent(url.substring(url.lastIndexOf('review-of-') + 1, url.length))
-            //log(encodeUrl);
-            let fileName = dir + url.substring(url.lastIndexOf('/') + 1)
-            downloadImage(fileName, encodeUrl, () => { })
-        })
-    } catch (error) {
-        log('fetchImagesOfReview:')
-        log(error)
-    }
-}
-
-function downloadImage(fileName, url, callback) {
-    request.head(url, (error, response, body) => {
-        if (error) log('downloadImage.request.head:' + error)
-        else {
-            try {
-                request(url, (error, response, body) => {
-                    try {
-                        if (error) log('downloadImage.request.head.request:' + error)
-                    } catch (error) {
-                        log('downloadImage.request.head.request.catch:' + error)
-                    }
-                })
-                    .pipe(fs.createWriteStream(fileName)
-                        .on("error", (err) => log('downloadImage.request.head.request.fs.createWriteStream' + err))
-                    )
-                    .on("error", (err) => log('downloadImage.request.head.request.pipe' + err))
-                    .on('close', callback)
-            } catch (error) {
-                log('downloadImage %s error fs.createWriteStream :%s', fileName, error.message)
-                log(error)
-            }
-        }
-    })
-}
-
-async function fetchReviewIdsOfProduct(url, productId, reviewPerPageNumber) {
-    try {
-        log(`productId=${productId} reviewPerPageNumber=${reviewPerPageNumber}`)
-        var options = {
-            url: url,
-            headers: headers,
-            qs: {
-                entityId: productId,
-                entityType: 'product',
-                includeAuthor: true,
-                orderBy: 'latest',
-                page: 1,
-                plugin: 'escort',
-                rpp: reviewPerPageNumber,
-            },
-        }
-        let json = await rp(options)
-        reviewIds = JSON.parse(json).map(review => parseInt(review.id))
-        // log(reviewIds);
-        log('reviewIds.length = %s', reviewIds.length)
-        return reviewIds
-    } catch (error) {
-        log('fetchReviewIdsOfProduct:')
-        log(error.message)
-    }
-}
-
-async function fetchReviewOfProduct(url, reviewId, productId) {
-    try {
-        var options = {
-            url: url + '/' + reviewId,
-            headers: headers,
-        }
-        let json = await rp(options)
-        shell.mkdir("-p",  DIR_PRODUCTS + productId + '/' + DIR_REVIEWS);
-        let nkJson = JSON.parse(json)
-        fetchImagesOfReview(nkJson, productId)
-        return nkJson
-    } catch (error) {
-        log('fetchReviewOfProduct:')
-        log(error.message)
-    }
-}
-
-async function delay(ms) {
-    return new Promise(resolve => {
-        setTimeout(resolve, ms)
-    })
-}
-
-function wait(label, i, val) {
-    var seconds = Array(1000, 500, 1500, 500)
-    second = seconds[Math.floor(Math.random() * seconds.length)]
-    log('%sId[%s] = %s, wait : ', label, i, val, second)
-    return second
-}
-// async function fetchReviewsOfProduct(url, productId, reviewIds) {
-//     try {
-//         for (let i = 0; i < reviewIds.length; i++) {
-//             await delay(wait('review', i, reviewIds[i]))
-//             await fetchReviewOfProduct(url, reviewIds[i], productId)
-//         }
-//     } catch (error) {
-//         log('fetchReviewsOfProduct:')
-//         log(error.message)
-//     }
-// }
-async function fetchReviewsOfProduct(url, productId, reviewPerPageNumber) {
-    try {
-        var options = {
-            url: url,
-            headers: headers,
-            qs: {
-                entityId: productId,
-                entityType: 'product',
-                includeAuthor: true,
-                orderBy: 'latest',
-                page: 1,
-                plugin: 'escort',
-                rpp: reviewPerPageNumber,
-            },
-        }
-        let json = await rp(options)
-        let reviews = JSON.parse(json)
-        // FOREACH can not apply async await
-        // reviews.forEach( async review => {
-        //   review.survey = JSON.parse(review.survey)
-        //   review.productId = productId
-        //   let reviewDetail = await fetchReviewOfProduct(url, review.id, productId)
-        //   review.photos = [];
-        //   review.photos = review.photos.concat(reviewDetail.data.review.photos)
-        //   //log(review.photos)
-        // })
-
-        await Promise.all(reviews.map(async review => {
-            review.survey = JSON.parse(review.survey)
-            review.productId = productId
-            let reviewDetail = await fetchReviewOfProduct(url, review.id, productId)
-            review.photos = reviewDetail.data.review.photos
-        }))
-        log('reviews.length = %s', reviews.length)
-        return reviews
-    } catch (error) {
-        log(error.message)
     }
 }
 async function fetchProducts(url, productIds) {
@@ -297,6 +189,121 @@ function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
     // return products
 }
 
+
+///////////////////////// REVIEW /////////////////////////
+async function fetchImagesOfReview(nkJson, productId) {
+    try {
+        nkJson.data.review.photos.forEach(e => {
+            let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS
+            let url = e.data.dimensions.original.url
+            let encodeUrl = url.substring(0, url.lastIndexOf('review-of-') + 1) + encodeURIComponent(url.substring(url.lastIndexOf('review-of-') + 1, url.length))
+            //log(encodeUrl);
+            let fileName = dir + url.substring(url.lastIndexOf('/') + 1)
+            downloadImage(fileName, encodeUrl, () => { })
+        })
+    } catch (error) {
+        log('fetchImagesOfReview:')
+        log(error)
+    }
+}
+
+async function fetchReviewIdsOfProduct(url, productId, reviewPerPageNumber) {
+    try {
+        log(`productId=${productId} reviewPerPageNumber=${reviewPerPageNumber}`)
+        var options = {
+            url: url,
+            headers: headers,
+            qs: {
+                entityId: productId,
+                entityType: 'product',
+                includeAuthor: true,
+                orderBy: 'latest',
+                page: 1,
+                plugin: 'escort',
+                rpp: reviewPerPageNumber,
+            },
+        }
+        let json = await rp(options)
+        reviewIds = JSON.parse(json).map(review => parseInt(review.id))
+        // log(reviewIds);
+        log('reviewIds.length = %s', reviewIds.length)
+        return reviewIds
+    } catch (error) {
+        log('fetchReviewIdsOfProduct:')
+        log(error.message)
+    }
+}
+
+async function fetchReviewOfProduct(url, reviewId, productId) {
+    try {
+        var options = {
+            url: url + '/' + reviewId,
+            headers: headers,
+        }
+        let json = await rp(options)
+        shell.mkdir("-p",  DIR_PRODUCTS + productId + '/' + DIR_REVIEWS);
+        let nkJson = JSON.parse(json)
+        fetchImagesOfReview(nkJson, productId)
+        return nkJson
+    } catch (error) {
+        log('fetchReviewOfProduct:')
+        log(error.message)
+    }
+}
+
+// Fetch All Reivew without json and save image safe don't miss
+async function fetchReviewsOfProductSafe(url, productId, reviewIds) {
+    try {
+        for (let i = 0; i < reviewIds.length; i++) {
+            await delay(wait('review', i, reviewIds[i]))
+            await fetchReviewOfProduct(url, reviewIds[i], productId)
+        }
+    } catch (error) {
+        log('fetchReviewsOfProduct:')
+        log(error.message)
+    }
+}
+async function fetchReviewsOfProduct(url, productId, reviewPerPageNumber) {
+    try {
+        var options = {
+            url: url,
+            headers: headers,
+            qs: {
+                entityId: productId,
+                entityType: 'product',
+                includeAuthor: true,
+                orderBy: 'latest',
+                page: 1,
+                plugin: 'escort',
+                rpp: reviewPerPageNumber,
+            },
+        }
+        let json = await rp(options)
+        let reviews = JSON.parse(json)
+        // FOREACH can not apply async await
+        // reviews.forEach( async review => {
+        //   review.survey = JSON.parse(review.survey)
+        //   review.productId = productId
+        //   let reviewDetail = await fetchReviewOfProduct(url, review.id, productId)
+        //   review.photos = [];
+        //   review.photos = review.photos.concat(reviewDetail.data.review.photos)
+        //   //log(review.photos)
+        // })
+
+        await Promise.all(reviews.map(async review => {
+            review.survey = JSON.parse(review.survey)
+            review.productId = productId
+            let reviewDetail = await fetchReviewOfProduct(url, review.id, productId)
+            review.photos = reviewDetail.data.review.photos
+        }))
+        log('reviews.length = %s', reviews.length)
+        return reviews
+    } catch (error) {
+        log(error.message)
+    }
+}
+
+
 /////////////////////// Recursive load all pages ///////////////////////
 // function fetchProductsSGByPriceDescOnePage(pageNumber, callback) {
 //     let offset = pageNumber == 1 ? 0 : pageNumber * 20
@@ -343,18 +350,21 @@ function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
 //     }
 // }
 module.exports = {
-    downloadImage: downloadImage,
     fetchProduct: fetchProduct,
     fetchProducts: fetchProducts,
     fetchJsonOfProduct: fetchJsonOfProduct,
+    fetchImagesOfProduct: fetchImagesOfProduct,
     fetchProductsByIdRange: fetchProductsByIdRange,
     fetchProductByCTOnePage: fetchProductByCTOnePage,
-    fetchReviewIdsOfProduct: fetchReviewIdsOfProduct,
+
     fetchReviewOfProduct: fetchReviewOfProduct,
     fetchReviewsOfProduct: fetchReviewsOfProduct,
-    fetchImagesOfProduct: fetchImagesOfProduct,
+    fetchReviewIdsOfProduct: fetchReviewIdsOfProduct,
+    fetchReviewsOfProductSafe:fetchReviewsOfProductSafe,
+    
     wait: wait,
-    delay: delay
+    delay: delay,
+    downloadImage: downloadImage
 };
 // (async function () {
 //   //{"data":null,"type":"exception","message":"review not found"}
