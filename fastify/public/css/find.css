@@ -1,5 +1,5 @@
 /* ============== Start Find Form ============== */
-
+/* input[type=number]{width:90px !important} */
 form#form-search .conditions {
     width: 80px;
     margin: 0 10px;

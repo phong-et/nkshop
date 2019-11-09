@@ -39,10 +39,19 @@
             </fieldset>
             <fieldset class="controller-group">
                 <legend>
-                    <h6>Status - Place</h6>
+                    <h6>Status</h6>
                 </legend>
                 <input type="checkbox" checked id="cbStatus">
                 <label>Status</label>
+                <input type="checkbox" id="cbOnLeave">
+                <label>On Leave</label>
+            </fieldset>
+            <fieldset class="controller-group">
+                <legend>
+                    <h6>Place</h6>
+                </legend>
+                <input type="checkbox" checked id="cbCity">
+                <label>City</label>
                 <input type="checkbox" id="cbDistrict">
                 <label>District</label>
             </fieldset>
@@ -141,11 +150,7 @@
                 <input type="number" class="form-control" id="txtRatingCount" placeholder="number">
                 <label id="lbPhotoCount">Photo: </label>
                 <select class="form-control conditions" id="conditionsPhotoCount"></select>
-                <select class="form-control" id="ddlPhotoCount">
-                    <option>Photo</option>
-                    <option>0</option>
-                    <option>1</option>
-                </select>
+                <input type="number" class="form-control" id="txtPhotoCount" placeholder="number">
             </fieldset>
 
             <fieldset class="query-group">

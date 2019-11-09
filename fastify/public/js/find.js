@@ -269,7 +269,7 @@ function getQueryConditions() {
         else query.push(`status === ${status}`)
     }
     if ($('#cbPhotoCount').is(':checked'))
-        query.push(`photos.length ${$('#conditionsPhotoCount option:selected').text()} ${$('#ddlPhotoCount option:selected').text()}`)
+        query.push(`photos.length ${$('#conditionsPhotoCount option:selected').text()} ${$('#txtPhotoCount').val()}`)
     if ($('#cbMonth').is(':checked'))
         query.push(`parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(5,7)) ${$('#conditionsMonth option:selected').text()} ${$('#ddlMonth option:selected').text()}`)
     if ($('#cbYear').is(':checked'))
@@ -294,7 +294,7 @@ function configureConditionsController() {
         { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
         { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
         { cbStatus: ['ddlStatus'] },
-        { cbPhotoCount: ['lbPhotoCount', 'conditionsPhotoCount', 'ddlPhotoCount'] },
+        { cbPhotoCount: ['lbPhotoCount', 'conditionsPhotoCount', 'txtPhotoCount'] },
         { cbMonth: ['lbMonth', 'conditionsMonth', 'ddlMonth'] },
         { cbYear: ['lbYear', 'conditionsYear', 'ddlYear'] },
         { cbV1: ['lbV1', 'conditionsV1', 'txtV1'] },
@@ -332,8 +332,10 @@ function configureConditionsController() {
                 break
         }
     })
+    // default price group
     $('#conditionsPriceFrom option[value="<="]').prop('selected', 'selected')
     $('#conditionsPriceTo option[value="<="]').prop('selected', 'selected')
+    // default time group
     $('#conditionsAge option[value="<="]').prop('selected', 'selected')
     $('#conditionsYear option[value="=="]').prop('selected', 'selected')
     $('#conditionsMonth option[value="=="]').prop('selected', 'selected')
@@ -342,7 +344,9 @@ function configureConditionsController() {
     $('#cbHideProductCover').prop('checked')
     $('.productCover').css('display', 'none')
     $('.productItem').css('width', '300px')
-
+    // default photo count
+    $('#conditionsPhotoCount option[value=">"]').prop('selected', 'selected')
+    $('#txtPhotoCount').val(1)
 }
 
 function drawProduct(products) {
@@ -355,7 +359,7 @@ function drawProduct(products) {
             _t = product.attributes && product.attributes['46'] || 'N',
             _author = product.author && product.author.displayName || 'N',
             _authorName = product.author && product.author.username || 'N',
-            _cover = product.cover && product.cover.dimensions && product.cover.dimensions && product.cover.dimensions.small && product.cover.dimensions.small.file || 'NULL'
+            _cover = product.cover && product.cover.dimensions && product.cover.dimensions.small && product.cover.dimensions.small.file || 'NULL'
 
         strHtml = strHtml + `
         <div class="productItem">
@@ -444,6 +448,7 @@ function genYears() {
     }
     $('#ddlYear').html(strHtml)
 }
+
 function genMonths() {
     let strHtml = ''
     for (let i = 1; i <= 12; i++) {
@@ -459,6 +464,7 @@ function genAges() {
     }
     $('#ddlAge').html(strHtml)
 }
+
 //////////////////////////////////////// AJAX FUNCTIONS ////////////////////////////////////////
 function openProductFolder(productId) {
     $.ajax({
@@ -476,12 +482,15 @@ function openProductFolder(productId) {
         }
     });
 }
+
 function openTabProduct(id) {
     window.open(globalConfiguration.productDetailUrl + id, '_blank')
 }
+
 function openTabAuthor(authorName) {
     window.open(globalConfiguration.authorUrl + authorName, '_blank')
 }
+
 function fetchConfiguration() {
     $.ajax({
         url: '/products/configurations/',
