@@ -30,6 +30,7 @@ $().ready(function () {
     genDistrict(2)
     genPrices()
     genMonths()
+    genStatus()
     genYears()
     genAges()
     configureConditionsController()
@@ -58,13 +59,16 @@ $().ready(function () {
             }
         });
     })
+
     $('#btnUpdateReviewsAllProducts').click(function () {
         updateReiewsProducts($('#txtStartIndexUpdateReviews').val(), globalProducts.length)
     })
+
     $('#btnDeleteAllProducts').click(function () {
         var isDeleted = confirm('Are you sure delete all product ?')
         if (isDeleted) deleteProducts($('#txtStartIndexUpdateReviews').val(), globalProducts.length)
     })
+
     $('#cbHideProductCover').change(function () {
         if ($(this).is(':checked')) {
             $('.productCover').css('display', 'none')
@@ -75,6 +79,7 @@ $().ready(function () {
             $('.productCover').css('display', '')
         }
     })
+
     $('#cbHideProductName').change(function () {
         if ($(this).is(':checked')) {
             $('.productName').css('display', 'none')
@@ -83,6 +88,7 @@ $().ready(function () {
             $('.productName').css('display', '')
         }
     })
+
     $('#ddlSorting').change(function () {
         var typeSorting = $('#ddlSorting option:selected').val()
         drawProduct(sort(typeSorting, globalProducts))
@@ -112,10 +118,11 @@ $().ready(function () {
             }
         })
     })
+
     $('#btnFetchNewProducts').click(function () {
         let btnFetchNewProduct = $(this),
             spiner = btnFetchNewProduct.children(),
-            data = { listId: JSON.stringify($('#txtListId').val().split(',')), acceptedMinPrice:$('#txtAcceptedMinPrice').val()}
+            data = { listId: JSON.stringify($('#txtListId').val().split(',')), acceptedMinPrice: $('#txtAcceptedMinPrice').val() }
         spiner.prop('class', 'fas fa-sync fa-spin')
 
         $.ajax({
@@ -136,116 +143,10 @@ $().ready(function () {
             }
         })
     })
-
 })
-function sort(type, products) {
-    log(type)
-    var sortedProducts = []
-    switch (type) {
-        case "price":
-            sortedProducts = _u.orderBy(products, ['price'])
-            break
-        case "time":
-            sortedProducts = _u.orderBy(products, ['lastUpdateStamp'])
-            break
-        case "rating":
-            sortedProducts = _u.orderBy(products, ['ratingCount'])
-            break
-        default: sortedProducts = products
-            break
-    }
-    return sortedProducts.reverse()
-}
-function genBackground() {
-    //src : http://wallpaperswide.com
-    let bgRandomNumber = Math.floor(Math.random() * 17)
-    bgRandomNumber = bgRandomNumber === 0 ? bgRandomNumber + 1 : bgRandomNumber
-    $('body').css('background', `url('img/bg/1 (${bgRandomNumber}).jpg')`)
-    $('body').css('background-repeat', 'no-repeat')
-    $('body').css('background-attachment', 'fixed')
-    $('body').css('background-size', 'cover')
-}
 
 // use for button update all product
-function updateReiewsProducts(index, limitIndex) {
-    // use trigger  -> don't asynchronous
-    // $.when($('.btnUpdateReviews').eq(index).triggerHandler('click')).done(() => {
-    //     setTimeout(() => {
-    //         index++
-    //         if (index < limitIndex)
-    //             updateReiewsProducts(index, limitIndex)
-    //         else
-    //             log('Done Update Reviews All Product')
-    //     }, 2000)
-    // })
 
-    // use function directly -> don't asynchronous
-    // $.when(updateReviews(globalProducts[index].id, document.getElementsByClassName('btnUpdateReviews')[index])).then(() => {
-    //     //setTimeout(() => {
-    //         index++
-    //         if (index < limitIndex)
-    //             updateReiewsProducts(index, limitIndex)
-    //         else
-    //             log('Done Update Reviews All Product')
-    //     //}, 2000)
-    // })
-
-    // use recursive native
-    let productId = globalProducts[index].id
-    let btnUpdateReview = document.getElementsByClassName('btnUpdateReviews')[index];
-    $(btnUpdateReview).parent().parent().parent().addClass('active')
-    if ($('#cbFocusProductItem').is(':checked')) $(btnUpdateReview).focus()
-    let spiner = $(btnUpdateReview).parent().prev()
-    spiner.prop('class', 'fas fa-sync fa-spin')
-    $.ajax({
-        url: '/products/review/update/' + productId,
-        type: 'GET',
-        data:{isFetchImage: $('#cbIsFetchImage').is(':checked')},
-        success: function (data) {
-            try {
-                $(btnUpdateReview).parent().parent().parent().removeClass('active')
-                spiner.prop('class', 'fa fa-refresh')
-
-                if (data.newReviewIds.length > 0) {
-                    // effect to html layout
-                    $(btnUpdateReview).parent().parent().parent().addClass('reviewUpdated')
-                    $(btnUpdateReview).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
-                    // push updated product 
-                    globalUpdatedReviewProducts.push(globalProducts[index])
-                } else {
-                    $(btnUpdateReview).html(`Updated<span>(${data.newReviewIds.length})</span>`)
-                }
-                console.log(data)
-                index++
-                if (index < limitIndex)
-                    updateReiewsProducts(index, limitIndex)
-                else {
-                    log('Done Update Reviews All Product')
-                    // use for sorting after updated reviews
-                    globalProducts = globalUpdatedReviewProducts
-                    drawProduct(globalUpdatedReviewProducts)
-                }
-            } catch (error) {
-                $(btnUpdateReview).parent().parent().parent().addClass('errorTry')
-                index++
-                if (index < limitIndex)
-                    updateReiewsProducts(index, limitIndex)
-                else
-                    log('Done Update Reviews All Product')
-                log(error)
-            }
-        },
-        error: function (err) {
-            $(btnUpdateReview).parent().parent().parent().addClass('errorAjax')
-            index++
-            if (index < limitIndex)
-                updateReiewsProducts(index, limitIndex)
-            else
-                log('Done Update Reviews All Product')
-            console.log(err)
-        }
-    });
-}
 function getQueryConditions() {
     var query = []
     if ($('#cbName').is(':checked'))
@@ -284,6 +185,25 @@ function getQueryConditions() {
             query.push(`new Date(this.attributes['42']*1000).getFullYear() ${$('#conditionsAge option:selected').text()} ${$('#ddlAge option:selected').text()}`)
     }
     return query
+}
+
+function sort(type, products) {
+    log(type)
+    var sortedProducts = []
+    switch (type) {
+        case "price":
+            sortedProducts = _u.orderBy(products, ['price'])
+            break
+        case "time":
+            sortedProducts = _u.orderBy(products, ['lastUpdateStamp'])
+            break
+        case "rating":
+            sortedProducts = _u.orderBy(products, ['ratingCount'])
+            break
+        default: sortedProducts = products
+            break
+    }
+    return sortedProducts.reverse()
 }
 
 function configureConditionsController() {
@@ -414,6 +334,18 @@ function drawProduct(products) {
     })
     $('#cbHideProductCover').trigger('change')
 }
+
+//////////////////////////////////////// GENERATION FUNCTIONS GROUP ////////////////////////////////////////
+function genBackground() {
+    //src : http://wallpaperswide.com
+    let bgRandomNumber = Math.floor(Math.random() * 17)
+    bgRandomNumber = bgRandomNumber === 0 ? bgRandomNumber + 1 : bgRandomNumber
+    $('body').css('background', `url('img/bg/1 (${bgRandomNumber}).jpg')`)
+    $('body').css('background-repeat', 'no-repeat')
+    $('body').css('background-attachment', 'fixed')
+    $('body').css('background-size', 'cover')
+}
+
 function genConditions() {
     let conditions = ['&gt;=', '&lt;=', '==', '&gt;', '&lt;', '!='],
         ddlIds = [
@@ -443,7 +375,7 @@ function genPrices() {
 
 function genYears() {
     let strHtml = ''
-    for (let i = new Date().getFullYear(); i >= 2015; i--) {
+    for (let i = new Date().getFullYear(); i >= 2016; i--) {
         strHtml += `<option>${i}</option>`
     }
     $('#ddlYear').html(strHtml)
@@ -465,7 +397,11 @@ function genAges() {
     $('#ddlAge').html(strHtml)
 }
 
-//////////////////////////////////////// AJAX FUNCTIONS ////////////////////////////////////////
+function genStatus() {
+    let ddlStatus = $('#ddlStatus')
+    Object.keys(globalStatus).forEach(id => ddlStatus.append(`<option value="${id}">${globalStatus[id]}</option>`))
+}
+//////////////////////////////////////// AJAX FUNCTIONS GROUP ////////////////////////////////////////
 function openProductFolder(productId) {
     $.ajax({
         url: '/products/openFolder/' + productId,
@@ -515,7 +451,7 @@ function updateReviews(productId, e) {
     $.ajax({
         url: '/products/review/update/' + productId,
         type: 'GET',
-        data:{isFetchImage: $('#cbIsFetchImage').is(':checked')},
+        data: { isFetchImage: $('#cbIsFetchImage').is(':checked') },
         success: function (data) {
             try {
                 spiner.prop('class', 'fa fa-refresh')
@@ -584,6 +520,86 @@ function genDistrict(cityId) {
         },
         error: function (err) {
             log(err)
+        }
+    });
+}
+
+function updateReiewsProducts(index, limitIndex) {
+    // use trigger  -> don't asynchronous
+    // $.when($('.btnUpdateReviews').eq(index).triggerHandler('click')).done(() => {
+    //     setTimeout(() => {
+    //         index++
+    //         if (index < limitIndex)
+    //             updateReiewsProducts(index, limitIndex)
+    //         else
+    //             log('Done Update Reviews All Product')
+    //     }, 2000)
+    // })
+
+    // use function directly -> don't asynchronous
+    // $.when(updateReviews(globalProducts[index].id, document.getElementsByClassName('btnUpdateReviews')[index])).then(() => {
+    //     //setTimeout(() => {
+    //         index++
+    //         if (index < limitIndex)
+    //             updateReiewsProducts(index, limitIndex)
+    //         else
+    //             log('Done Update Reviews All Product')
+    //     //}, 2000)
+    // })
+
+    // use recursive native
+    let productId = globalProducts[index].id
+    let btnUpdateReview = document.getElementsByClassName('btnUpdateReviews')[index];
+    $(btnUpdateReview).parent().parent().parent().addClass('active')
+    if ($('#cbFocusProductItem').is(':checked')) $(btnUpdateReview).focus()
+    let spiner = $(btnUpdateReview).parent().prev()
+    spiner.prop('class', 'fas fa-sync fa-spin')
+    $.ajax({
+        url: '/products/review/update/' + productId,
+        type: 'GET',
+        data: { isFetchImage: $('#cbIsFetchImage').is(':checked') },
+        success: function (data) {
+            try {
+                $(btnUpdateReview).parent().parent().parent().removeClass('active')
+                spiner.prop('class', 'fa fa-refresh')
+
+                if (data.newReviewIds.length > 0) {
+                    // effect to html layout
+                    $(btnUpdateReview).parent().parent().parent().addClass('reviewUpdated')
+                    $(btnUpdateReview).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
+                    // push updated product 
+                    globalUpdatedReviewProducts.push(globalProducts[index])
+                } else {
+                    $(btnUpdateReview).html(`Updated<span>(${data.newReviewIds.length})</span>`)
+                }
+                console.log(data)
+                index++
+                if (index < limitIndex)
+                    updateReiewsProducts(index, limitIndex)
+                else {
+                    log('Done Update Reviews All Product')
+                    // use for sorting after updated reviews
+                    globalProducts = globalUpdatedReviewProducts
+                    drawProduct(globalUpdatedReviewProducts)
+                }
+            } catch (error) {
+                $(btnUpdateReview).parent().parent().parent().addClass('errorTry')
+                index++
+                if (index < limitIndex)
+                    updateReiewsProducts(index, limitIndex)
+                else
+                    log('Done Update Reviews All Product')
+                log(error)
+            }
+        },
+        error: function (err) {
+            $(btnUpdateReview).parent().parent().parent().addClass('errorAjax')
+            index++
+            if (index < limitIndex)
+                updateReiewsProducts(index, limitIndex)
+            else
+                log('Done Update Reviews All Product')
+            console.log(err)
         }
     });
 }
