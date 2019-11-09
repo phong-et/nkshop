@@ -3,6 +3,7 @@ let log = console.log,
     ProductDetail = require('../../models/productDetail'),
     Review = require('../../models/review'),
     District = require('../../models/district'),
+    City = require('../../models/city'),
     cfg = require('../../../nk.cfg'),
     nk = require('../../../nk'),
     rimraf = require('rimraf'),
@@ -49,6 +50,16 @@ async function fetchProductsDetailByListId(url, productIdList, acceptedMinPrice)
     }
 }
 module.exports = async function (fastify, opts, next) {
+    fastify.get('/products/cities/:countryId', async function (request, reply) {
+        log('----request.query----')
+        let countryId = request.params.countryId
+        log(countryId)
+        try {
+            reply.send(await City.fetchCities(countryId))
+        } catch (error) {
+            reply.send(error)
+        }
+    })
     fastify.get('/products/districts/:cityId', async function (request, reply) {
         log('----request.query----')
         let cityId = request.params.cityId

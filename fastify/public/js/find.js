@@ -1,15 +1,17 @@
 let log = console.log,
-    globalProducts = [],
-    globalDistricts = {},
-    globalConfiguration = {},
-    globalUpdatedReviewProducts = [],
     globalStatus = {
         "1": 'ACTIVE',
         "2": 'OFF',
         "3": "ON LEAVE",
         "4": 'FAKE',
         "8": 'PENDING..',
-    }
+    },
+    globalCities = {},
+    globalProducts = [],
+    globalDistricts = {},
+    globalConfiguration = {},
+    globalUpdatedReviewProducts = []
+
 /**
  * todo 
  *  - add setting bar for find page (hide all conditions, show cover ...)
@@ -27,7 +29,8 @@ $().ready(function () {
     fetchConfiguration()
     genConditions()
     genBackground()
-    genDistrict(2)
+    genDistricts(2)
+    genCities(1)
     genPrices()
     genMonths()
     genStatus()
@@ -143,6 +146,14 @@ $().ready(function () {
             }
         })
     })
+
+    $('#ddlCity').change(function () {
+        genDistricts(this.value)
+    })
+    $('#cbDistrict').change(function () {
+        if (this.checked)
+            $('#cbCity').prop('checked', true).change()
+    })
 })
 
 // use for button update all product
@@ -157,8 +168,13 @@ function getQueryConditions() {
         query.push(`price ${$('#conditionsPriceFrom option:selected').val()} ${$('#ddlPriceFrom option:selected').text()}`)
         query.push(`price ${$('#conditionsPriceTo option:selected').val()} ${$('#ddlPriceTo option:selected').text()}`)
     }
-    if ($('#cbDistrict').is(':checked'))
+    if ($('#cbDistrict').is(':checked') && $('#cbCity').is(':checked'))
         query.push(`districtId == ${$('#ddlDisctrict option:selected').val()}`)
+    else if ($('#cbDistrict').is(':checked'))
+        query.push(`districtId == ${$('#ddlDisctrict option:selected').val()}`)
+    else if ($('#cbCity').is(':checked'))
+        query.push(`cityId == ${$('#ddlCity option:selected').val()}`)
+
     if ($('#cbRatingCount').is(':checked'))
         query.push(`ratingCount ${$('#conditionsRatingCount option:selected').text()} ${$('#txtRatingCount').val()}`)
     if ($('#cbStatus').is(':checked')) {
@@ -184,6 +200,7 @@ function getQueryConditions() {
         if ($('#cbAge').is(':checked'))
             query.push(`new Date(this.attributes['42']*1000).getFullYear() ${$('#conditionsAge option:selected').text()} ${$('#ddlAge option:selected').text()}`)
     }
+
     return query
 }
 
@@ -209,6 +226,7 @@ function sort(type, products) {
 function configureConditionsController() {
     let checkboxsControl = [
         { cbDistrict: ['ddlDisctrict'] },
+        { cbCity: ['ddlCity'] },
         { cbName: ['lbName', 'txtName'] },
         { cbPriceRange: ['lbPriceRange', 'conditionsPriceFrom', 'conditionsPriceTo', 'ddlPriceFrom', 'ddlPriceTo'] },
         { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
@@ -471,6 +489,7 @@ function updateReviews(productId, e) {
         }
     });
 }
+
 function fetchAllImagesReviews(productId, e) {
     let spiner = $(e).parent().prev()
     spiner.prop('class', 'fas fa-sync fa-spin')
@@ -496,7 +515,24 @@ function fetchAllImagesReviews(productId, e) {
     });
 }
 
-function genDistrict(cityId) {
+function genCities(countryId) {
+    $.ajax({
+        url: '/products/cities/' + countryId,
+        type: 'GET',
+        success: function (cities) {
+            try {
+                cities.forEach(city => $('#ddlCity').append(`<option value="${city.id}">${city.name}</option>`))
+            } catch (e) {
+                log(e)
+            }
+        },
+        error: function (err) {
+            log(err)
+        }
+    });
+}
+
+function genDistricts(cityId) {
     $.ajax({
         url: '/products/districts/' + cityId,
         type: 'GET',
@@ -631,6 +667,7 @@ function deleteProduct(productId, btnDelete) {
         });
     }
 }
+
 function deleteProducts(index, limitIndex) {
     // use recursive native
     let productId = globalProducts[index].id
