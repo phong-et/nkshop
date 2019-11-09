@@ -36,7 +36,7 @@ $().ready(function () {
     genStatus()
     genYears()
     genAges()
-    configureConditionsController()
+    config()
     $('#btnSearch').click(function () {
         let spiner = $(this).children()
         spiner.prop('class', 'fas fa-sync fa-spin')
@@ -223,7 +223,7 @@ function sort(type, products) {
     return sortedProducts.reverse()
 }
 
-function configureConditionsController() {
+function config() {
     let checkboxsControl = [
         { cbDistrict: ['ddlDisctrict'] },
         { cbCity: ['ddlCity'] },
