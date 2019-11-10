@@ -24,7 +24,7 @@
                 </legend>
                 <input type="checkbox" checked id="cbName">
                 <label>Name</label>
-                <input type="checkbox" id="cbId">
+                <input type="checkbox" id="cbId" name="id">
                 <label>Id</label>
             </fieldset>
 
@@ -43,8 +43,8 @@
                 </legend>
                 <input type="checkbox" checked id="cbStatus">
                 <label>Status</label>
-                <input type="checkbox" id="cbOnLeave">
-                <label>On Leave</label>
+                <!-- <input type="checkbox" id="cbOnLeave">
+                <label>On Leave</label> -->
             </fieldset>
             <fieldset class="controller-group">
                 <legend>
@@ -99,8 +99,10 @@
                 <legend>
                     <h6>Id - Name</h6>
                 </legend>
+                <label style="margin-left:0;" id="lbId">Id: </label>
+                <input style="width:80px !important;" type="text" class="form-control" id="txtId" placeholder="id">
                 <label style="margin-left:0;" id="lbName">Name: </label>
-                <input style="width:200px !important;" type="text" class="form-control" id="txtName" placeholder="name">
+                <input style="width:250px !important;" type="text" class="form-control" id="txtName" placeholder="name">
             </fieldset>
 
             <fieldset class="query-group">
@@ -197,6 +199,8 @@
                 All Products</button>
             <input class="inputSettings" type="checkbox" id="cbIsFetchImage">
             <label>Fetch Image &nbsp;</label>
+            <button style="margin-left: 20px;" id="btnOpenChart" type="button"
+                class="btn btn-primary btn-small"><i class="fa fa-trash-alt"></i></i><span></span>Open Chart</button>
             <input type="number" class="form-control" value="0" id="txtStartIndexUpdateReviews" placeholder="number">
             <button style="margin-left: 20px;" id="btnDeleteAllProducts" type="button"
                 class="btn btn-primary btn-small"><i class="fa fa-trash-alt"></i></i><span></span> Delete

@@ -150,17 +150,27 @@ $().ready(function () {
     $('#ddlCity').change(function () {
         genDistricts(this.value)
     })
+
     $('#cbDistrict').change(function () {
         if (this.checked)
             $('#cbCity').prop('checked', true).change()
     })
+    $('#cbId').change(function () {
+        if (this.checked)
+            $('input[name!=id]').prop('checked', false).change()
+    })
+
+    $('#btnOpenChart').click(function () {
+        genChart(globalProducts)
+    })
 })
 
 // use for button update all product
-
 function getQueryConditions() {
     var query = []
-    if ($('#cbName').is(':checked'))
+    if ($('#cbId').is(':checked'))
+        query.push(`id == ${$('#txtId').val()}`)
+    if ($('#cbName').is(':checked') && $('#txtName').val() !== '')
         query.push(`name.toLowerCase().indexOf('${$('#txtName').val().toLowerCase()}')>-1`)
     if ($('#cbPrice').is(':checked'))
         query.push(`price ${$('#conditionsPrice option:selected').text()} ${$('#ddlPrice option:selected').text()}`)
@@ -200,7 +210,6 @@ function getQueryConditions() {
         if ($('#cbAge').is(':checked'))
             query.push(`new Date(this.attributes['42']*1000).getFullYear() ${$('#conditionsAge option:selected').text()} ${$('#ddlAge option:selected').text()}`)
     }
-
     return query
 }
 
@@ -228,6 +237,7 @@ function config() {
         { cbDistrict: ['ddlDisctrict'] },
         { cbCity: ['ddlCity'] },
         { cbName: ['lbName', 'txtName'] },
+        { cbId: ['lbId', 'txtId'] },
         { cbPriceRange: ['lbPriceRange', 'conditionsPriceFrom', 'conditionsPriceTo', 'ddlPriceFrom', 'ddlPriceTo'] },
         { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
         { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
@@ -302,7 +312,7 @@ function drawProduct(products) {
         strHtml = strHtml + `
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
-            <div>
+            <div class="productIdName">
             <i class="fa fa-user"></i>
             <a href="#" onclick="openTabProduct('${product.id}'); return false;">[${product.id}]</a>
             <span class="productName"> ${product.name}</span>
@@ -336,6 +346,8 @@ function drawProduct(products) {
                 <a class="btnFetchAllReviews action" href="#" onclick="fetchAllImagesReviews('${product.id}', this); return false;">Fetch All Reviews</a></span>
                 <i class="fa fa-trash-alt"></i>
                 <span><a class="action-delete btnDelete" href="#" onclick="deleteProduct('${product.id}', this); return false;">Delete</a></span><br />
+                <i class="fas fa-chart-line"></i>
+                <span><a class="action" href="#" onclick="openChart('${product.id}'); return false;">Open Statistic Chart</a></span><br />
             </div>
             </div>
         `
@@ -356,7 +368,7 @@ function drawProduct(products) {
 //////////////////////////////////////// GENERATION FUNCTIONS GROUP ////////////////////////////////////////
 function genBackground() {
     //src : http://wallpaperswide.com
-    let bgRandomNumber = Math.floor(Math.random() * 17)
+    let bgRandomNumber = Math.floor(Math.random() * 8)
     bgRandomNumber = bgRandomNumber === 0 ? bgRandomNumber + 1 : bgRandomNumber
     $('body').css('background', `url('img/bg/1 (${bgRandomNumber}).jpg')`)
     $('body').css('background-repeat', 'no-repeat')
@@ -558,6 +570,22 @@ function genDistricts(cityId) {
             log(err)
         }
     });
+}
+
+function genChart(products, type) {
+    window['chart'] = 
+        _u.chain(products)
+            // Group the elements of Array based on `color` property
+            .groupBy("price")
+            // `key` is group's name (color), `value` is the array of objects
+            .map((value, key) => ({ price: key, products: value }))
+            .map(group => {
+                let price = group.price;
+                return { name: price >= 1000 ? price / 1000 + '$' : price + 'K', y: group.products.length }
+            })
+            .value()
+    log(window['chart'])
+    window.open('chart.html', 'Chart', 'width=' + 1000 + ',height=' + 500 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
 }
 
 function updateReiewsProducts(index, limitIndex) {

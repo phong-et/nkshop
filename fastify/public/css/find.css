@@ -16,7 +16,7 @@ form#form-search input {
 form#form-search label {
     margin-left: 15px;
     font-weight: bold;
-    color: green;
+    color: #000;
 }
 
 fieldset {
@@ -75,7 +75,7 @@ label{color: #000;}
 }
 
 .productItem:hover {
-    background: #4c4141;
+    /* background: #4c4141; */
 }
 .selected {
     background: #4c4141;
@@ -97,7 +97,8 @@ i.fa, i.fas, i.far{color: #d7eee5;}
     float: left;
     width: 259px;
 }
-
+.productIdName{padding-left: 4px}
+.productIdName a{font-weight: bold;}
 .productName a, span.productName {
     font-weight: bold;
     color:#effb40;
