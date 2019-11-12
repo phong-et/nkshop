@@ -6,8 +6,7 @@ let log = console.log,
     City = require('../../models/city'),
     cfg = require('../../../nk.cfg'),
     nk = require('../../../nk'),
-    rimraf = require('rimraf'),
-    newProductIds = []
+    rimraf = require('rimraf')
 function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, productIds, callback) {
     try {
         return nk.fetchProductByCTOnePage(cityId, orderBy, fromPage, products => {
@@ -93,13 +92,22 @@ module.exports = async function (fastify, opts, next) {
 
     fastify.get('/products/configurations/', function (_, reply) {
         log('/products/configurations/')
-        reply.send({ productDetailUrl: cfg.productDetailUrl, authorUrl: cfg.authorUrl })
+        reply.send({
+            productDetailUrl: cfg.productDetailUrl,
+            authorUrl: cfg.authorUrl,
+            title: cfg.chart.title,
+            subTitle: cfg.chart.subTitle,
+            priceUnit: cfg.chart.priceUnit,
+            titleX: cfg.chart.titleX,
+            titleY: cfg.chart.titleY,
+            groups: cfg.chart.groups,
+        })
     })
 
     fastify.get('/products/review/update/:productId', async function (request, reply) {
         log('----request.params----')
         log(request.params)
-        let isFetchImage =  JSON.parse(request.query.isFetchImage.toLowerCase())
+        let isFetchImage = JSON.parse(request.query.isFetchImage.toLowerCase())
         log(`isFetchImage = ${isFetchImage}`)
         try {
             let productId = request.params.productId,

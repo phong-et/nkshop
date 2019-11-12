@@ -161,7 +161,7 @@ $().ready(function () {
     })
 
     $('#btnOpenChart').click(function () {
-        genChart(globalProducts)
+        genChart(globalProducts, 'districtId')
     })
 })
 
@@ -324,7 +324,7 @@ function drawProduct(products) {
                 <i class="fa fa-money"></i><span class="productPrice">${product.price} $</span>
                 <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalStatus[product.status] || ''}">${globalStatus[product.status]}</span><br />
                 <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span><br />
-                <i class="fas fa-globe"></i><span class="productPlace">${globalDistricts['"' + product.districtId + '"']}</span>
+                <i class="fas fa-globe"></i><span class="productPlace">${globalDistricts[product.districtId]}</span>
                 <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}(${product.ratingCountTotal || 'N'})</span>
                 <i class="fa fa-trophy"></i><span class="productRatingScore">${product.ratingScore}</span><br />
                 <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString()}</span>
@@ -558,7 +558,7 @@ function genDistricts(cityId) {
                 })
                 districts.forEach(district => {
                     html = html + `<option value="${district.id}">${district.name}</option>`
-                    globalDistricts['"' + district.id + '"'] = district.name
+                    globalDistricts[district.id] = district.name
                 })
                 log(globalDistricts)
                 $('#ddlDisctrict').html(html)
@@ -573,44 +573,45 @@ function genDistricts(cityId) {
 }
 
 function genChart(products, type) {
-    window['chart'] = 
+    window["chart"] = {
+        data: [],
+        cfg: {
+            title: globalConfiguration.title + '(' + new Date().toLocaleDateString() + ')',
+            subTitle: `Theo ${globalConfiguration.subTitle} query :${getQueryConditions().toString()}`,
+            titleX: globalConfiguration.titleX,
+            titleY: globalConfiguration.titleY
+        }
+    }
+    window["chart"].data =
         _u.chain(products)
-            // Group the elements of Array based on `color` property
-            .groupBy("price")
-            // `key` is group's name (color), `value` is the array of objects
-            .map((value, key) => ({ price: key, products: value }))
-            .map(group => {
-                let price = group.price;
-                return { name: price >= 1000 ? price / 1000 + '$' : price + 'K', y: group.products.length }
+            .groupBy(type)
+            //.map((value, key) => ({ type: key, products: value }))
+            .map((value, key) => {
+                let item = {}
+                item[type] = key
+                item['products'] = value
+                return item
             })
-            .value()
+    let groups = window["chart"].data
+    switch (type) {
+        case "price":
+            window["chart"].data = groups.map(group => {
+                let price = group.price;
+                return { name: price >= 1000 ? price / 1000 + globalConfiguration.priceUnit[1] : price + globalConfiguration.priceUnit[0], y: group.products.length }
+            }).value()
+            break;
+        case "districtId":
+            window["chart"].data = groups.map(group => {
+                let districtName = globalDistricts[group.districtId]
+                return { name: districtName, y: group.products.length }
+            }).value()
+            break;
+    }
     log(window['chart'])
-    window.open('chart.html', 'Chart', 'width=' + 1000 + ',height=' + 500 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
+    window.open('chart.html', 'Chart', 'width=' + 1360 + ',height=' + 1000 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
 }
 
 function updateReiewsProducts(index, limitIndex) {
-    // use trigger  -> don't asynchronous
-    // $.when($('.btnUpdateReviews').eq(index).triggerHandler('click')).done(() => {
-    //     setTimeout(() => {
-    //         index++
-    //         if (index < limitIndex)
-    //             updateReiewsProducts(index, limitIndex)
-    //         else
-    //             log('Done Update Reviews All Product')
-    //     }, 2000)
-    // })
-
-    // use function directly -> don't asynchronous
-    // $.when(updateReviews(globalProducts[index].id, document.getElementsByClassName('btnUpdateReviews')[index])).then(() => {
-    //     //setTimeout(() => {
-    //         index++
-    //         if (index < limitIndex)
-    //             updateReiewsProducts(index, limitIndex)
-    //         else
-    //             log('Done Update Reviews All Product')
-    //     //}, 2000)
-    // })
-
     // use recursive native
     let productId = globalProducts[index].id
     let btnUpdateReview = document.getElementsByClassName('btnUpdateReviews')[index];

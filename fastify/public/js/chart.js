@@ -1,15 +1,15 @@
 // Create the chart
-function drawChart(data){
+function drawChart(data, title, subTitle, titleX, titleY) {
     Highcharts.chart('container', {
         chart: {
             type: 'column',
             //width:1700
         },
         title: {
-            text: 'Statictis product by price range'
+            text: title
         },
         subtitle: {
-            text: 'ssg.com'
+            text: subTitle
         },
         accessibility: {
             announceNewData: {
@@ -18,10 +18,13 @@ function drawChart(data){
         },
         xAxis: {
             type: 'category',
+            title: {
+                text: titleX
+            }
         },
         yAxis: {
             title: {
-                text: 'Quantity of products'
+                text: titleY
             }
         },
         legend: {
@@ -79,4 +82,13 @@ function drawChart(data){
         ]
     })
 }
-drawChart(opener.window['chart'])
+let chart = opener.window['chart'],
+    data = chart.data,
+    cfg = chart.cfg
+drawChart(
+    data,
+    cfg.title,
+    cfg.subTitle,
+    cfg.titleX,
+    cfg.titleY
+)
