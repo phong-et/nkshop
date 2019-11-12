@@ -13,10 +13,10 @@
 </head>
 
 <body>
-    <fieldset>
+    <!-- <fieldset>
         <legend>
             <h6><a data-toggle="collapse" data-target="#demo" href="#">Conditions Controller</a></h6>
-        </legend>
+        </legend> -->
         <form id="form-search-control" class="form-inline">
             <fieldset class="controller-group">
                 <legend>
@@ -87,8 +87,8 @@
                 <input type="checkbox" checked id="cbAge">
                 <label>Age</label>
             </fieldset>
-        </form>
-    </fieldset>
+         </form>
+    <!--</fieldset> -->
 
     <fieldset class="conditions-query">
         <legend>
@@ -180,9 +180,7 @@
 
                 <label id="lbAge">Age: </label>
                 <select class="form-control" id="conditionsAge"></select>
-                <select class="form-control" id="ddlAge">
-                    <option>Year</option>
-                </select>
+                <select class="form-control" id="ddlAge"></select>
             </fieldset>
         </form>
     </fieldset>
@@ -199,9 +197,11 @@
                 All Products</button>
             <input class="inputSettings" type="checkbox" id="cbIsFetchImage">
             <label>Fetch Image &nbsp;</label>
-            <button style="margin-left: 20px;" id="btnOpenChart" type="button"
-                class="btn btn-primary btn-small"><i class="fa fa-trash-alt"></i></i><span></span>Open Chart</button>
+
             <input type="number" class="form-control" value="0" id="txtStartIndexUpdateReviews" placeholder="number">
+            <button style="margin:0 10px;" id="btnOpenChart" type="button" class="btn btn-primary btn-small"><i
+                    class="fa fa-trash-alt"></i></i><span></span>Open Chart</button>
+            <select class="form-control" id="ddlGroupBy"></select>
             <button style="margin-left: 20px;" id="btnDeleteAllProducts" type="button"
                 class="btn btn-primary btn-small"><i class="fa fa-trash-alt"></i></i><span></span> Delete
                 All Products</button>

@@ -26,7 +26,7 @@ let log = console.log,
  */
 $().ready(function () {
     // gen conditions part
-    fetchConfiguration()
+    fetchConfiguration(configs => genGroupBy(configs.groups))
     genConditions()
     genBackground()
     genDistricts(2)
@@ -161,7 +161,7 @@ $().ready(function () {
     })
 
     $('#btnOpenChart').click(function () {
-        genChart(globalProducts, 'districtId')
+        genChart(globalProducts, $('#ddlGroupBy option:selected').val())
     })
 })
 
@@ -431,6 +431,10 @@ function genStatus() {
     let ddlStatus = $('#ddlStatus')
     Object.keys(globalStatus).forEach(id => ddlStatus.append(`<option value="${id}">${globalStatus[id]}</option>`))
 }
+function genGroupBy(groups) {
+    let ddlGroupBy = $('#ddlGroupBy')
+    groups.forEach(group => ddlGroupBy.append(`<option value="${group.key}">${group.name}</options>`))
+}
 //////////////////////////////////////// AJAX FUNCTIONS GROUP ////////////////////////////////////////
 function openProductFolder(productId) {
     $.ajax({
@@ -457,13 +461,14 @@ function openTabAuthor(authorName) {
     window.open(globalConfiguration.authorUrl + authorName, '_blank')
 }
 
-function fetchConfiguration() {
+function fetchConfiguration(callback) {
     $.ajax({
         url: '/products/configurations/',
         type: 'GET',
         success: function (configs) {
             try {
                 globalConfiguration = configs
+                callback(configs)
             } catch (e) {
                 console.log(e)
             }
@@ -573,39 +578,56 @@ function genDistricts(cityId) {
 }
 
 function genChart(products, type) {
+    let ddlGroupBy =  $('#ddlGroupBy option:selected')
     window["chart"] = {
         data: [],
         cfg: {
-            title: globalConfiguration.title + '(' + new Date().toLocaleDateString() + ')',
+            title: globalConfiguration.title + ddlGroupBy.text().toUpperCase() + '(' + new Date().toLocaleDateString() + ')',
             subTitle: `Theo ${globalConfiguration.subTitle} query :${getQueryConditions().toString()}`,
             titleX: globalConfiguration.titleX,
             titleY: globalConfiguration.titleY
         }
     }
-    window["chart"].data =
-        _u.chain(products)
-            .groupBy(type)
-            //.map((value, key) => ({ type: key, products: value }))
+    if (type === 'author') {
+        window["chart"].data = _u.chain(products)
+            .groupBy(function (product) { return product.author.displayName })
             .map((value, key) => {
-                let item = {}
-                item[type] = key
-                item['products'] = value
-                return item
+                return { name: key, y: value.length }
             })
-    let groups = window["chart"].data
-    switch (type) {
-        case "price":
-            window["chart"].data = groups.map(group => {
-                let price = group.price;
-                return { name: price >= 1000 ? price / 1000 + globalConfiguration.priceUnit[1] : price + globalConfiguration.priceUnit[0], y: group.products.length }
-            }).value()
-            break;
-        case "districtId":
-            window["chart"].data = groups.map(group => {
-                let districtName = globalDistricts[group.districtId]
-                return { name: districtName, y: group.products.length }
-            }).value()
-            break;
+            .value()
+        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+    }
+    else {
+        window["chart"].data =
+            _u.chain(products)
+                .groupBy(type)
+                .map((value, key) => {
+                    let item = {}
+                    item[type] = key
+                    item['products'] = value
+                    return item
+                })
+        let groups = window["chart"].data
+        switch (type) {
+            case "price":
+                window["chart"].data = groups.map(group => {
+                    let price = group.price;
+                    return { name: price >= 1000 ? price / 1000 + globalConfiguration.priceUnit[1] : price + globalConfiguration.priceUnit[0], y: group.products.length }
+                }).value()
+                break;
+            case "districtId":
+                window["chart"].data = groups.map(group => {
+                    let districtName = globalDistricts[group.districtId] || 'districtId=' + group.districtId
+                    return { name: districtName, y: group.products.length }
+                }).value()
+                break;
+            case "author":
+                window["chart"].data = groups.map(group => {
+                    let districtName = globalDistricts[group.districtId] || 'districtId=' + group.districtId
+                    return { name: districtName, y: group.products.length }
+                }).value()
+                break;
+        }
     }
     log(window['chart'])
     window.open('chart.html', 'Chart', 'width=' + 1360 + ',height=' + 1000 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
