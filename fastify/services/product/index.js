@@ -111,7 +111,7 @@ module.exports = async function (fastify, opts, next) {
         log(`isFetchImage = ${isFetchImage}`)
         try {
             let productId = request.params.productId,
-                oldReviewIds = await Review.findReviewsOfProduct(productId),
+                oldReviewIds = await Review.fetchReviewIdsOfProduct(productId),
                 product = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
                 currentReviewIds = await nk.fetchReviewIdsOfProduct(cfg.reviewUrl, productId, product.ratingCount),
                 newReviewIds = currentReviewIds.filter(value => !oldReviewIds.includes(value)),
@@ -254,5 +254,20 @@ module.exports = async function (fastify, opts, next) {
         }
     })
 
+    fastify.get('/products/review/:productId', async function (request, reply) {
+        log('----request.query----')
+        log(request.params)
+        try {
+            let productId = request.params.productId,
+                reviews = await Review.fetchReviewsOfProduct(productId)
+            reply.send({
+                reviews: reviews,
+            })
+        } catch (error) {
+            reply.send({
+                error
+            })
+        }
+    })
     next()
 }

@@ -347,7 +347,7 @@ function drawProduct(products) {
                 <i class="fa fa-trash-alt"></i>
                 <span><a class="action-delete btnDelete" href="#" onclick="deleteProduct('${product.id}', this); return false;">Delete</a></span><br />
                 <i class="fas fa-chart-line"></i>
-                <span><a class="action" href="#" onclick="openChart('${product.id}'); return false;">Open Statistic Chart</a></span><br />
+                <span><a class="action" href="#" onclick="openChartReview('${product.id}'); return false;">Open Statistic Chart</a></span><br />
             </div>
             </div>
         `
@@ -576,7 +576,18 @@ function genDistricts(cityId) {
         }
     });
 }
-
+function openChartReview(productId){
+    window.chartReview = {
+        cfg: {
+            title: globalConfiguration.title + '(' + new Date().toLocaleDateString() + ')',
+            subTitle: `Theo ${globalConfiguration.subTitle} query :${getQueryConditions().toString()}`,
+            titleX: globalConfiguration.titleX,
+            titleY: globalConfiguration.titleY
+        }
+    }
+    log(window['chart'])
+    window.open('chart-review.html?id=' + productId, 'Chart', 'width=' + 1360 + ',height=' + 1000 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
+}
 function genChart(products, type) {
     let ddlGroupBy =  $('#ddlGroupBy option:selected')
     window["chart"] = {
