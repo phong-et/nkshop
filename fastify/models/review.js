@@ -60,29 +60,43 @@ async function insertMany(jsonReviews) {
         log(error)
     }
 }
-async function findReviewsOfProduct(productId) {
+async function fetchReviewIdsOfProduct(productId) {
     var query = {
         '$where': 'this.productId == ' + productId
     }
-    log(`find review of product with query : ${JSON.stringify(query)}`)
+    log(`find review ids of product with query : ${JSON.stringify(query)}`)
     db.connect(dbURL, { useNewUrlParser: true });
     try {
         let reviews = await Review.find(
-                query,
-                'id productId'
-                //userId phone timeStamp'
-            )
-            .sort({ timeStamp: -1 })
-            .exec()
+            query,
+            'id productId'
+        )
+        .sort({ timeStamp: -1 })
+        .exec()
         log('reviews.length=%s', reviews.length)
-        let reviewIds = []
-        reviews.forEach(e => {
-                e.timeStamp = new Date(e.timeStamp * 1000).toLocaleDateString()
-                reviewIds.push(e.id)
-            })
-            //log(reviews)
         db.connection.close()
-        return reviewIds
+        return reviews.map(review => review.id)
+    } catch (error) {
+        log(error)
+    }
+}
+
+async function fetchReviewsOfProduct(productId) {
+    var query = {
+        '$where': 'this.productId == ' + productId
+    }
+    log(`fetch review of product with query : ${JSON.stringify(query)}`)
+    db.connect(dbURL, { useNewUrlParser: true });
+    try {
+        let reviews = await Review.find(
+            query,
+            'id productId author timeStamp userId'
+        )
+        .sort({ timeStamp: -1 })
+        .exec()
+        log('reviews.length=%s', reviews.length)
+        db.connection.close()
+        return reviews
     } catch (error) {
         log(error)
     }
@@ -90,6 +104,7 @@ async function findReviewsOfProduct(productId) {
 module.exports = {
     insert: insert,
     insertMany: insertMany,
-    findReviewsOfProduct: findReviewsOfProduct
+    fetchReviewIdsOfProduct: fetchReviewIdsOfProduct,
+    fetchReviewsOfProduct: fetchReviewsOfProduct
 };
-//(async function () { await findReviewsOfProduct(24842) }())
+//(async function () { await fetchReviewIdsOfProduct(24842) }())
