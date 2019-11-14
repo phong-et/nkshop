@@ -347,7 +347,7 @@ function drawProduct(products) {
                 <i class="fa fa-trash-alt"></i>
                 <span><a class="action-delete btnDelete" href="#" onclick="deleteProduct('${product.id}', this); return false;">Delete</a></span><br />
                 <i class="fas fa-chart-line"></i>
-                <span><a class="action" href="#" onclick="openChartReview('${product.id}'); return false;">Open Statistic Chart</a></span><br />
+                <span><a class="action" href="#" onclick="openChartReview('${product.id}','${product.name}'); return false;">Open Statistic Chart</a></span><br />
             </div>
             </div>
         `
@@ -576,11 +576,11 @@ function genDistricts(cityId) {
         }
     });
 }
-function openChartReview(productId){
+function openChartReview(productId, productName){
     window.chartReview = {
         cfg: {
-            title: globalConfiguration.title + '(' + new Date().toLocaleDateString() + ')',
-            subTitle: `Theo ${globalConfiguration.subTitle} query :${getQueryConditions().toString()}`,
+            title: globalConfiguration.titleByReport +  ' ' + productName +  '(' + new Date().toLocaleDateString() + ')',
+            subTitle: `${globalConfiguration.subTitle}`,
             titleX: globalConfiguration.titleX,
             titleY: globalConfiguration.titleY
         }

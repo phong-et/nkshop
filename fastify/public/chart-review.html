@@ -10,23 +10,17 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+    <script>
+        _u = _.noConflict();
+    </script>
 </head>
 
 <body>
-    <div id="divResizer" style="position:fixed;height: 20px;width: 234px;top: 0;left: 0;z-index: 9999; margin: 2px;">
-        <input type="number" placeholder="input width" id="txtWidth" style="width:80px">
-        <button id="btnResize">Resize</button>
-    </div>
-    
     <figure class="highcharts-figure">
         <div id="container"></div>
     </figure>
     <script src="js/chart-review.js"></script>
-    <script>
-        $().ready(function () {
-            
-        })
-    </script>
 </body>
 
 </html>

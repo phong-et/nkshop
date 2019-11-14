@@ -100,6 +100,7 @@ module.exports = async function (fastify, opts, next) {
             priceUnit: cfg.chart.priceUnit,
             titleX: cfg.chart.titleX,
             titleY: cfg.chart.titleY,
+            titleByReport: cfg.chart.titleByReport,
             groups: cfg.chart.groups,
         })
     })

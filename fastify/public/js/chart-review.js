@@ -19,10 +19,10 @@ function fetchReview(productId, callback) {
         }
     });
 }
-function drawChart(data, title, subTitle, titleX, titleY) {
+function drawChart(data, categories, title, subTitle, titleY) {
     return Highcharts.chart('container', {
         chart: {
-            type: 'column',
+            type: 'line'
         },
         title: {
             text: title
@@ -30,72 +30,66 @@ function drawChart(data, title, subTitle, titleX, titleY) {
         subtitle: {
             text: subTitle
         },
-        accessibility: {
-            announceNewData: {
-                enabled: true
-            }
-        },
         xAxis: {
-            type: 'category',
-            title: {
-                text: titleX
-            }
+            categories: categories
         },
         yAxis: {
             title: {
                 text: titleY
             }
         },
-        legend: {
-            enabled: true
-        },
         plotOptions: {
-            series: {
-                borderWidth: 0,
+            line: {
                 dataLabels: {
-                    enabled: true,
-                    format: '{point.y}'
-                }
+                    enabled: true
+                },
+                enableMouseTracking: false
             }
         },
-        tooltip: {
-            headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
-        },
-        series: [
-            {
-                name: "Price",
-                colorByPoint: true,
-                data: data
-            }
-        ]
+        series: [{
+            name: 'Total Reviews : ' + _u.sum(data)  ,
+            data: data
+        }]
     })
 }
 
 $().ready(function () {
     try {
         let productId = getQueryParam('id'),
-        Chart
-    fetchReview(productId, function (reviews) {
-        // let chart = opener.window.chartReview,
-        //     cfg = chart.cfg
-        reviews.map(review => {
-            review.timeStamp = new Date(review.timeStamp).toLocaleDateString()
-            return review
+            Chart
+        cfg = opener.window.chartReview.cfg
+        fetchReview(productId, function (reviews) {
+            reviews.map(review => {
+                let d = new Date(review.timeStamp).toLocaleDateString().split('/')
+                review.timeStamp = d[0] + '/' + d[2]
+                return review
+            })
+            log(reviews)
+            let groups = _u.chain(reviews).groupBy("timeStamp")
+                .map((value, key) => {
+                    return { "timeStamp": key, reviews: value }
+                })
+                // view groups original
+                //.value()
+                //map to data chart
+                .map(group => {
+                    return { month: group.timeStamp, count: group.reviews.length }
+                }).value()
+            let categories = groups.map(group => group.month).reverse()
+            let data = groups.map(group => group.count).reverse()
+            log(groups)
+            Chart = drawChart(
+                data,
+                categories,
+                cfg.title,
+                cfg.subTitle,
+                cfg.titleY
+            )
         })
-        log(reviews)
-        Chart = drawChart(
-            data,
-            cfg.title,
-            cfg.subTitle,
-            cfg.titleX,
-            cfg.titleY
-        )
-    })
     } catch (error) {
         log(error)
     }
-    
+
     $('#btnResize').click(function () {
         let width = $('#txtWidth').val()
         $('#container').width(width ? width : '100%')
