@@ -39,3 +39,14 @@
         - Thay thế ‘+[]’ thành giá trị +0
         - Dấu cộng giữa 2 ngoặc đơn ‘)+(‘ là phép nối chuỗi (trong PHP là “.”, trong C++ là &)
         - Dấu ‘)/+(‘ giữa 2 ngoặc đơn là phép chia
+
+# Test output all date functions
+    d.toLocaleDateString() => 11/14/2019
+    d.toLocaleTimeString() => 8:49:40 PM
+    d.toLocaleString() => 11/14/2019, 8:49:40 PM
+    d.toDateString() => Thu Nov 14 2019
+    d.toTimeString() => 20:49:40 GMT+0700 (Indochina Time)
+    d.toISOString() => 2019-11-14T13:49:40.346Z
+    d.toUTCString() => Thu, 14 Nov 2019 13:49:40 GMT
+    d.toString() => Thu Nov 14 2019 20:49:40 GMT+0700 (Indochina Time)
+    d.toJSON() => 2019-11-14T13:49:40.346Z
