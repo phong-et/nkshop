@@ -33,16 +33,23 @@ function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, product
 async function fetchProductsDetailByListId(url, productIdList, acceptedMinPrice) {
     try {
         for (let i = 0; i < productIdList.length; i++) {
-            await nk.delay(nk.wait('product', i, productIdList[i]))
-            var jsonProduct = await nk.fetchJsonOfProduct(url, productIdList[i])
-            if (jsonProduct && jsonProduct.price >= acceptedMinPrice) {
+            let productId = productIdList[i]
+            await nk.delay(nk.wait('product', i, productId))
+            var jsonProduct = await nk.fetchJsonOfProduct(url, productId)
+            if (jsonProduct) {
                 log(`price:${jsonProduct.price} || ratingCount:${jsonProduct.ratingCount}`)
                 await ProductDetail.insert(jsonProduct)
-                await nk.fetchProduct(url, productIdList[i], jsonProduct)
-                await Review.insertMany(await nk.fetchReviewsOfProduct(cfg.reviewUrl, jsonProduct.id, jsonProduct.ratingCount))
+                let reviewsJson = await nk.fetchReviewsOfProduct(cfg.reviewUrl, productId, jsonProduct.ratingCount)
+                await Review.insertMany(reviewsJson)
+                if (jsonProduct.price >= acceptedMinPrice) {
+                    nk.fetchImagesOfProduct(jsonProduct)
+                    reviewsJson.forEach(reviewJson => nk.fetchImagesOfReview(reviewJson.photos, productId))
+                }
+                else
+                    log(`Rejected => Price: ${jsonProduct.price}`)
             }
             else
-                log(`Rejected Product Price: ${jsonProduct.price || 'NULL'}`)
+                log('Product NULL')
         }
     } catch (error) {
         log(error.message)
@@ -129,7 +136,7 @@ module.exports = async function (fastify, opts, next) {
                 let reviews = await Promise.all(newReviewIds.map(async reviewId => {
                     try {
                         let review = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
-                        nk.fetchImagesOfReview(review, productId)
+                        nk.fetchImagesOfReview(review.data.review.photos, productId)
                         review.data.review["productId"] = productId
                         return review.data.review
                     } catch (error) {
@@ -192,19 +199,19 @@ module.exports = async function (fastify, opts, next) {
         reply.send(productId)
     })
 
-    fastify.get('/products/add/:id', async function (request, reply) {
-        try {
-            let id = request.params.id
-            log(id)
-            nk.fetchProduct()
-            fetchProductsDetailByListId(cfg.productUrl, listId, parseInt(acceptedMinPrice))
-            reply.send({ success: true })
-        } catch (error) {
-            log(error)
-            reply.send({ success: false, msg: error.message })
-        }
-    })
-    fastify.get('/products/adds/', async function (request, reply) {
+    // fastify.get('/products/add/:id', async function (request, reply) {
+    //     try {
+    //         let id = request.params.id
+    //         log(id)
+    //         nk.fetchProduct()
+    //         fetchProductsDetailByListId(cfg.productUrl, listId, parseInt(acceptedMinPrice))
+    //         reply.send({ success: true })
+    //     } catch (error) {
+    //         log(error)
+    //         reply.send({ success: false, msg: error.message })
+    //     }
+    // })
+    fastify.get('/products/add/', async function (request, reply) {
         try {
             let listId = JSON.parse(request.query['listId']).map(id => parseInt(id)),
                 acceptedMinPrice = request.query['acceptedMinPrice']

@@ -129,7 +129,7 @@ $().ready(function () {
         spiner.prop('class', 'fas fa-sync fa-spin')
 
         $.ajax({
-            url: '/products/add',
+            url: '/products/add/',
             type: 'GET',
             data: data,
             success: function (data) {
@@ -173,7 +173,7 @@ $().ready(function () {
 function getQueryConditions() {
     var query = []
     if ($('#cbId').is(':checked'))
-        query.push(`id == ${$('#txtId').val()}`)
+        query.push(`id >= ${$('#txtId').val()}`)
     if ($('#cbName').is(':checked') && $('#txtName').val() !== '')
         query.push(`name.toLowerCase().indexOf('${$('#txtName').val().toLowerCase()}')>-1`)
     if ($('#cbPrice').is(':checked'))
@@ -328,7 +328,7 @@ function drawProduct(products) {
                 <i class="fa fa-money"></i><span class="productPrice">${product.price} $</span>
                 <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalStatus[product.status] || ''}">${globalStatus[product.status]}</span><br />
                 <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span><br />
-                <i class="fas fa-globe"></i><span class="productPlace">${globalDistricts[product.districtId]}</span>
+                <i class="fas fa-map-marker-alt"></i><span class="productPlace">${globalDistricts[product.districtId]}</span>
                 <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}(${product.ratingCountTotal || 'N'})</span>
                 <i class="fa fa-trophy"></i><span class="productRatingScore">${product.ratingScore}</span><br />
                 <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString()}</span>
@@ -344,7 +344,7 @@ function drawProduct(products) {
                 <a class="btnUpdateReviews action" href="#" onclick="updateReviews('${product.id}',this); return false;">Update Reviews</a></span><br />
                 <i class="far fa-folder-open"></i>
                 <span><a class="action" href="#" onclick="openProductFolder('${product.id}'); return false">Open Folder</a></span>
-                <i class="fa fa-external-link-alt"></i>
+                <i class="fas fa-globe"></i>
                 <span><a class="action" href="#" onclick="openWeb('${product.id}'); return false;">Open Web</a></span><br />
                 <i class="fa fa-cloud-download-alt"></i><span>
                 <a class="btnFetchAllReviews action" href="#" onclick="fetchAllImagesReviews('${product.id}', this); return false;">Fetch All Reviews</a></span>
@@ -613,7 +613,7 @@ function genChart(products, type) {
         data: [],
         cfg: {
             title: globalConfiguration.title + ddlGroupBy.text().toUpperCase() + '(' + new Date().toLocaleDateString() + ')',
-            subTitle: `Theo ${globalConfiguration.subTitle} query :${getQueryConditions().toString()}`,
+            subTitle: `${globalConfiguration.subTitle} query: ${getQueryConditions().toString()}`,
             titleX: globalConfiguration.titleX,
             titleY: globalConfiguration.titleY
         }
