@@ -87,10 +87,10 @@ async function fetchProduct(url, productId, jsonProduct) {
     }
 }
 
-async function fetchImagesOfProduct(nkJson) {
+async function fetchImagesOfProduct(productJson) {
     try {
-        nkJson.photos.forEach(e => {
-            let productId = nkJson.id,
+        productJson.photos.forEach(e => {
+            let productId = productJson.id,
                 dir = DIR_PRODUCTS + productId + '/',
                 url = e.data.dimensions.original.url,
                 fileName = dir + url.substring(url.lastIndexOf('/') + 1)
@@ -100,7 +100,7 @@ async function fetchImagesOfProduct(nkJson) {
             // download cover image
             if (e.type === 'cover') {
                 log('download cover')
-                let productId = nkJson.id,
+                let productId = productJson.id,
                     dir = DIR_PRODUCTS + productId + '/',
                     url = e.data.dimensions.small.url,
                     fileName = dir + url.substring(url.lastIndexOf('/') + 1)
@@ -191,9 +191,10 @@ function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
 
 
 ///////////////////////// REVIEW /////////////////////////
-async function fetchImagesOfReview(nkJson, productId) {
+function fetchImagesOfReview(reviewJsonPhotos, productId) {
     try {
-        nkJson.data.review.photos.forEach(e => {
+        //reviewJson.data.review.photos
+        reviewJsonPhotos.forEach(e => {
             let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS
             let url = e.data.dimensions.original.url
             let encodeUrl = url.substring(0, url.lastIndexOf('review-of-') + 1) + encodeURIComponent(url.substring(url.lastIndexOf('review-of-') + 1, url.length))
@@ -242,10 +243,10 @@ async function fetchReviewOfProduct(url, reviewId, productId) {
         }
         let json = await rp(options)
         shell.mkdir("-p", DIR_PRODUCTS + productId + '/' + DIR_REVIEWS);
-        let nkJson = JSON.parse(json)
+        let reviewJson = JSON.parse(json)
         // locked
-        //fetchImagesOfReview(nkJson, productId)
-        return nkJson
+        //fetchImagesOfReview(reviewJson, productId)
+        return reviewJson
     } catch (error) {
         log('fetchReviewOfProduct:')
         log(error.message)
@@ -257,8 +258,8 @@ async function fetchReviewsOfProductSafe(url, productId, reviewIds) {
     try {
         for (let i = 0; i < reviewIds.length; i++) {
             await delay(wait('review', i, reviewIds[i]))
-            let nkJson = await fetchReviewOfProduct(url, reviewIds[i], productId)
-            fetchImagesOfReview(nkJson, productId)
+            let reviewJson = await fetchReviewOfProduct(url, reviewIds[i], productId)
+            fetchImagesOfReview(reviewJson.data.review.photos, productId)
         }
     } catch (error) {
         log('fetchReviewsOfProduct:')
