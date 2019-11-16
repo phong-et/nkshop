@@ -35,13 +35,13 @@ let chart = opener.window.chart,
                 borderWidth: 0,
                 dataLabels: {
                     enabled: true,
-                    format: '{point.y}'
+                    format: '{point.percent:.1f} %<br/>{point.y}'
                 }
             }
         },
         tooltip: {
             headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
+            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.percent:.1f} %</b> of total<br/>'
         },
         series: [
             {
