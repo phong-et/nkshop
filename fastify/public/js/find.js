@@ -614,12 +614,12 @@ function genChart(products, type) {
         cfg: {
             title: globalConfiguration.title + ddlGroupBy.text().toUpperCase() + '(' + new Date().toLocaleDateString() + ')',
             subTitle: `${globalConfiguration.subTitle} query: ${getQueryConditions().toString()}`,
-            titleX: globalConfiguration.titleX,
+            titleX: ddlGroupBy.text(),
             titleY: globalConfiguration.titleY
         }
     }
     if (type === 'author') {
-        window["chart"].data = _u.chain(products)
+        window.chart.data = _u.chain(products)
             .groupBy(function (product) { return product.author.displayName })
             .map((value, key) => {
                 return { name: key, y: value.length }
@@ -628,7 +628,7 @@ function genChart(products, type) {
         window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
     }
     else {
-        window["chart"].data =
+        window.chart.data =
             _u.chain(products)
                 .groupBy(type)
                 .map((value, key) => {
@@ -637,29 +637,34 @@ function genChart(products, type) {
                     item['products'] = value
                     return item
                 })
-        let groups = window["chart"].data
+        let groups = window.chart.data
         switch (type) {
             case "price":
-                window["chart"].data = groups.map(group => {
+                window.chart.data = groups.map(group => {
                     let price = group.price;
                     return { name: price >= 1000 ? price / 1000 + globalConfiguration.priceUnit[1] : price + globalConfiguration.priceUnit[0], y: group.products.length }
                 }).value()
                 break;
             case "districtId":
-                window["chart"].data = groups.map(group => {
+                window.chart.data = groups.map(group => {
                     let districtName = globalDistricts[group.districtId] || 'districtId=' + group.districtId
                     return { name: districtName, y: group.products.length }
                 }).value()
                 break;
-            case "author":
-                window["chart"].data = groups.map(group => {
-                    let districtName = globalDistricts[group.districtId] || 'districtId=' + group.districtId
-                    return { name: districtName, y: group.products.length }
+            case "status":
+                window.chart.data = groups.map(group => {
+                    let statusName = globalStatus[group.status] || 'status=' + group.status
+                    return { name: statusName, y: group.products.length }
                 }).value()
                 break;
         }
     }
-    log(window['chart'])
+    let sumOfYValue = _u.sumBy(window.chart.data, 'y')
+    window.chart.data.map(group => {
+        group.percent = (group.y/sumOfYValue)*100
+        return group
+    })
+    log(window.chart)
     window.open('chart.html', 'Chart', 'width=' + 1360 + ',height=' + 1000 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
 }
 
