@@ -185,10 +185,10 @@ module.exports = async function (fastify, opts, next) {
         }
     })
 
-    fastify.get('/products/latest/', function (_, reply) {
+    fastify.get('/products/latest/', async function (_, reply) {
         log('fetch latest product')
-        let product = ProductDetail.fetchLatestProduct()
-        reply.send({ product: product })
+        let productId = await ProductDetail.fetchLatestProductId()
+        reply.send(productId)
     })
 
     fastify.get('/products/add/:id', async function (request, reply) {

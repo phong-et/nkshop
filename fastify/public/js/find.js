@@ -98,8 +98,8 @@ $().ready(function () {
     })
 
     $('#btnFetchListId').click(function () {
-        let btnFetchLastIds = $(this),
-            spiner = btnFetchLastIds.children(),
+        let btnFetchListId = $(this),
+            spiner = btnFetchListId.children(),
             txtListId = $('#txtListId')
         spiner.prop('class', 'fas fa-sync fa-spin')
         var pageRange = txtListId.val()
@@ -107,7 +107,7 @@ $().ready(function () {
             url: '/products/new/listid/' + pageRange,
             type: 'GET',
             success: function (data) {
-                btnFetchLastIds.html(`<i class="fa fa-cloud-download-alt"></i> Fetch New Products (${data.length})`)
+                btnFetchListId.html(`<i class="fa fa-cloud-download-alt"></i> Fetch New Products (${data.length})`)
                 txtListId.val(data)
                 try {
                     log(data)
@@ -162,6 +162,10 @@ $().ready(function () {
 
     $('#btnOpenChart').click(function () {
         genChart(globalProducts, $('#ddlGroupBy option:selected').val())
+    })
+
+    $('#btnFetchLastId').click(function () {
+        fetchLastProductId()
     })
 })
 
@@ -452,7 +456,22 @@ function openProductFolder(productId) {
         }
     });
 }
-
+function fetchLastProductId() {
+    $.ajax({
+        url: '/products/latest/',
+        type: 'GET',
+        success: function (productId) {
+            try {
+                $('#txtListId').val(productId)
+            } catch (e) {
+                log(e)
+            }
+        },
+        error: function (err) {
+            log(err)
+        }
+    });
+}
 function openTabProduct(id) {
     window.open(globalConfiguration.productDetailUrl + id, '_blank')
 }
@@ -758,22 +777,10 @@ function deleteProducts(index, limitIndex) {
                     drawProduct(globalUpdatedReviewProducts)
                 }
             } catch (error) {
-                // $(btnDelete).parent().parent().parent().addClass('errorTry')
-                // index++
-                // if (index < limitIndex)
-                //     deleteProducts(index, limitIndex)
-                // else
-                // log('Done Delete All Products')
                 log(error)
             }
         },
         error: function (err) {
-            // $(btnDelete).parent().parent().parent().addClass('errorAjax')
-            // index++
-            // if (index < limitIndex)
-            //     deleteProducts(index, limitIndex)
-            // else
-            // log('Done Delete All Products')
             log(err)
         }
     });
