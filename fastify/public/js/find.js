@@ -173,7 +173,7 @@ $().ready(function () {
 function getQueryConditions() {
     var query = []
     if ($('#cbId').is(':checked'))
-        query.push(`id >= ${$('#txtId').val()}`)
+        query.push(`id ${$('#conditionsId option:selected').text()} ${$('#txtId').val()}`)
     if ($('#cbName').is(':checked') && $('#txtName').val() !== '')
         query.push(`name.toLowerCase().indexOf('${$('#txtName').val().toLowerCase()}')>-1`)
     if ($('#cbPrice').is(':checked'))
@@ -241,7 +241,7 @@ function config() {
         { cbDistrict: ['ddlDisctrict'] },
         { cbCity: ['ddlCity'] },
         { cbName: ['lbName', 'txtName'] },
-        { cbId: ['lbId', 'txtId'] },
+        { cbId: ['lbId', 'conditionsId', 'txtId'] },
         { cbPriceRange: ['lbPriceRange', 'conditionsPriceFrom', 'conditionsPriceTo', 'ddlPriceFrom', 'ddlPriceTo'] },
         { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
         { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
@@ -386,7 +386,7 @@ function genConditions() {
             'conditionsPrice', 'conditionsRatingCount',
             'conditionsPhotoCount', 'conditionsMonth', 'conditionsYear',
             'conditionsV1', 'conditionsV3',
-            'conditionsAge'
+            'conditionsAge', 'conditionsId'
         ]
     strHtml = ''
     conditions.forEach(condition => {
@@ -595,10 +595,10 @@ function genDistricts(cityId) {
         }
     });
 }
-function openChartReview(productId, productName){
+function openChartReview(productId, productName) {
     window.chartReview = {
         cfg: {
-            title: globalConfiguration.titleByReport +  ' ' + productName +  '(' + new Date().toLocaleDateString() + ')',
+            title: globalConfiguration.titleByReport + ' ' + productName + '(' + new Date().toLocaleDateString() + ')',
             subTitle: `${globalConfiguration.subTitle}`,
             titleX: globalConfiguration.titleX,
             titleY: globalConfiguration.titleY
@@ -608,7 +608,7 @@ function openChartReview(productId, productName){
     window.open('chart-review.html?id=' + productId, 'Chart', 'width=' + 1360 + ',height=' + 1000 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
 }
 function genChart(products, type) {
-    let ddlGroupBy =  $('#ddlGroupBy option:selected')
+    let ddlGroupBy = $('#ddlGroupBy option:selected')
     window["chart"] = {
         data: [],
         cfg: {
