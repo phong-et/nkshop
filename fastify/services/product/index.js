@@ -129,6 +129,7 @@ module.exports = async function (fastify, opts, next) {
                 let reviews = await Promise.all(newReviewIds.map(async reviewId => {
                     try {
                         let review = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
+                        nk.fetchImagesOfReview(review, productId)
                         review.data.review["productId"] = productId
                         return review.data.review
                     } catch (error) {

@@ -241,9 +241,10 @@ async function fetchReviewOfProduct(url, reviewId, productId) {
             headers: headers,
         }
         let json = await rp(options)
-        shell.mkdir("-p",  DIR_PRODUCTS + productId + '/' + DIR_REVIEWS);
+        shell.mkdir("-p", DIR_PRODUCTS + productId + '/' + DIR_REVIEWS);
         let nkJson = JSON.parse(json)
-        fetchImagesOfReview(nkJson, productId)
+        // locked
+        //fetchImagesOfReview(nkJson, productId)
         return nkJson
     } catch (error) {
         log('fetchReviewOfProduct:')
@@ -256,7 +257,8 @@ async function fetchReviewsOfProductSafe(url, productId, reviewIds) {
     try {
         for (let i = 0; i < reviewIds.length; i++) {
             await delay(wait('review', i, reviewIds[i]))
-            await fetchReviewOfProduct(url, reviewIds[i], productId)
+            let nkJson = await fetchReviewOfProduct(url, reviewIds[i], productId)
+            fetchImagesOfReview(nkJson, productId)
         }
     } catch (error) {
         log('fetchReviewsOfProduct:')
@@ -357,11 +359,12 @@ module.exports = {
     fetchProductsByIdRange: fetchProductsByIdRange,
     fetchProductByCTOnePage: fetchProductByCTOnePage,
 
+    fetchImagesOfReview: fetchImagesOfReview,
     fetchReviewOfProduct: fetchReviewOfProduct,
     fetchReviewsOfProduct: fetchReviewsOfProduct,
     fetchReviewIdsOfProduct: fetchReviewIdsOfProduct,
-    fetchReviewsOfProductSafe:fetchReviewsOfProductSafe,
-    
+    fetchReviewsOfProductSafe: fetchReviewsOfProductSafe,
+
     wait: wait,
     delay: delay,
     downloadImage: downloadImage
