@@ -47,7 +47,7 @@ function drawChart(data, categories, title, subTitle, titleY) {
             }
         },
         series: [{
-            name: 'Total Reviews : ' + _u.sum(data)  ,
+            name: 'Total Reviews : ' + _u.sum(data),
             data: data
         }]
     })
@@ -56,8 +56,8 @@ function drawChart(data, categories, title, subTitle, titleY) {
 $().ready(function () {
     try {
         let productId = getQueryParam('id'),
-            Chart
-        cfg = opener.window.chartReview.cfg
+            Chart,
+            cfg = opener.window.chartReview.cfg
         fetchReview(productId, function (reviews) {
             reviews.map(review => {
                 let d = new Date(review.timeStamp).toLocaleDateString().split('/')

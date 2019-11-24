@@ -17,77 +17,77 @@
         <legend>
             <h6><a data-toggle="collapse" data-target="#demo" href="#">Conditions Controller</a></h6>
         </legend> -->
-        <form id="form-search-control" class="form-inline">
-            <fieldset class="controller-group">
-                <legend>
-                    <h6>Id-Name</h6>
-                </legend>
-                <input type="checkbox" checked id="cbName">
-                <label>Name</label>
-                <input type="checkbox" id="cbId" name="id">
-                <label>Id</label>
-            </fieldset>
+    <form id="form-search-control" class="form-inline">
+        <fieldset class="controller-group">
+            <legend>
+                <h6>Id-Name</h6>
+            </legend>
+            <input type="checkbox" checked id="cbName">
+            <label>Name</label>
+            <input type="checkbox" id="cbId" name="id">
+            <label>Id</label>
+        </fieldset>
 
-            <fieldset class="controller-group">
-                <legend>
-                    <h6>Price</h6>
-                </legend>
-                <input type="checkbox" name="price" checked id="cbPriceRange">
-                <label>Price Range</label>
-                <input type="checkbox" name="price" checked id="cbPrice">
-                <label>Price Specification</label>
-            </fieldset>
-            <fieldset class="controller-group">
-                <legend>
-                    <h6>Status</h6>
-                </legend>
-                <input type="checkbox" checked id="cbStatus">
-                <label>Status</label>
-                <!-- <input type="checkbox" id="cbOnLeave">
+        <fieldset class="controller-group">
+            <legend>
+                <h6>Price</h6>
+            </legend>
+            <input type="checkbox" name="price" checked id="cbPriceRange">
+            <label>Price Range</label>
+            <input type="checkbox" name="price" checked id="cbPrice">
+            <label>Price Specification</label>
+        </fieldset>
+        <fieldset class="controller-group">
+            <legend>
+                <h6>Status</h6>
+            </legend>
+            <input type="checkbox" checked id="cbStatus">
+            <label>Status</label>
+            <!-- <input type="checkbox" id="cbOnLeave">
                 <label>On Leave</label> -->
-            </fieldset>
-            <fieldset class="controller-group">
-                <legend>
-                    <h6>Place</h6>
-                </legend>
-                <input type="checkbox" id="cbCity">
-                <label>City</label>
-                <input type="checkbox" id="cbDistrict">
-                <label>District</label>
-            </fieldset>
+        </fieldset>
+        <fieldset class="controller-group">
+            <legend>
+                <h6>Place</h6>
+            </legend>
+            <input type="checkbox" id="cbCity">
+            <label>City</label>
+            <input type="checkbox" id="cbDistrict">
+            <label>District</label>
+        </fieldset>
 
-            <fieldset class="controller-group">
-                <legend>
-                    <h6>Time</h6>
-                </legend>
-                <input type="checkbox" checked id="cbYear">
-                <label>Year</label>
-                <input type="checkbox" checked id="cbMonth">
-                <label>Month</label>
-            </fieldset>
+        <fieldset class="controller-group">
+            <legend>
+                <h6>Time</h6>
+            </legend>
+            <input type="checkbox" checked id="cbYear">
+            <label>Year</label>
+            <input type="checkbox" checked id="cbMonth">
+            <label>Month</label>
+        </fieldset>
 
-            <fieldset class="controller-group">
-                <legend>
-                    <h6>Count</h6>
-                </legend>
-                <input type="checkbox" checked id="cbRatingCount">
-                <label>Rating Count</label>
-                <input type="checkbox" checked id="cbPhotoCount">
-                <label>Photo Count</label>
-            </fieldset>
+        <fieldset class="controller-group">
+            <legend>
+                <h6>Count</h6>
+            </legend>
+            <input type="checkbox" checked id="cbRatingCount">
+            <label>Rating Count</label>
+            <input type="checkbox" checked id="cbPhotoCount">
+            <label>Photo Count</label>
+        </fieldset>
 
-            <fieldset class="controller-group">
-                <legend>
-                    <h6>Number</h6>
-                </legend>
-                <input type="checkbox" checked id="cbV1">
-                <label>1V</label>
-                <input type="checkbox" checked id="cbV3">
-                <label>3V</label>
-                <input type="checkbox" checked id="cbAge">
-                <label>Age</label>
-            </fieldset>
-         </form>
+        <fieldset class="controller-group">
+            <legend>
+                <h6>Number</h6>
+            </legend>
+            <input type="checkbox" checked id="cbV1">
+            <label>1V</label>
+            <input type="checkbox" checked id="cbV3">
+            <label>3V</label>
+            <input type="checkbox" checked id="cbAge">
+            <label>Age</label>
+        </fieldset>
+    </form>
     <!--</fieldset> -->
 
     <fieldset class="conditions-query">
@@ -215,7 +215,7 @@
             <h6>Fetch New Products</h6>
         </legend>
         <form class="form-inline">
-                <button style="margin-right: 20px;" id="btnFetchLastId" type="button" class="btn btn-primary btn-small"><i
+            <button style="margin-right: 20px;" id="btnFetchLastId" type="button" class="btn btn-primary btn-small"><i
                     class="fa fa-cloud-download-alt"></i>
                 Fetch Last Product Id</button>
             <button style="margin-right: 20px;" id="btnFetchListId" type="button" class="btn btn-primary btn-small"><i
@@ -229,9 +229,13 @@
         </form>
     </fieldset>
 
-    <div class="quick-controller" style="position: fixed; bottom: 0; right: 0; background: #eee;">
-        <a onclick="" href="#form-search-control"><i class="fa fa-arrow-up" aria-hidden="true"
-                style="color: green; margin-left:5px;"></i></a><br />
+    <a href="javascript:void(0);" class="slider-arrow show">&raquo;</a>
+    <div class="quick-controller">
+        
+        <button id="btnRefresh" type="button" class="btn btn-primary btn-small"><i
+                class="fa fa-refresh"></i><span></span>&nbsp; Refresh &nbsp;</button>
+                <a onclick="" href="#form-search-control"><i class="fa fa-arrow-up" aria-hidden="true"
+                    style="color: green; position: relative; right:0px;"></i></a>
         <select class="form-control" id="ddlSorting" style="margin: 5px 5px; width: 150px;">
             <option value="sort" selected>Sort by :</option>
             <option value="price">Price</option>

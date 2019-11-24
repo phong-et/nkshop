@@ -1,3 +1,26 @@
+.slider-arrow {
+    margin-left: -3px;
+    padding-left: 5px;
+    padding-bottom: 0px;
+    width: 20px;
+    float: left;
+    background: #d7e2e2;
+    font: 800 12px Arial, Helvetica, sans-serif;
+    color: #000;
+    text-decoration: none;
+    position: fixed;
+    top: -3px;
+    opacity: 0.9;
+}
+.quick-controller{
+    position: fixed; 
+    top: 0px; 
+    left: -185px; 
+    background: #d7e2e2;;
+    opacity: 0.9;
+    padding-top: 5px;
+}
+#btnRefresh{margin-left:6px;}
 /* ============== Start Find Form ============== */
 /* input[type=number]{width:90px !important} */
 form#form-search .conditions {
