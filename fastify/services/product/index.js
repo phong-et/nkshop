@@ -100,6 +100,7 @@ module.exports = async function (fastify, opts, next) {
     fastify.get('/products/configurations/', function (_, reply) {
         log('/products/configurations/')
         reply.send({
+            statuses: cfg.statuses,
             productDetailUrl: cfg.productDetailUrl,
             authorUrl: cfg.authorUrl,
             title: cfg.chart.title,
@@ -109,6 +110,8 @@ module.exports = async function (fastify, opts, next) {
             titleY: cfg.chart.titleY,
             titleByReport: cfg.chart.titleByReport,
             groups: cfg.chart.groups,
+            coverUrl: cfg.coverUrl,
+            regions:cfg.attributes["68"]
         })
     })
 

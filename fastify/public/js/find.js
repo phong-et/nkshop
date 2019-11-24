@@ -1,12 +1,4 @@
 let log = console.log,
-    globalStatus = {
-        "1": 'ACTIVE',
-        "2": 'OFF',
-        "3": "ON LEAVE",
-        "4": 'FAKE',
-        "8": 'PENDING..',
-    },
-    globalCities = {},
     globalProducts = [],
     globalDistricts = {},
     globalConfiguration = {},
@@ -26,14 +18,16 @@ let log = console.log,
  */
 $().ready(function () {
     // gen conditions part
-    fetchConfiguration(configs => genGroupBy(configs.groups))
+    fetchConfiguration(configs => {
+        genGroupBy(configs.groups)
+        genStatus()
+    })
     genConditions()
     genBackground()
     genDistricts(2)
     genCities(1)
     genPrices()
     genMonths()
-    genStatus()
     genYears()
     genAges()
     config()
@@ -166,6 +160,32 @@ $().ready(function () {
 
     $('#btnFetchLastId').click(function () {
         fetchLastProductId()
+    })
+    $('#txtName, #txtId').keyup(function (e) {
+        var code = e.which;
+        if (code === 13) $('#btnSearch').trigger('click')
+    })
+    // show hide lef quick-controller
+    $('.slider-arrow').on('click mouseover', function () {
+        if ($(this).hasClass('show')) {
+            $(".slider-arrow, .quick-controller").animate({
+                left: "+=182"
+            }, 200, function () {
+                // Animation complete.
+            })
+            $(this).html('&laquo;').removeClass('show').addClass('hide');
+        }
+        else {
+            $(".slider-arrow, .quick-controller").animate({
+                left: "-=182"
+            }, 200, function () {
+                // Animation complete.
+            })
+            $(this).html('&raquo;').removeClass('hide').addClass('show');
+        }
+    })
+    $('#btnRefresh').click(function () {
+        drawProduct(globalProducts)
     })
 })
 
@@ -304,15 +324,17 @@ function config() {
 function drawProduct(products) {
     var strHtml = '';
     products.forEach((product, index) => {
-        let productLastUpdateTime = new Date(product.lastUpdateStamp * 1000),
-            _age = product.attributes && product.attributes['42'] || 1,
+        let _age = product.attributes && product.attributes['42'] || 1,
             _1v = product.attributes && product.attributes['51'] || 'N',
             _3v = product.attributes && product.attributes['49'] || 'N',
             _t = product.attributes && product.attributes['46'] || 'N',
             _author = product.author && product.author.displayName || 'N',
             _authorName = product.author && product.author.username || 'N',
-            _cover = product.cover && product.cover.dimensions && product.cover.dimensions.small && product.cover.dimensions.small.file || 'NULL'
-
+            _cover = product.cover && product.cover.dimensions && product.cover.dimensions.small && product.cover.dimensions.small.file || 'NULL',
+            productLastUpdateTime = new Date(product.lastUpdateStamp * 1000),
+            _dateFormating = productLastUpdateTime.toLocaleDateString().split('/'),
+            _date = _dateFormating[1] + '/' +  _dateFormating[0] + '/' +  _dateFormating[2],
+            _region = product.attributes && product.attributes['68'] || 'N'
         strHtml = strHtml + `
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
@@ -326,12 +348,14 @@ function drawProduct(products) {
             </div>
             <div class="productInfo">
                 <i class="fa fa-money"></i><span class="productPrice">${product.price} $</span>
-                <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalStatus[product.status] || ''}">${globalStatus[product.status]}</span><br />
-                <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span><br />
+                <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalConfiguration.statuses[product.status] || ''}">${globalConfiguration.statuses[product.status]}</span><br />
+                <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span>
+                <i class="fas fa-map-marked-alt"></i><span class="productRegion">${globalConfiguration.regions[_region]}</span>
+                <br />
                 <i class="fas fa-map-marker-alt"></i><span class="productPlace">${globalDistricts[product.districtId]}</span>
                 <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}(${product.ratingCountTotal || 'N'})</span>
                 <i class="fa fa-trophy"></i><span class="productRatingScore">${product.ratingScore}</span><br />
-                <i class="fa fa-calendar"></i><span class="productDate">${productLastUpdateTime.toLocaleDateString()}</span>
+                <i class="fa fa-calendar"></i><span class="productDate">${_date}</span>
                 <i class="fa fa-user-secret"></i>
                 <span class="productAuthor">
                     <a href="#" onclick="openTabAuthor('${_authorName}'); return false;">${_author}</a>
@@ -433,13 +457,23 @@ function genAges() {
 
 function genStatus() {
     let ddlStatus = $('#ddlStatus')
-    Object.keys(globalStatus).forEach(id => ddlStatus.append(`<option value="${id}">${globalStatus[id]}</option>`))
+    Object.keys(globalConfiguration.statuses).forEach(id => ddlStatus.append(`<option value="${id}">${globalConfiguration.statuses[id]}</option>`))
 }
 function genGroupBy(groups) {
     let ddlGroupBy = $('#ddlGroupBy')
     groups.forEach(group => ddlGroupBy.append(`<option value="${group.key}">${group.name}</options>`))
 }
+function openTabProduct(id) {
+    window.open(globalConfiguration.productDetailUrl + id, '_blank')
+}
+
+function openTabAuthor(authorName) {
+    window.open(globalConfiguration.authorUrl + authorName, '_blank')
+}
+
+
 //////////////////////////////////////// AJAX FUNCTIONS GROUP ////////////////////////////////////////
+
 function openProductFolder(productId) {
     $.ajax({
         url: '/products/openFolder/' + productId,
@@ -471,13 +505,6 @@ function fetchLastProductId() {
             log(err)
         }
     });
-}
-function openTabProduct(id) {
-    window.open(globalConfiguration.productDetailUrl + id, '_blank')
-}
-
-function openTabAuthor(authorName) {
-    window.open(globalConfiguration.authorUrl + authorName, '_blank')
 }
 
 function fetchConfiguration(callback) {
@@ -653,7 +680,7 @@ function genChart(products, type) {
                 break;
             case "status":
                 window.chart.data = groups.map(group => {
-                    let statusName = globalStatus[group.status] || 'status=' + group.status
+                    let statusName = globalConfiguration.statuses[group.status] || 'status=' + group.status
                     return { name: statusName, y: group.products.length }
                 }).value()
                 break;
@@ -661,7 +688,7 @@ function genChart(products, type) {
     }
     let sumOfYValue = _u.sumBy(window.chart.data, 'y')
     window.chart.data.map(group => {
-        group.percent = (group.y/sumOfYValue)*100
+        group.percent = (group.y / sumOfYValue) * 100
         return group
     })
     log(window.chart)
@@ -790,3 +817,5 @@ function deleteProducts(index, limitIndex) {
         }
     });
 }
+
+
