@@ -333,8 +333,9 @@ function drawProduct(products) {
             _cover = product.cover && product.cover.dimensions && product.cover.dimensions.small && product.cover.dimensions.small.file || 'NULL',
             productLastUpdateTime = new Date(product.lastUpdateStamp * 1000),
             _dateFormating = productLastUpdateTime.toLocaleDateString().split('/'),
-            _date = _dateFormating[1] + '/' +  _dateFormating[0] + '/' +  _dateFormating[2],
+            _date = _dateFormating[1] + '/' + _dateFormating[0] + '/' + _dateFormating[2],
             _region = product.attributes && product.attributes['68'] || 'N'
+        _cover = $('#cbUseCoverUrl').is(':checked') ? globalConfiguration.coverUrl + _cover : `/public/products/${product.id}/${_cover}`
         strHtml = strHtml + `
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
@@ -344,7 +345,7 @@ function drawProduct(products) {
             <span class="productName"> ${product.name}</span>
             </div>
             <div class="productCover">
-                ${($('#cbHideProductCover').is(':checked') ? '' : `<img src="/public/products/${product.id}/${_cover}">`)}
+                ${($('#cbHideProductCover').is(':checked') ? '' : `<img src="${_cover}">`)}
             </div>
             <div class="productInfo">
                 <i class="fa fa-money"></i><span class="productPrice">${product.price} $</span>
