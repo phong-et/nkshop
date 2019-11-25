@@ -3,7 +3,6 @@ let log = console.log,
     globalDistricts = {},
     globalConfiguration = {},
     globalUpdatedReviewProducts = []
-
 /**
  * todo 
  *  - add setting bar for find page (hide all conditions, show cover ...)
@@ -18,8 +17,9 @@ let log = console.log,
  */
 $().ready(function () {
     // gen conditions part
-    fetchConfiguration(configs => {
-        genGroupBy(configs.groups)
+    fetchConfiguration(() => {
+        genRegions()
+        genGroupBy()
         genStatus()
     })
     genConditions()
@@ -31,6 +31,7 @@ $().ready(function () {
     genYears()
     genAges()
     config()
+
     $('#btnSearch').click(function () {
         let spiner = $(this).children()
         spiner.prop('class', 'fas fa-sync fa-spin')
@@ -149,6 +150,7 @@ $().ready(function () {
         if (this.checked)
             $('#cbCity').prop('checked', true).change()
     })
+
     $('#cbId').change(function () {
         if (this.checked)
             $('input[name!=id]').prop('checked', false).change()
@@ -161,10 +163,12 @@ $().ready(function () {
     $('#btnFetchLastId').click(function () {
         fetchLastProductId()
     })
+
     $('#txtName, #txtId').keyup(function (e) {
         var code = e.which;
         if (code === 13) $('#btnSearch').trigger('click')
     })
+
     // show hide lef quick-controller
     $('.slider-arrow').on('click mouseover', function () {
         if ($(this).hasClass('show')) {
@@ -184,6 +188,7 @@ $().ready(function () {
             $(this).html('&raquo;').removeClass('hide').addClass('show');
         }
     })
+
     $('#btnRefresh').click(function () {
         drawProduct(globalProducts)
     })
@@ -258,20 +263,21 @@ function sort(type, products) {
 
 function config() {
     let checkboxsControl = [
-        { cbDistrict: ['ddlDisctrict'] },
         { cbCity: ['ddlCity'] },
+        { cbRegion: ['ddlRegion'] },
+        { cbStatus: ['ddlStatus'] },
+        { cbDistrict: ['ddlDisctrict'] },
         { cbName: ['lbName', 'txtName'] },
         { cbId: ['lbId', 'conditionsId', 'txtId'] },
-        { cbPriceRange: ['lbPriceRange', 'conditionsPriceFrom', 'conditionsPriceTo', 'ddlPriceFrom', 'ddlPriceTo'] },
-        { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
-        { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
-        { cbStatus: ['ddlStatus'] },
-        { cbPhotoCount: ['lbPhotoCount', 'conditionsPhotoCount', 'txtPhotoCount'] },
-        { cbMonth: ['lbMonth', 'conditionsMonth', 'ddlMonth'] },
-        { cbYear: ['lbYear', 'conditionsYear', 'ddlYear'] },
         { cbV1: ['lbV1', 'conditionsV1', 'txtV1'] },
         { cbV3: ['lbV3', 'conditionsV3', 'txtV3'] },
-        { cbAge: ['lbAge', 'conditionsAge', 'ddlAge'] }
+        { cbAge: ['lbAge', 'conditionsAge', 'ddlAge'] },
+        { cbYear: ['lbYear', 'conditionsYear', 'ddlYear'] },
+        { cbMonth: ['lbMonth', 'conditionsMonth', 'ddlMonth'] },
+        { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
+        { cbPhotoCount: ['lbPhotoCount', 'conditionsPhotoCount', 'txtPhotoCount'] },
+        { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
+        { cbPriceRange: ['lbPriceRange', 'conditionsPriceFrom', 'conditionsPriceTo', 'ddlPriceFrom', 'ddlPriceTo'] },
     ]
     // bind event change show hide component conditions
     checkboxsControl.forEach(checkbox => {
@@ -294,7 +300,7 @@ function config() {
         switch (checkboxId) {
             case 'cbPrice':
             //case 'cbAge':
-            case 'cbYear':
+            //case 'cbYear':
             case 'cbStatus':
                 //case 'cbMonth':
                 $('#' + checkboxId).prop('checked', true).change();
@@ -460,10 +466,17 @@ function genStatus() {
     let ddlStatus = $('#ddlStatus')
     Object.keys(globalConfiguration.statuses).forEach(id => ddlStatus.append(`<option value="${id}">${globalConfiguration.statuses[id]}</option>`))
 }
-function genGroupBy(groups) {
+
+function genGroupBy() {
     let ddlGroupBy = $('#ddlGroupBy')
-    groups.forEach(group => ddlGroupBy.append(`<option value="${group.key}">${group.name}</options>`))
+    globalConfiguration.groups.forEach(group => ddlGroupBy.append(`<option value="${group.key}">${group.name}</options>`))
 }
+
+function genRegions(){
+    let ddlRegion = $('#ddlRegion')
+    Object.keys(globalConfiguration.regions).forEach(id => ddlRegion.append(`<option value="${id}">${globalConfiguration.regions[id]}</option>`))
+}
+
 function openTabProduct(id) {
     window.open(globalConfiguration.productDetailUrl + id, '_blank')
 }
@@ -491,6 +504,7 @@ function openProductFolder(productId) {
         }
     });
 }
+
 function fetchLastProductId() {
     $.ajax({
         url: '/products/latest/',
@@ -623,6 +637,7 @@ function genDistricts(cityId) {
         }
     });
 }
+
 function openChartReview(productId, productName) {
     window.chartReview = {
         cfg: {
@@ -635,6 +650,7 @@ function openChartReview(productId, productName) {
     log(window['chart'])
     window.open('chart-review.html?id=' + productId, 'Chart', 'width=' + 1360 + ',height=' + 1000 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
 }
+
 function genChart(products, type) {
     let ddlGroupBy = $('#ddlGroupBy option:selected')
     window["chart"] = {
