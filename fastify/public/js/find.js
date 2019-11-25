@@ -331,8 +331,9 @@ function drawProduct(products) {
     var strHtml = '';
     products.forEach((product, index) => {
         let _age = product.attributes && product.attributes['42'] || 1,
-            _1v = product.attributes && product.attributes['51'] || 'N',
-            _3v = product.attributes && product.attributes['49'] || 'N',
+            _1v = product.attributes && product.attributes['49'] || 'N',
+            _2v = product.attributes && product.attributes['50'] || 'N',
+            _3v = product.attributes && product.attributes['51'] || 'N',
             _t = product.attributes && product.attributes['46'] || 'N',
             _author = product.author && product.author.displayName || 'N',
             _authorName = product.author && product.author.username || 'N',
@@ -367,7 +368,8 @@ function drawProduct(products) {
                 <span class="productAuthor">
                     <a href="#" onclick="openTabAuthor('${_authorName}'); return false;">${_author}</a>
                 </span><br />
-                <i class="fa fa-stethoscope"></i><span class="productV1">${_1v}</span>
+                <i class="fa fa-dot-circle-o"></i><span class="productV1">${_1v}</span>
+                <i class="fa fa-hourglass"></i></i><span class="productV1">${_2v}</span>
                 <i class="fa fa-wheelchair"></i><span class="productV3">${_3v}</span>
                 <i class="fa fa-child"></i><span>${_t}</span><br />
                 <i class="fa fa-heartbeat"></i><span class="productAge">${new Date(_age * 1000).getFullYear()}</span>
@@ -665,6 +667,60 @@ function genChart(products, type) {
     if (type === 'author') {
         window.chart.data = _u.chain(products)
             .groupBy(function (product) { return product.author.displayName })
+            .map((value, key) => {
+                return { name: key, y: value.length }
+            })
+            .value()
+        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+    }
+    else if (type === 'region') {
+        window.chart.data = _u.chain(products)
+            .groupBy(function (product) { return product.attributes["68"] })
+            .map((value, key) => {
+                return { name: globalConfiguration.regions[key], y: value.length }
+            })
+            .value()
+        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+    }
+    else if (type === '1v') {
+        window.chart.data = _u.chain(products)
+            .groupBy(function (product) { return product.attributes["49"] })
+            .map((value, key) => {
+                return { name: key, y: value.length }
+            })
+            .value()
+        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+    }
+    else if (type === '2v') {
+        window.chart.data = _u.chain(products)
+            .groupBy(function (product) { return product.attributes["50"] })
+            .map((value, key) => {
+                return { name: key, y: value.length }
+            })
+            .value()
+        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+    }
+    else if (type === '3v') {
+        window.chart.data = _u.chain(products)
+            .groupBy(function (product) { return product.attributes["51"] })
+            .map((value, key) => {
+                return { name: key, y: value.length }
+            })
+            .value()
+        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+    }
+    else if (type === 'w') {
+        window.chart.data = _u.chain(products)
+            .groupBy(function (product) { return product.attributes["48"] })
+            .map((value, key) => {
+                return { name: key, y: value.length }
+            })
+            .value()
+        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+    }
+    else if (type === 'h') {
+        window.chart.data = _u.chain(products)
+            .groupBy(function (product) { return product.attributes["46"] })
             .map((value, key) => {
                 return { name: key, y: value.length }
             })
