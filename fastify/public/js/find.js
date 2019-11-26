@@ -471,7 +471,7 @@ function genStatus() {
 
 function genGroupBy() {
     let ddlGroupBy = $('#ddlGroupBy')
-    globalConfiguration.groups.forEach(group => ddlGroupBy.append(`<option value="${group.key}">${group.name}</options>`))
+    globalConfiguration.chart.groups.forEach(group => ddlGroupBy.append(`<option value="${group.key}">${group.name}</options>`))
 }
 
 function genRegions(){
@@ -643,10 +643,10 @@ function genDistricts(cityId) {
 function openChartReview(productId, productName) {
     window.chartReview = {
         cfg: {
-            title: globalConfiguration.titleByReport + ' ' + productName + '(' + new Date().toLocaleDateString() + ')',
-            subTitle: `${globalConfiguration.subTitle}`,
-            titleX: globalConfiguration.titleX,
-            titleY: globalConfiguration.titleY
+            title: globalConfiguration.chart.titleByReport + ' ' + productName + '(' + new Date().toLocaleDateString() + ')',
+            subTitle: `${globalConfiguration.chart.subTitle}`,
+            titleX: globalConfiguration.chart.titleX,
+            titleY: globalConfiguration.chart.titleY
         }
     }
     log(window['chart'])
@@ -658,10 +658,10 @@ function genChart(products, type) {
     window["chart"] = {
         data: [],
         cfg: {
-            title: globalConfiguration.title + ddlGroupBy.text().toUpperCase() + '(' + new Date().toLocaleDateString() + ')',
-            subTitle: `${globalConfiguration.subTitle} query: ${getQueryConditions().toString()}`,
+            title: globalConfiguration.chart.title + ddlGroupBy.text().toUpperCase() + '(' + new Date().toLocaleDateString() + ')',
+            subTitle: `${globalConfiguration.chart.subTitle} query: ${getQueryConditions().toString()}`,
             titleX: ddlGroupBy.text(),
-            titleY: globalConfiguration.titleY
+            titleY: globalConfiguration.chart.titleY
         }
     }
     if (type === 'author') {
@@ -671,7 +671,7 @@ function genChart(products, type) {
                 return { name: key, y: value.length }
             })
             .value()
-        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+        window.chart.cfg.titleX = `${window.chart.data.length} ${ddlGroupBy.text().toUpperCase()}`
     }
     else if (type === 'region') {
         window.chart.data = _u.chain(products)
@@ -680,7 +680,7 @@ function genChart(products, type) {
                 return { name: globalConfiguration.regions[key], y: value.length }
             })
             .value()
-        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+        window.chart.cfg.titleX = `${window.chart.data.length} ${ddlGroupBy.text().toUpperCase()}`
     }
     else if (type === '1v') {
         window.chart.data = _u.chain(products)
@@ -689,7 +689,7 @@ function genChart(products, type) {
                 return { name: key, y: value.length }
             })
             .value()
-        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+        window.chart.cfg.titleX = `${window.chart.data.length} ${ddlGroupBy.text().toUpperCase()} (${globalConfiguration.chart.units.number})`
     }
     else if (type === '2v') {
         window.chart.data = _u.chain(products)
@@ -698,7 +698,7 @@ function genChart(products, type) {
                 return { name: key, y: value.length }
             })
             .value()
-        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+        window.chart.cfg.titleX = `${window.chart.data.length} ${ddlGroupBy.text().toUpperCase()} (${globalConfiguration.chart.units.number})`
     }
     else if (type === '3v') {
         window.chart.data = _u.chain(products)
@@ -707,7 +707,7 @@ function genChart(products, type) {
                 return { name: key, y: value.length }
             })
             .value()
-        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+        window.chart.cfg.titleX = `${window.chart.data.length} ${ddlGroupBy.text().toUpperCase()} (${globalConfiguration.chart.units.number})`
     }
     else if (type === 'w') {
         window.chart.data = _u.chain(products)
@@ -716,7 +716,7 @@ function genChart(products, type) {
                 return { name: key, y: value.length }
             })
             .value()
-        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+        window.chart.cfg.titleX = `${window.chart.data.length} ${ddlGroupBy.text().toUpperCase()} (${globalConfiguration.chart.units.w})`
     }
     else if (type === 'h') {
         window.chart.data = _u.chain(products)
@@ -725,7 +725,16 @@ function genChart(products, type) {
                 return { name: key, y: value.length }
             })
             .value()
-        window.chart.cfg.titleX = window.chart.data.length + ' ' + ddlGroupBy.text().toUpperCase()
+        window.chart.cfg.titleX = `${window.chart.data.length} ${ddlGroupBy.text().toUpperCase()} (${globalConfiguration.chart.units.number})`
+    }
+    else if (type === 'age') {
+        window.chart.data = _u.chain(products)
+            .groupBy(function (product) { return product.attributes["42"] })
+            .map((value, key) => {
+                return { name: new Date().getFullYear() - new Date(key * 1000).getFullYear() + `(${new Date(key * 1000).getFullYear()})`, y: value.length }
+            })
+            .value()
+        window.chart.cfg.titleX = `${window.chart.data.length} ${ddlGroupBy.text().toUpperCase()} (${globalConfiguration.chart.units.age})`
     }
     else {
         window.chart.data =
@@ -742,7 +751,7 @@ function genChart(products, type) {
             case "price":
                 window.chart.data = groups.map(group => {
                     let price = group.price;
-                    return { name: price >= 1000 ? price / 1000 + globalConfiguration.priceUnit[1] : price + globalConfiguration.priceUnit[0], y: group.products.length }
+                    return { name: price >= 1000 ? price / 1000 + globalConfiguration.chart.units.price[1] : price + globalConfiguration.chart.units.price[0], y: group.products.length }
                 }).value()
                 break;
             case "districtId":

@@ -103,16 +103,18 @@ module.exports = async function (fastify, opts, next) {
             statuses: cfg.statuses,
             productDetailUrl: cfg.productDetailUrl,
             authorUrl: cfg.authorUrl,
-            title: cfg.chart.title,
-            subTitle: cfg.chart.subTitle,
-            priceUnit: cfg.chart.priceUnit,
-            titleX: cfg.chart.titleX,
-            titleY: cfg.chart.titleY,
-            titleByReport: cfg.chart.titleByReport,
-            groups: cfg.chart.groups,
+            chart:cfg.chart,
+            // title: cfg.chart.title,
+            // subTitle: cfg.chart.subTitle,
+            // priceUnit: cfg.chart.priceUnit,
+            // titleX: cfg.chart.titleX,
+            // titleY: cfg.chart.titleY,
+            // titleByReport: cfg.chart.titleByReport,
+            // groups: cfg.chart.groups,
             coverUrl: cfg.coverUrl,
-            regions:cfg.attributes["68"]
+            regions: cfg.attributes["68"],
         })
+        reply.send(cfg)
     })
 
     fastify.get('/products/review/update/:productId', async function (request, reply) {
