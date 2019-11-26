@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="css/chart.css" />
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/drilldown.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+    <script>
+        _u = _.noConflict();
+    </script>
+</head>
+
+<body>
+    <div id="divResizer" style="position:fixed;height: 20px;width: 234px;top: 0;left: 0;z-index: 9999; margin: 2px;">
+        <input type="number" placeholder="input width" id="txtWidth" style="width:80px">
+        <button id="btnResize">Resize</button>
+    </div>
+    <figure class="highcharts-figure">
+        <div id="container"></div>
+    </figure>
+    <script>
+        let log = console.log
+        function getQueryParam(name, queryString) {
+            var match = RegExp(name + '=([^&]*)').exec(queryString || location.search);
+            return match && decodeURIComponent(match[1]);
+        }
+        Date.prototype.addDays = function (days) {
+            var date = new Date(this.valueOf());
+            date.setDate(date.getDate() + days);
+            return date;
+        }
+
+        function getDates(startDate, stopDate) {
+            var dateArray = new Array();
+            var currentDate = startDate;
+            while (currentDate <= stopDate) {
+                dateArray.push(new Date(currentDate)
+                    //.toString().substr(4,6));
+                    .toJSON().substr(0, 10).replace(/\//g, "-"))
+                currentDate = currentDate.addDays(1);
+            }
+            return dateArray;
+        }
+        function fetchCommits(callback) {
+            $.ajax({
+                url: 'js/commits.json',
+                type: 'GET',
+                success: function (data) {
+                    try {
+                        callback(data.commits)
+                    } catch (e) {
+                        log(e)
+                    }
+                },
+                error: function (err) {
+                    log(err)
+                }
+            });
+        }
+        function drawChart(data, categories, title, subTitle, titleY) {
+            return Highcharts.chart('container', {
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: title
+                },
+                subtitle: {
+                    text: subTitle
+                },
+                xAxis: {
+                    categories: categories
+                },
+                yAxis: {
+                    title: {
+                        text: titleY
+                    }
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: true
+                        },
+                        enableMouseTracking: false
+                    }
+                },
+                series: [{
+                    name: `Total Reviews :${_u.sum(data)} | Total Days has commit: ${categories.length}`,
+                    data: data
+                }]
+            })
+        }
+        let Chart
+        $().ready(function () {
+            try {
+                
+                //cfg = opener.window.chartReview.cfg
+                fetchCommits(function (commits) {
+                    let groups = _u.chain(commits)
+                        .groupBy(commit => commit.date.substr(0, 10))
+                        .map((value, key) => {
+                            return { "day": key, commits: value }
+                        })
+                        // commit groups original
+                        //.value()
+                        //map to data chart
+                        .map(group => {
+                            return { day: group.day, count: group.commits.length }
+                        }).value()
+                    let categories = groups.map(group => group.day)
+                    let data = groups.map(group => group.count)
+                    log(groups)
+
+                    // convert group 
+                    let commitGroups = {}
+                    groups.forEach(group => {
+                        commitGroups[group.day] = group.count
+                    })
+                    log(commitGroups)
+                    // create a list day
+                    let date = categories[0].split('-')
+                    log(date)
+                    let startDate = new Date(parseInt(date[0]), parseInt(date[1]) - 1, parseInt(date[2]))
+                    log(startDate)
+                    date = categories[categories.length - 1].split('-')
+                    log(date)
+                    let endDate = new Date(parseInt(date[0]), parseInt(date[1]) - 1, parseInt(date[2]))
+                    log(endDate)
+                    let dataCommit = getDates(startDate, endDate)
+                        .map(commit => {
+                            let obj = {}
+                            obj[`${commit}`] = 0
+                            return obj
+                        })
+                        //log(dataCommit)
+                        .map((commit, index) => {
+                            //log(commit)
+                            let keyOfCommit = Object.keys(commit)
+                            //log(keyOfCommit)
+                            if (commitGroups[keyOfCommit])
+                                commit[keyOfCommit] = commitGroups[keyOfCommit]
+                            return commit
+                        })
+                    log(dataCommit)
+                    let finalData = {}
+                    dataCommit.forEach(commit => {
+                        finalData[Object.keys(commit)[0]] = commit[Object.keys(commit)[0]]
+                    })
+                    log(finalData)
+                    //let finalData = {}
+                    //dataCommit.forEach(commit => )
+                    Chart = drawChart(
+                        Object.values(finalData),
+                        Object.keys(finalData),
+                        'cfg.title',
+                        'cfg.subTitle',
+                        'cfg.titleY'
+                    )
+                })
+            } catch (error) {
+                log(error)
+            }
+
+            $('#btnResize').click(function () {
+                let width = $('#txtWidth').val()
+                $('#container').width(width ? width : '100%')
+                Chart.reflow();
+            });
+        })
+    </script>
+</body>
+
+</html>

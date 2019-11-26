@@ -32,3 +32,5 @@ test/t12.js
 fastify/NKSHOP-204503-d0f45f50664e.json
 
 fastify/public/img/
+
+fastify/public/js/commits.json
