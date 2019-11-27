@@ -102,12 +102,10 @@ $().ready(function () {
             url: '/products/new/listid/' + pageRange,
             type: 'GET',
             success: function (data) {
-                btnFetchListId.html(`<i class="fa fa-cloud-download-alt"></i> Fetch New Products (${data.length})`)
-                txtListId.val(data)
-                try {
-                    log(data)
-                } catch (e) {
-                    log(e)
+                if(data === 503) alert(globalConfiguration.errors["503"])
+                else{
+                    btnFetchListId.html(`<i class="fa fa-cloud-download-alt"></i> Fetch New Products (${data.length})`)
+                    txtListId.val(data)
                 }
             },
             error: function (err) {

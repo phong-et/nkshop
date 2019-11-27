@@ -10,6 +10,8 @@ let log = console.log,
 function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, productIds, callback) {
     try {
         return nk.fetchProductByCTOnePage(cityId, orderBy, fromPage, products => {
+            log(products)
+            if (products === 503) { callback(503); return; }
             productIds = productIds.concat(products.map(product => parseInt(product.id)))
             log('products:%s', products.length)
             //log(products.map(product => product.id))
@@ -103,14 +105,8 @@ module.exports = async function (fastify, opts, next) {
             statuses: cfg.statuses,
             productDetailUrl: cfg.productDetailUrl,
             authorUrl: cfg.authorUrl,
-            chart:cfg.chart,
-            // title: cfg.chart.title,
-            // subTitle: cfg.chart.subTitle,
-            // priceUnit: cfg.chart.priceUnit,
-            // titleX: cfg.chart.titleX,
-            // titleY: cfg.chart.titleY,
-            // titleByReport: cfg.chart.titleByReport,
-            // groups: cfg.chart.groups,
+            chart: cfg.chart,
+            errors: cfg.errors,
             coverUrl: cfg.coverUrl,
             regions: cfg.attributes["68"],
         })
@@ -235,12 +231,16 @@ module.exports = async function (fastify, opts, next) {
                 pageRange = request.params.pageRange.split(','),
                 fromPage = pageRange[0], toPage = pageRange[1]
             fetchProductsByCTByPageRange(cfg.cities[0], cfg.orderBy[0], fromPage, toPage, [], ids => {
-                let newIds = []
-                ids.forEach(id => {
-                    if (id > latestId)
-                        newIds.push(id)
-                })
-                reply.send(newIds.sort((a, b) => a - b))
+                if (ids === 503)
+                    reply.send(503)
+                else {
+                    let newIds = []
+                    ids.forEach(id => {
+                        if (id > latestId)
+                            newIds.push(id)
+                    })
+                    reply.send(newIds.sort((a, b) => a - b))
+                }
             })
         } catch (error) {
             log(error)
