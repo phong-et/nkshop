@@ -75,6 +75,8 @@ legend {
 fieldset.controller-group label{ display: inline;}
 fieldset.query-group label{ display: inline;}
 
+#datepickerReview{width: 200px!important;}
+
 /* ============== End Find Form ============== */
 
 

@@ -102,8 +102,8 @@ $().ready(function () {
             url: '/products/new/listid/' + pageRange,
             type: 'GET',
             success: function (data) {
-                if(data === 503) alert(globalConfiguration.errors["503"])
-                else{
+                if (data === 503) alert(globalConfiguration.errors["503"])
+                else {
                     btnFetchListId.html(`<i class="fa fa-cloud-download-alt"></i> Fetch New Products (${data.length})`)
                     txtListId.val(data)
                 }
@@ -190,6 +190,14 @@ $().ready(function () {
     $('#btnRefresh').click(function () {
         drawProduct(globalProducts)
     })
+
+    $('#datepickerReview').datepicker({
+        format: 'dd/mm/yyyy',
+        setDate: new Date(),
+        defaultViewDate: new Date(),
+        autoclose: true,
+        todayHighlight: true,
+    }).datepicker("setDate",'now');
 })
 
 // use for button update all product
@@ -262,6 +270,7 @@ function sort(type, products) {
 function config() {
     let checkboxsControl = [
         { cbCity: ['ddlCity'] },
+        { cbReview: ['datepickerContainer'] },
         { cbRegion: ['ddlRegion'] },
         { cbStatus: ['ddlStatus'] },
         { cbDistrict: ['ddlDisctrict'] },
@@ -300,7 +309,8 @@ function config() {
             //case 'cbAge':
             //case 'cbYear':
             case 'cbStatus':
-                //case 'cbMonth':
+            //case 'cbMonth':
+            case 'cbReview':
                 $('#' + checkboxId).prop('checked', true).change();
                 break
             default:
@@ -472,7 +482,7 @@ function genGroupBy() {
     globalConfiguration.chart.groups.forEach(group => ddlGroupBy.append(`<option value="${group.key}">${group.name}</options>`))
 }
 
-function genRegions(){
+function genRegions() {
     let ddlRegion = $('#ddlRegion')
     Object.keys(globalConfiguration.regions).forEach(id => ddlRegion.append(`<option value="${id}">${globalConfiguration.regions[id]}</option>`))
 }
@@ -547,7 +557,10 @@ function updateReviews(productId, e) {
     $.ajax({
         url: '/products/review/update/' + productId,
         type: 'GET',
-        data: { isFetchImage: $('#cbIsFetchImage').is(':checked') },
+        data: {
+            isFetchImageProduct: $('#cbIsFetchImageProduct').is(':checked'),
+            isFetchImageReview: $('#isFetchImageReview').is(':checked')
+        },
         success: function (data) {
             try {
                 spiner.prop('class', 'fa fa-refresh')
@@ -786,7 +799,7 @@ function updateReiewsProducts(index, limitIndex) {
     $.ajax({
         url: '/products/review/update/' + productId,
         type: 'GET',
-        data: { isFetchImage: $('#cbIsFetchImage').is(':checked') },
+        data: { isFetchImageProduct: $('#cbIsFetchImageProduct').is(':checked') },
         success: function (data) {
             try {
                 $(btnUpdateReview).parent().parent().parent().removeClass('active')

@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" />
+    <link href="css/bootstrap-datepicker.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/find.css" />
     <title>Management Products</title>
 </head>
@@ -88,6 +89,13 @@
             <label>3V</label>
             <input type="checkbox" checked id="cbAge">
             <label>Age</label>
+        </fieldset>
+        <fieldset class="controller-group">
+            <legend>
+                <h6>Products have review at day</h6>
+            </legend>
+            <input type="checkbox" checked id="cbReview">
+            <label>Review of day</label>
         </fieldset>
     </form>
     <!--</fieldset> -->
@@ -186,6 +194,17 @@
                 <select class="form-control" id="conditionsAge"></select>
                 <select class="form-control" id="ddlAge"></select>
             </fieldset>
+            <fieldset class="query-group">
+                <legend>
+                    <h6>Products have review at day</h6>
+                </legend>
+                <div id="datepickerContainer" class="input-group-prepend">
+                    <i class="far fa-calendar-alt fa-2x" style="margin-top: 2px;color: #000;"></i>
+                    <input id="datepickerReview" style="width:110px!important;" type="text" class="form-control">
+                </div>
+                </div>
+            </fieldset>
+
         </form>
     </fieldset>
 
@@ -199,7 +218,7 @@
             <button id="btnUpdateReviewsAllProducts" type="button" class="btn btn-primary btn-small"><i
                     class="fa fa-refresh"></i><span></span> Update Reviews
                 All Products</button>
-            <input class="inputSettings" type="checkbox" id="cbIsFetchImage">
+            <input class="inputSettings" type="checkbox" id="cbIsFetchImageProduct">
             <label>Fetch Image Product &nbsp;</label>
             <input class="inputSettings" type="checkbox" id="cbIsFetchImageReview">
             <label>Fetch Image Review &nbsp;</label>
@@ -235,11 +254,11 @@
 
     <a href="javascript:void(0);" class="slider-arrow show">&raquo;</a>
     <div class="quick-controller">
-        
+
         <button id="btnRefresh" type="button" class="btn btn-primary btn-small"><i
                 class="fa fa-refresh"></i><span></span>&nbsp; Refresh &nbsp;</button>
-                <a onclick="" href="#form-search-control"><i class="fa fa-arrow-up" aria-hidden="true"
-                    style="color: green; position: relative; right:0px;"></i></a>
+        <a onclick="" href="#form-search-control"><i class="fa fa-arrow-up" aria-hidden="true"
+                style="color: green; position: relative; right:0px;"></i></a>
         <select class="form-control" id="ddlSorting" style="margin: 5px 5px; width: 150px;">
             <option value="sort" selected>Sort by :</option>
             <option value="price">Price</option>
@@ -266,6 +285,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
         </script>
+    <script src="js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
     <script>
         _u = _.noConflict(); // lets call ourselves _u
