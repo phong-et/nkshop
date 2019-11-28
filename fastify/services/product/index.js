@@ -50,7 +50,7 @@ async function fetchProductsDetailByListId(url, productIdList, acceptedMinPrice)
                 else
                     log(`Rejected => Price: ${jsonProduct.price}`)
             }
-            else
+            else 
                 log('Product NULL')
         }
     } catch (error) {
@@ -116,8 +116,9 @@ module.exports = async function (fastify, opts, next) {
     fastify.get('/products/review/update/:productId', async function (request, reply) {
         log('----request.params----')
         log(request.params)
-        let isFetchImage = JSON.parse(request.query.isFetchImage.toLowerCase())
-        log(`isFetchImage = ${isFetchImage}`)
+        let isFetchImageProduct = JSON.parse(request.query.isFetchImageProduct.toLowerCase()),
+            isFetchImageReview = JSON.parse(request.query.isFetchImageReview.toLowerCase())
+        log(`isFetchImageProduct = ${isFetchImageProduct}`)
         try {
             let productId = request.params.productId,
                 oldReviewIds = await Review.fetchReviewIdsOfProduct(productId),
@@ -128,7 +129,7 @@ module.exports = async function (fastify, opts, next) {
 
             totalReviewIds = [...new Set(totalReviewIds)]
             ProductDetail.update(productId, product, totalReviewIds.length)
-            if (isFetchImage) nk.fetchImagesOfProduct(product)
+            if (isFetchImageProduct) nk.fetchImagesOfProduct(product)
             log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
             log(`newReviewIds: ${JSON.stringify(newReviewIds)}`)
@@ -137,7 +138,7 @@ module.exports = async function (fastify, opts, next) {
                 let reviews = await Promise.all(newReviewIds.map(async reviewId => {
                     try {
                         let review = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
-                        nk.fetchImagesOfReview(review.data.review.photos, productId)
+                        if (isFetchImageReview) nk.fetchImagesOfReview(review.data.review.photos, productId)
                         review.data.review["productId"] = productId
                         return review.data.review
                     } catch (error) {
@@ -161,6 +162,9 @@ module.exports = async function (fastify, opts, next) {
         }
     })
 
+    /**
+     * Only fetch images without json 
+     */
     fastify.get('/products/currentreviews/:productId', async function (request, reply) {
         log('----request.query----')
         log(request.params)
