@@ -5,7 +5,7 @@ const log = console.log
 const autoIncrement = require('mongoose-sequence')(db)
 const common = require('./common')
 const COLLECTION_NAME = 'product_details'
-const _  = require('lodash')
+const _ = require('lodash')
 const productDetailSchema = new Schema({
   _id: Number,
   id: Number,
@@ -135,47 +135,58 @@ async function deleteProduct(productId) {
     log(error)
   }
 }
-
-function findProductByConditions(conditions, callback) {
+async function fetchProductByIds(ids) {
   try {
+    log(ids)
+    var query = {
+      id: { $in: ids }
+    }
+    log(query)
+    db.connect(dbURL, { useNewUrlParser: true });
+    let products = await ProductDetail.find(query, 'id name price ratingCount ratingScore lastUpdateStamp status attributes phone districtId cover ratingCountTotal author').exec()
+    db.connection.close()
+    log(products.length)
+    return products
+  } catch (error) {
+    log(error)
+    return []
+  }
+}
+async function findProductByConditions(conditions, productIds) {
+  try {
+    //productIds = [26871, 26470]
     var query = {
       '$where': conditions.map(condition => {
         if (condition.indexOf('new') > -1)
           return condition
         return 'this.' + condition
       }).join(' && ')
+      //, $and: [{ id: { $in: productIds } }]
     }
-    log(query)
-    db.connect(dbURL, { useNewUrlParser: true });
-    return ProductDetail.find(
+    if (productIds) {
+      if (productIds.length === 0)
+        return []
+      query['$and'] = [{ id: { $in: productIds } }]
+    }
+    log(JSON.stringify(query))
+    await db.connect(dbURL, { useNewUrlParser: true });
+    let products = await ProductDetail.find(
       query,
-      'id name price ratingCount ratingScore lastUpdateStamp status attributes phone districtId cover ratingCountTotal author')
-      //.sort({ lastUpdateStamp: -1 })
-      .exec((err, data) => {
-        if (err) log(err)
-        if (data && data.length > 0) {
-          log('data.length=%s', data.length)
-          data.forEach(e => {
-            e.lastUpdateStamp = new Date(e.lastUpdateStamp * 1000).toLocaleDateString()
-          })
-          callback(data)
-        }
-        else
-          callback([])
-        db.connection.close()
-      })
+      'id name price ratingCount ratingScore lastUpdateStamp status attributes phone districtId cover ratingCountTotal author'
+    ).exec()
+    await db.connection.close()
+    return products
   } catch (error) {
     log(error)
-    callback([])
+    return []
   }
-
 }
 async function fetchLatestProductId() {
   try {
     db.connect(dbURL, { useNewUrlParser: true });
     let products = await ProductDetail.find({}, 'id').exec()
     db.connection.close()
-    return _.maxBy(products,'id').id
+    return _.maxBy(products, 'id').id
   } catch (error) {
     log(error)
   }
@@ -187,8 +198,12 @@ module.exports = {
   findProductByConditions: findProductByConditions,
   fetchLatestProductId: fetchLatestProductId,
   update: update,
-  deleteProduct: deleteProduct
+  deleteProduct: deleteProduct,
+  fetchProductByIds: fetchProductByIds
 };
 
 ///////////////////////////////// Testing part /////////////////////////////////
 //moved t.14
+// (async function () {
+//   log(await fetchProductByIds([8181, 25869]))
+// }())

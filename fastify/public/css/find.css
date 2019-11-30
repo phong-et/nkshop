@@ -19,6 +19,7 @@
     background: #d7e2e2;;
     opacity: 0.9;
     padding-top: 5px;
+    z-index: 99999;
 }
 #btnRefresh{margin-left:6px;}
 /* ============== Start Find Form ============== */

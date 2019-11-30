@@ -50,7 +50,7 @@ async function fetchProductsDetailByListId(url, productIdList, acceptedMinPrice)
                 else
                     log(`Rejected => Price: ${jsonProduct.price}`)
             }
-            else 
+            else
                 log('Product NULL')
         }
     } catch (error) {
@@ -79,14 +79,17 @@ module.exports = async function (fastify, opts, next) {
         }
     })
 
-    fastify.get('/products/findConditions', function (request, reply) {
+    fastify.get('/products/findConditions', async function (request, reply) {
         log('----request.query----')
-        log(request.query['query'])
         try {
-            ProductDetail.findProductByConditions(JSON.parse(request.query['query']), products => {
-                log(products.length)
-                reply.send(products)
-            })
+            let query = JSON.parse(request.query['query']),
+                reviewDay = request.query['reviewDay'],
+                productIdsOfReview
+            if (reviewDay)
+                productIdsOfReview = await Review.fetchProductIdByReviewDay(reviewDay)
+            let products = await ProductDetail.findProductByConditions(query, productIdsOfReview)
+            log(products.length)
+            reply.send(products)
         } catch (error) {
             reply.send(error)
         }

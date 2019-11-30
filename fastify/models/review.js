@@ -37,6 +37,7 @@ const reviewSchema = new Schema({
     }
 })
 const Review = db.model('review', reviewSchema, COLLECTION_NAME);
+
 async function insert(jsonReview) {
     try {
         db.connect(dbURL, { useNewUrlParser: true });
@@ -71,8 +72,8 @@ async function fetchReviewIdsOfProduct(productId) {
             query,
             'id productId'
         )
-        .sort({ timeStamp: -1 })
-        .exec()
+            .sort({ timeStamp: -1 })
+            .exec()
         log('reviews.length=%s', reviews.length)
         db.connection.close()
         return reviews.map(review => review.id)
@@ -81,6 +82,23 @@ async function fetchReviewIdsOfProduct(productId) {
     }
 }
 
+async function fetchProductIdByReviewDay(reviewDay) {
+    try {
+        log(reviewDay)
+        var query = {
+             '$where': `new Date(this.timeStamp).toJSON().indexOf("${reviewDay}") >- 1`
+        }
+        log(query)
+        await db.connect(dbURL, { useNewUrlParser: true });
+        let reviews = await Review.find(query, 'id productId').exec()
+        await db.connection.close()
+        log(reviews)
+        return reviews.map( review => review.productId);
+    } catch (error) {
+        log(error)
+        return []
+    }
+}
 async function fetchReviewsOfProduct(productId) {
     var query = {
         '$where': 'this.productId == ' + productId
@@ -92,8 +110,8 @@ async function fetchReviewsOfProduct(productId) {
             query,
             'id productId author timeStamp userId'
         )
-        .sort({ timeStamp: -1 })
-        .exec()
+            .sort({ timeStamp: -1 })
+            .exec()
         log('reviews.length=%s', reviews.length)
         db.connection.close()
         return reviews
@@ -105,6 +123,10 @@ module.exports = {
     insert: insert,
     insertMany: insertMany,
     fetchReviewIdsOfProduct: fetchReviewIdsOfProduct,
-    fetchReviewsOfProduct: fetchReviewsOfProduct
+    fetchReviewsOfProduct: fetchReviewsOfProduct,
+    fetchProductIdByReviewDay: fetchProductIdByReviewDay
 };
-//(async function () { await fetchReviewIdsOfProduct(24842) }())
+// (async function () { 
+//     var reviews = await fetchProductIdByReviewDay('2019-10-24')
+//     log(reviews.length)
+// }())

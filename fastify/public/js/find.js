@@ -36,10 +36,17 @@ $().ready(function () {
         let spiner = $(this).children()
         spiner.prop('class', 'fas fa-sync fa-spin')
         var query = getQueryConditions()
+        var reviewDay; 
+        if ($('#cbReview').is(':checked')){
+            // format layout : 14/11/2019
+            // format database : d.toJSON() => 2019-11-14T13:49:40.346Z
+            var dateFormating = $('#datepickerReview').val().split('/'),
+            reviewDay = dateFormating[2] + '-' + dateFormating[1] + '-' + dateFormating[0]
+        }
         $.ajax({
             url: '/products/findConditions',
             type: 'GET',
-            data: { query: JSON.stringify(query) },
+            data: { query: JSON.stringify(query), reviewDay:reviewDay },
             success: function (products) {
                 spiner.prop('class', 'fab fa-searchengin')
                 try {
