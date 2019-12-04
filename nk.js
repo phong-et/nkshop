@@ -122,73 +122,6 @@ async function fetchProducts(url, productIds) {
         log(error.message)
     }
 }
-async function fetchProductsByIdRange(url, fromProductId, toProductId, condition) {
-    try {
-        for (let i = fromProductId; i <= toProductId; i++) {
-            await delay(wait('product', i, i))
-            if (condition) {
-                var jsonProduct = await fetchJsonOfProduct(url, i)
-                try {
-                    if (Boolean(jsonProduct.price) && Boolean(jsonProduct.ratingCount)) {
-                        log(`Product[${i}] price:${jsonProduct.price} || ratingCount:${jsonProduct.ratingCount}`)
-                        var price = parseInt(jsonProduct.price)
-                        var ratingCount = parseInt(jsonProduct.ratingCount)
-                        log(`price:${price} || ratingCount:${ratingCount}`)
-                        if (price >= condition.price)
-                            await fetchProduct(url, i, jsonProduct)
-                        else
-                            log('price low')
-                    } else {
-                        log('JSON Product failed')
-                    }
-                } catch (error) {
-                    log(error)
-                }
-            }
-        }
-    } catch (error) {
-        log(error.message)
-    }
-}
-// save to db version 
-function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
-    let offset = currentPage == 1 ? 0 : currentPage * 20
-    log(`offset = ${offset} || currentPage = ${currentPage}`)
-
-    /////////////// Request-native (success) ///////////////
-    var url = cfg.productUrl + '?cityCode=' + cityId + '&mode=directory&offset=' + offset + '&orderBy=' + orderBy
-    log(url)
-    request(url, function (error, response, body) {
-        if (error)
-            log(error)
-        log('statusCode:', response && response.statusCode);
-        log('headers:', response && response.headers);
-        if (response && response.statusCode === 503) {
-            callback(503)
-        } else {
-            callback(JSON.parse(body));
-        }
-    })
-    /////////////// Request promise (failed) ///////////////
-    // var options = {
-    //   url: cfg.productUrl,
-    //   //headers: headers,
-    //   qs: {
-    //     cityCode: cityId,
-    //     mode: 'directory',
-    //     offset: offset,
-    //     orderBy: orderBy
-    //   }
-    // }
-    // log(options)
-    // let products = await rp(options)
-    // .catch(function (err) {
-    //   console.log(err)
-    // })
-    // log(products)
-    // return products
-}
-
 
 ///////////////////////// REVIEW /////////////////////////
 function fetchImagesOfReview(reviewJsonPhotos, productId) {
@@ -352,6 +285,111 @@ async function fetchReviewsOfProduct(url, productId, reviewPerPageNumber) {
 //         log(error)
 //     }
 // }
+
+async function fetchProductsByIdRange(url, fromProductId, toProductId, condition) {
+    try {
+        for (let i = fromProductId; i <= toProductId; i++) {
+            await delay(wait('product', i, i))
+            if (condition) {
+                var jsonProduct = await fetchJsonOfProduct(url, i)
+                try {
+                    if (Boolean(jsonProduct.price) && Boolean(jsonProduct.ratingCount)) {
+                        log(`Product[${i}] price:${jsonProduct.price} || ratingCount:${jsonProduct.ratingCount}`)
+                        var price = parseInt(jsonProduct.price)
+                        var ratingCount = parseInt(jsonProduct.ratingCount)
+                        log(`price:${price} || ratingCount:${ratingCount}`)
+                        if (price >= condition.price)
+                            await fetchProduct(url, i, jsonProduct)
+                        else
+                            log('price low')
+                    } else {
+                        log('JSON Product failed')
+                    }
+                } catch (error) {
+                    log(error)
+                }
+            }
+        }
+    } catch (error) {
+        log(error.message)
+    }
+}
+
+function fetchProductByCTOnePage(cityId, orderBy, currentPage, callback) {
+    let offset = currentPage == 1 ? 0 : currentPage * 20
+    log(`offset = ${offset} || currentPage = ${currentPage}`)
+
+    /////////////// Request-native (success) ///////////////
+    var url = cfg.productUrl + '?cityCode=' + cityId + '&mode=directory&offset=' + offset + '&orderBy=' + orderBy
+    log(url)
+    request(url, function (error, response, body) {
+        if (error)
+            log(error)
+        log('statusCode:', response && response.statusCode);
+        log('headers:', response && response.headers);
+        if (response && response.statusCode === 503) {
+            callback(503)
+        } else {
+            callback(JSON.parse(body));
+        }
+    })
+    /////////////// Request promise (failed) ///////////////
+    // var options = {
+    //   url: cfg.productUrl,
+    //   //headers: headers,
+    //   qs: {
+    //     cityCode: cityId,
+    //     mode: 'directory',
+    //     offset: offset,
+    //     orderBy: orderBy
+    //   }
+    // }
+    // log(options)
+    // let products = await rp(options)
+    // .catch(function (err) {
+    //   console.log(err)
+    // })
+    // log(products)
+    // return products
+}
+function createJar(cookies, request, url) {
+    let jar = request.jar()
+    cookies.forEach((e, i) => {
+        if (i == 0)
+            e.split(';').forEach(cookie => {
+                jar.setCookie(request.cookie(cookie.trim()), url)
+            })
+    })
+    return jar
+}
+function fetchProductByCTOnePageCookie(cityId, orderBy, currentPage) {
+    let offset = currentPage == 1 ? 0 : currentPage * 20
+    log(`offset = ${offset} || currentPage = ${currentPage}`)
+    var url = cfg.productUrl + '?cityCode=' + cityId + '&mode=directory&offset=' + offset + '&orderBy=' + orderBy
+    log(url)
+    var cookies = [
+        'cf_clearance=3678a865c8fad3368a80dc8e1b9aa6b4fdbbb28c-1575419888-0-150; __cfduid=d79dda5c55df68ac5e00f96b62a92a8f41575419888; 06cb36fc0e9a783099b7974a96a6d0c0=jkv7k33dunjlvl09k3o8merqp1; base_language_id=2; __utma=132440220.1526899330.1575419889.1575419889.1575419889.1; __utmc=132440220; __utmz=132440220.1575419889.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmt=1; __utmb=132440220.3.10.1575419889'
+    ]
+    let options = {
+        method: 'GET',
+        url: url,
+        headers: cfg.headers,
+        jar: createJar(cookies, request, cfg.productUrl),
+    }
+    request(options, function (error, response, body) {
+        if (error)
+            log(error)
+        log('statusCode:', response && response.statusCode);
+        log('headers:', response && response.headers);
+        if (response && response.statusCode === 503) {
+            log(503)
+            //log(body)
+        } else {
+            log(body)
+            //callback(JSON.parse(body));
+        }
+    })
+}
 module.exports = {
     fetchProduct: fetchProduct,
     fetchProducts: fetchProducts,
@@ -359,6 +397,7 @@ module.exports = {
     fetchImagesOfProduct: fetchImagesOfProduct,
     fetchProductsByIdRange: fetchProductsByIdRange,
     fetchProductByCTOnePage: fetchProductByCTOnePage,
+    fetchProductByCTOnePageCookie: fetchProductByCTOnePageCookie,
 
     fetchImagesOfReview: fetchImagesOfReview,
     fetchReviewOfProduct: fetchReviewOfProduct,
@@ -372,5 +411,6 @@ module.exports = {
 };
 // (async function () {
 //   //{"data":null,"type":"exception","message":"review not found"}
-//   await fetchReviewOfProduct(cfg.reviewUrl, 89009, 24842)
+//   //await fetchReviewOfProduct(cfg.reviewUrl, 89009, 24842)
+//   //fetchProductByCTOnePageCookie(cfg.cities[0], cfg.orderBy[0], 1, 1, function(){})
 // }())

@@ -10,7 +10,7 @@ let log = console.log,
 function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, productIds, callback) {
     try {
         return nk.fetchProductByCTOnePage(cityId, orderBy, fromPage, products => {
-            log(products)
+            //log(products)
             if (products === 503) { callback(503); return; }
             productIds = productIds.concat(products.map(product => parseInt(product.id)))
             log('products:%s', products.length)
