@@ -113,7 +113,6 @@ module.exports = async function (fastify, opts, next) {
             coverUrl: cfg.coverUrl,
             regions: cfg.attributes["68"],
         })
-        reply.send(cfg)
     })
 
     fastify.get('/products/review/update/:productId', async function (request, reply) {

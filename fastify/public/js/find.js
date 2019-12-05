@@ -36,17 +36,17 @@ $().ready(function () {
         let spiner = $(this).children()
         spiner.prop('class', 'fas fa-sync fa-spin')
         var query = getQueryConditions()
-        var reviewDay; 
-        if ($('#cbReview').is(':checked')){
+        var reviewDay;
+        if ($('#cbReview').is(':checked')) {
             // format layout : 14/11/2019
             // format database : d.toJSON() => 2019-11-14T13:49:40.346Z
             var dateFormating = $('#datepickerReview').val().split('/'),
-            reviewDay = dateFormating[2] + '-' + dateFormating[1] + '-' + dateFormating[0]
+                reviewDay = dateFormating[2] + '-' + dateFormating[1] + '-' + dateFormating[0]
         }
         $.ajax({
             url: '/products/findConditions',
             type: 'GET',
-            data: { query: JSON.stringify(query), reviewDay:reviewDay },
+            data: { query: JSON.stringify(query), reviewDay: reviewDay },
             success: function (products) {
                 spiner.prop('class', 'fab fa-searchengin')
                 try {
@@ -204,7 +204,7 @@ $().ready(function () {
         defaultViewDate: new Date(),
         autoclose: true,
         todayHighlight: true,
-    }).datepicker("setDate",'now');
+    }).datepicker("setDate", 'now');
 })
 
 // use for button update all product
@@ -317,7 +317,7 @@ function config() {
             //case 'cbYear':
             case 'cbStatus':
             //case 'cbMonth':
-            case 'cbReview':
+            //case 'cbReview':
                 $('#' + checkboxId).prop('checked', true).change();
                 break
             default:
@@ -806,7 +806,10 @@ function updateReiewsProducts(index, limitIndex) {
     $.ajax({
         url: '/products/review/update/' + productId,
         type: 'GET',
-        data: { isFetchImageProduct: $('#cbIsFetchImageProduct').is(':checked') },
+        data: {
+            isFetchImageProduct: $('#cbIsFetchImageProduct').is(':checked'),
+            isFetchImageReview: $('#isFetchImageReview').is(':checked')
+        },
         success: function (data) {
             try {
                 $(btnUpdateReview).parent().parent().parent().removeClass('active')
