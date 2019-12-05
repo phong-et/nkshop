@@ -1,7 +1,7 @@
 
 // fetch all reviews of each product without images (save to db)
-let nk = require('./nk'),
-   cfg = require('./nk.cfg'),
+let nk = require('../nk'),
+   cfg = require('../nk.cfg'),
    Review = require('./api/model/review'),
    products = [
       // fill product here 
