@@ -23,7 +23,7 @@ function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, product
             else {
                 log('Done fetching product all %s page', toPage)
                 log(`Products :${productIds.length}`)
-                //log(JSON.stringify(productIds))
+                log(JSON.stringify(productIds))
                 callback(productIds)
             }
         })

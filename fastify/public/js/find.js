@@ -566,7 +566,7 @@ function updateReviews(productId, e) {
         type: 'GET',
         data: {
             isFetchImageProduct: $('#cbIsFetchImageProduct').is(':checked'),
-            isFetchImageReview: $('#isFetchImageReview').is(':checked')
+            isFetchImageReview: $('#cbIsFetchImageReview').is(':checked')
         },
         success: function (data) {
             try {
@@ -808,7 +808,7 @@ function updateReiewsProducts(index, limitIndex) {
         type: 'GET',
         data: {
             isFetchImageProduct: $('#cbIsFetchImageProduct').is(':checked'),
-            isFetchImageReview: $('#isFetchImageReview').is(':checked')
+            isFetchImageReview: $('#cbIsFetchImageReview').is(':checked')
         },
         success: function (data) {
             try {
