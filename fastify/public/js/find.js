@@ -55,6 +55,7 @@ $().ready(function () {
                     $('#productTitleCount').text(`Product Result [${products.length}]`)
                     drawProduct(sort(typeSorting, products))
                     //log(`[${products.map(product => product.id).sort((a, b) => a - b).toString()}]`)
+                    //log(products.map(product => product.id).sort((a, b) => a - b).toString())
                 } catch (e) {
                     log(e)
                 }
@@ -420,7 +421,10 @@ function drawProduct(products) {
 //////////////////////////////////////// GENERATION FUNCTIONS GROUP ////////////////////////////////////////
 function genBackground() {
     //src : http://wallpaperswide.com
-    let bgRandomNumber = Math.floor(Math.random() * 8)
+    //let bgRandomNumber = Math.floor(Math.random() * 8)
+    let time = new Date().getTime().toString()
+    let bgRandomNumber = time.substr(time.length-1,1);
+    log(bgRandomNumber)
     bgRandomNumber = bgRandomNumber === 0 ? bgRandomNumber + 1 : bgRandomNumber
     $('body').css('background', `url('img/bg/1 (${bgRandomNumber}).jpg')`)
     $('body').css('background-repeat', 'no-repeat')
