@@ -155,7 +155,8 @@ module.exports = async function (fastify, opts, next) {
             reply.send({
                 oldReviewIds: oldReviewIds,
                 currentReviewIds: currentReviewIds,
-                newReviewIds: newReviewIds
+                newReviewIds: newReviewIds,
+                status: (product.meta !== undefined && product.meta.onLeave === true) ? 3 : product.status
             })
         } catch (error) {
             reply.send({

@@ -577,9 +577,9 @@ function updateReviews(productId, e) {
                 spiner.prop('class', 'fa fa-refresh')
                 if (data.newReviewIds.length > 0) {
                     $(e).parent().parent().addClass('reviewUpdated')
-                    $(e).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
+                    $(e).html(`Updated<span class="newReview">(${data.newReviewIds.length} | ${globalConfiguration.statuses[data.status]} )</span>`)
                 } else {
-                    $(e).html(`Updated<span>(${data.newReviewIds.length})</span>`)
+                    $(e).html(`Updated<span>(${globalConfiguration.statuses[data.status]})</span>`)
                 }
                 console.log(data)
             } catch (e) {
@@ -822,11 +822,11 @@ function updateReiewsProducts(index, limitIndex) {
                 if (data.newReviewIds.length > 0) {
                     // effect to html layout
                     $(btnUpdateReview).parent().parent().parent().addClass('reviewUpdated')
-                    $(btnUpdateReview).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
+                    $(btnUpdateReview).html(`Updated<span class="newReview">(${data.newReviewIds.length} | ${data.status})</span>`)
                     // push updated product 
                     globalUpdatedReviewProducts.push(globalProducts[index])
                 } else {
-                    $(btnUpdateReview).html(`Updated<span>(${data.newReviewIds.length})</span>`)
+                    $(btnUpdateReview).html(`Updated<span>(${data.status})</span>`)
                 }
                 console.log(data)
                 index++

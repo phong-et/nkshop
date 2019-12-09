@@ -117,7 +117,7 @@ async function update(productId, jsonProductDetail, ratingCountTotal) {
     db.connect(dbURL, { useNewUrlParser: true });
     common.convertStringToNumber(jsonProductDetail)
     jsonProductDetail.ratingCountTotal = ratingCountTotal
-    delete jsonProductDetail.phone
+    //delete jsonProductDetail.phone
     await ProductDetail.findOneAndUpdate({ id: productId }, jsonProductDetail)
     await db.connection.close()
     log(productId + " Updated to %s collection.", COLLECTION_NAME)
