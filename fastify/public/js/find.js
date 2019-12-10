@@ -126,9 +126,12 @@ $().ready(function () {
     $('#btnFetchNewProducts').click(function () {
         let btnFetchNewProduct = $(this),
             spiner = btnFetchNewProduct.children(),
-            data = { listId: JSON.stringify($('#txtListId').val().split(',')), acceptedMinPrice: $('#txtAcceptedMinPrice').val() }
-        spiner.prop('class', 'fas fa-sync fa-spin')
+            txtListId = $('#txtListId'),
+            pageRange = txtListId.val().split(','),
+            listId = genListId(parseInt(pageRange[0]), parseInt(pageRange[1])),
+            data = { listId: JSON.stringify(listId), acceptedMinPrice: $('#txtAcceptedMinPrice').val() }
 
+        spiner.prop('class', 'fas fa-sync fa-spin')
         $.ajax({
             url: '/products/add/',
             type: 'GET',
@@ -208,6 +211,12 @@ $().ready(function () {
     }).datepicker("setDate", 'now');
 })
 
+function genListId(startId, endId) {
+    var listId = [];
+    for (i = startId + 1; i <= endId; i++)
+        listId.push(i)
+    return listId
+}
 // use for button update all product
 function getQueryConditions() {
     var query = []
@@ -317,8 +326,8 @@ function config() {
             //case 'cbAge':
             //case 'cbYear':
             case 'cbStatus':
-            //case 'cbMonth':
-            //case 'cbReview':
+                //case 'cbMonth':
+                //case 'cbReview':
                 $('#' + checkboxId).prop('checked', true).change();
                 break
             default:
@@ -423,7 +432,7 @@ function genBackground() {
     //src : http://wallpaperswide.com
     //let bgRandomNumber = Math.floor(Math.random() * 8)
     let time = new Date().getTime().toString()
-    let bgRandomNumber = time.substr(time.length-1,1);
+    let bgRandomNumber = time.substr(time.length - 1, 1);
     log(bgRandomNumber)
     bgRandomNumber = bgRandomNumber === 0 ? bgRandomNumber + 1 : bgRandomNumber
     $('body').css('background', `url('img/bg/1 (${bgRandomNumber}).jpg')`)
