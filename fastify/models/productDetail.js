@@ -144,7 +144,7 @@ async function fetchProductByIds(ids) {
     log(query)
     db.connect(dbURL, { useNewUrlParser: true });
     let products = await ProductDetail.find(query, 'id name price ratingCount ratingScore lastUpdateStamp status attributes phone districtId cover ratingCountTotal author').exec()
-    db.connection.close()
+    await db.connection.close()
     log(products.length)
     return products
   } catch (error) {
@@ -166,7 +166,11 @@ async function findProductByConditions(conditions, productIds) {
     if (productIds) {
       if (productIds.length === 0)
         return []
-      query['$and'] = [{ id: { $in: productIds } }]
+
+      if (conditions.length > 0)
+        query['$and'] = [{ id: { $in: productIds } }]
+      else
+        query = { id: { $in: productIds } }
     }
     log(JSON.stringify(query))
     await db.connect(dbURL, { useNewUrlParser: true });
@@ -185,7 +189,7 @@ async function fetchLatestProductId() {
   try {
     db.connect(dbURL, { useNewUrlParser: true });
     let products = await ProductDetail.find({}, 'id').exec()
-    db.connection.close()
+    await db.connection.close()
     return _.maxBy(products, 'id').id
   } catch (error) {
     log(error)
