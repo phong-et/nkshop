@@ -75,7 +75,7 @@ async function fetchReviewIdsOfProduct(productId) {
             .sort({ timeStamp: -1 })
             .exec()
         log('reviews.length=%s', reviews.length)
-        db.connection.close()
+        await db.connection.close()
         return reviews.map(review => review.id)
     } catch (error) {
         log(error)
