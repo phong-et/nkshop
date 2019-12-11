@@ -570,37 +570,6 @@ function fetchConfiguration(callback) {
     });
 }
 
-// only use for click button a at product item
-function updateReviews(productId, e) {
-    let spiner = $(e).parent().prev()
-    spiner.prop('class', 'fas fa-sync fa-spin')
-    $.ajax({
-        url: '/products/review/update/' + productId,
-        type: 'GET',
-        data: {
-            isFetchImageProduct: $('#cbIsFetchImageProduct').is(':checked'),
-            isFetchImageReview: $('#cbIsFetchImageReview').is(':checked')
-        },
-        success: function (data) {
-            try {
-                spiner.prop('class', 'fa fa-refresh')
-                if (data.newReviewIds.length > 0) {
-                    $(e).parent().parent().addClass('reviewUpdated')
-                    $(e).html(`Updated<span class="newReview">(${data.newReviewIds.length} | ${globalConfiguration.statuses[data.status]} )</span>`)
-                } else {
-                    $(e).html(`Updated<span>(${globalConfiguration.statuses[data.status]})</span>`)
-                }
-                console.log(data)
-            } catch (e) {
-                console.log(e)
-            }
-        },
-        error: function (err) {
-            console.log(err)
-        }
-    });
-}
-
 function fetchAllImagesReviews(productId, e) {
     let spiner = $(e).parent().prev()
     spiner.prop('class', 'fas fa-sync fa-spin')
@@ -808,6 +777,40 @@ function genChart(products, type) {
     window.open('chart.html', 'Chart', 'width=' + 1360 + ',height=' + 1000 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
 }
 
+// only use for click button a at product item
+function updateReviews(productId, e) {
+    let spiner = $(e).parent().prev()
+    spiner.prop('class', 'fas fa-sync fa-spin')
+    $.ajax({
+        url: '/products/review/update/' + productId,
+        type: 'GET',
+        data: {
+            isFetchImageProduct: $('#cbIsFetchImageProduct').is(':checked'),
+            isFetchImageReview: $('#cbIsFetchImageReview').is(':checked')
+        },
+        success: function (data) {
+            try {
+                spiner.prop('class', 'fa fa-refresh')
+                if (data.newReviewIds.length > 0) {
+                    $(e).parent().parent().addClass('reviewUpdated')
+                    $(e).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
+                } else {
+                    $(e).html(`Updated<span>(0)</span>`)
+                }
+                var statuser = spiner.parent().parent().children().next().next().next().children().next().next().next()
+                statuser.eq(0).text(globalConfiguration.statuses[data.status])
+                console.log(data)
+            } catch (e) {
+                console.log(e)
+            }
+        },
+        error: function (err) {
+            console.log(err)
+        }
+    });
+}
+
+// Use for button update all
 function updateReiewsProducts(index, limitIndex) {
     // use recursive native
     let productId = globalProducts[index].id
@@ -831,12 +834,14 @@ function updateReiewsProducts(index, limitIndex) {
                 if (data.newReviewIds.length > 0) {
                     // effect to html layout
                     $(btnUpdateReview).parent().parent().parent().addClass('reviewUpdated')
-                    $(btnUpdateReview).html(`Updated<span class="newReview">(${data.newReviewIds.length} | ${data.status})</span>`)
+                    $(btnUpdateReview).html(`Updated<span class="newReview">(${data.newReviewIds.length}})</span>`)
                     // push updated product 
                     globalUpdatedReviewProducts.push(globalProducts[index])
                 } else {
-                    $(btnUpdateReview).html(`Updated<span>(${data.status})</span>`)
+                    $(btnUpdateReview).html(`Updated<span>(0)</span>`)
                 }
+                var statuser = spiner.parent().parent().children().next().next().next().children().next().next().next()
+                statuser.eq(0).text(globalConfiguration.statuses[data.status])
                 console.log(data)
                 index++
                 if (index < limitIndex)
@@ -845,7 +850,7 @@ function updateReiewsProducts(index, limitIndex) {
                     log('Done Update Reviews All Product')
                     // use for sorting after updated reviews
                     globalProducts = globalUpdatedReviewProducts
-                    drawProduct(globalUpdatedReviewProducts)
+                    //drawProduct(globalUpdatedReviewProducts)
                 }
             } catch (error) {
                 $(btnUpdateReview).parent().parent().parent().addClass('errorTry')
