@@ -1,12 +1,12 @@
-let rp = require('request-promise'),
-    request = require('request'),
-    fs = require('fs'),
-    cfg = require('./nk.cfg.js'),
+let cfg = require('./nk.cfg.js'),
     log = console.log,
     shell = require("shelljs"),
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'
-    }
+    },
+    rp = cfg.activedCF ? require('cloudscraper') : require('request-promise'),
+    request = require('request'),
+    fs = require('fs')
 const DIR_PRODUCTS = cfg.productFolder + '\\'
 const DIR_REVIEWS = 'reviews/'
 
