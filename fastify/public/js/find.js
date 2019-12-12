@@ -350,6 +350,9 @@ function config() {
     // default photo count
     $('#conditionsPhotoCount option[value=">"]').prop('selected', 'selected')
     $('#txtPhotoCount').val(1)
+    // fetchImage
+    $('#cbIsFetchImageReview').prop('checked', true)
+    $('#cbIsFetchImageProduct').prop('checked', true)
 }
 
 function drawProduct(products) {
@@ -777,9 +780,9 @@ function genChart(products, type) {
     window.open('chart.html', 'Chart', 'width=' + 1360 + ',height=' + 1000 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
 }
 
-// only use for click button a at product item
-function updateReviews(productId, e) {
-    let spiner = $(e).parent().prev()
+function updateReviews(productId, btn, callback) {
+    let spiner = $(btn).parent().prev()
+    $(btn).parent().parent().parent().addClass('active')
     spiner.prop('class', 'fas fa-sync fa-spin')
     $.ajax({
         url: '/products/review/update/' + productId,
@@ -791,27 +794,56 @@ function updateReviews(productId, e) {
         success: function (data) {
             try {
                 spiner.prop('class', 'fa fa-refresh')
+                $(btn).parent().parent().parent().removeClass('active')
                 if (data.newReviewIds.length > 0) {
-                    $(e).parent().parent().addClass('reviewUpdated')
-                    $(e).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
-                } else {
-                    $(e).html(`Updated<span>(0)</span>`)
-                }
+                    $(btn).parent().parent().addClass('reviewUpdated')
+                    $(btn).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
+                    globalUpdatedReviewProducts.push(globalProducts[index])
+                } else
+                    $(btn).html(`Updated<span>(0)</span>`)
+
                 var statuser = spiner.parent().parent().children().next().next().next().children().next().next().next()
                 statuser.eq(0).text(globalConfiguration.statuses[data.status])
-                console.log(data)
-            } catch (e) {
-                console.log(e)
+                log(data)
+                if (callback) callback(true)
+            } catch (error) {
+                log(error)
+                if (callback) callback(false, error)
             }
         },
         error: function (err) {
-            console.log(err)
+            log(err)
+            if (callback) callback(false, err)
         }
-    });
+    })
 }
 
-// Use for button update all
 function updateReiewsProducts(index, limitIndex) {
+    let productId = globalProducts[index].id
+    let btnUpdateReview = document.getElementsByClassName('btnUpdateReviews')[index];
+    
+    if ($('#cbFocusProductItem').is(':checked')) $(btnUpdateReview).focus()
+    //let spiner = $(btnUpdateReview).parent().prev()
+    //spiner.prop('class', 'fas fa-sync fa-spin')
+    updateReviews(productId, btnUpdateReview, function (done, error) {
+        if (done === true) {
+            index++
+            if (index < limitIndex)
+                updateReiewsProducts(index, limitIndex)
+            else {
+                log('Done Update Reviews All Product')
+                // use for sorting after updated reviews
+                globalProducts = globalUpdatedReviewProducts
+                //drawProduct(globalUpdatedReviewProducts)
+            }
+        }
+        else
+            alert(error)
+    })
+}
+
+// Will be remove in future
+function updateReiewsProducts2(index, limitIndex) {
     // use recursive native
     let productId = globalProducts[index].id
     let btnUpdateReview = document.getElementsByClassName('btnUpdateReviews')[index];
@@ -834,15 +866,17 @@ function updateReiewsProducts(index, limitIndex) {
                 if (data.newReviewIds.length > 0) {
                     // effect to html layout
                     $(btnUpdateReview).parent().parent().parent().addClass('reviewUpdated')
-                    $(btnUpdateReview).html(`Updated<span class="newReview">(${data.newReviewIds.length}})</span>`)
+                    $(btnUpdateReview).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
                     // push updated product 
                     globalUpdatedReviewProducts.push(globalProducts[index])
-                } else {
-                    $(btnUpdateReview).html(`Updated<span>(0)</span>`)
                 }
+                else
+                    $(btnUpdateReview).html(`Updated<span>(0)</span>`)
+
                 var statuser = spiner.parent().parent().children().next().next().next().children().next().next().next()
                 statuser.eq(0).text(globalConfiguration.statuses[data.status])
-                console.log(data)
+
+
                 index++
                 if (index < limitIndex)
                     updateReiewsProducts(index, limitIndex)
@@ -853,13 +887,15 @@ function updateReiewsProducts(index, limitIndex) {
                     //drawProduct(globalUpdatedReviewProducts)
                 }
             } catch (error) {
-                $(btnUpdateReview).parent().parent().parent().addClass('errorTry')
-                index++
-                if (index < limitIndex)
-                    updateReiewsProducts(index, limitIndex)
-                else
-                    log('Done Update Reviews All Product')
+                // $(btnUpdateReview).parent().parent().parent().addClass('errorTry')
+                // index++
+                // if (index < limitIndex)
+                //     updateReiewsProducts(index, limitIndex)
+                // else
+                //     log('Done Update Reviews All Product')
                 log(error)
+                alert('error fetch reviews all product')
+                alert(error)
             }
         },
         error: function (err) {
@@ -869,7 +905,7 @@ function updateReiewsProducts(index, limitIndex) {
                 updateReiewsProducts(index, limitIndex)
             else
                 log('Done Update Reviews All Product')
-            console.log(err)
+            log(err)
         }
     });
 }
