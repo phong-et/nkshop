@@ -147,14 +147,14 @@ module.exports = async function (fastify, opts, next) {
                         log(error)
                     }
                 }))
-                Review.insertMany(reviews)
+                await Review.insertMany(reviews)
             }
             oldReviewIds.sort((a, b) => a - b)
             currentReviewIds.sort((a, b) => a - b)
             newReviewIds.sort((a, b) => a - b)
             reply.send({
-                oldReviewIds: oldReviewIds,
-                currentReviewIds: currentReviewIds,
+                //oldReviewIds: oldReviewIds,
+                //currentReviewIds: currentReviewIds,
                 newReviewIds: newReviewIds,
                 status: (product.meta !== undefined && product.meta.onLeave === true) ? 3 : product.status
             })
