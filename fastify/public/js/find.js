@@ -780,7 +780,7 @@ function genChart(products, type) {
     window.open('chart.html', 'Chart', 'width=' + 1360 + ',height=' + 1000 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
 }
 
-function updateReviews(productId, btn, callback) {
+function updateReviews(productId, btn, index, callback) {
     let spiner = $(btn).parent().prev()
     $(btn).parent().parent().parent().addClass('active')
     spiner.prop('class', 'fas fa-sync fa-spin')
@@ -795,25 +795,29 @@ function updateReviews(productId, btn, callback) {
             try {
                 spiner.prop('class', 'fa fa-refresh')
                 $(btn).parent().parent().parent().removeClass('active')
+                var productItem = $(btn).parent().parent().parent()
                 if (data.newReviewIds.length > 0) {
-                    $(btn).parent().parent().addClass('reviewUpdated')
+                    productItem.addClass('reviewUpdated')
                     $(btn).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
-                    globalUpdatedReviewProducts.push(globalProducts[index])
+                    if (index)
+                        globalUpdatedReviewProducts.push(globalProducts[index])
                 } else
                     $(btn).html(`Updated<span>(0)</span>`)
 
                 var statuser = spiner.parent().parent().children().next().next().next().children().next().next().next()
-                statuser.eq(0).text(globalConfiguration.statuses[data.status])
+                var statusId = data.status
+                statuser.eq(0).text(globalConfiguration.statuses[statusId])
+                setProductItemStatus(productItem, statusId)
                 log(data)
                 if (callback) callback(true)
             } catch (error) {
                 log(error)
-                if (callback) callback(false, error)
+                if (callback) callback(false, { position: 'error at success try catch', error: error })
             }
         },
-        error: function (err) {
-            log(err)
-            if (callback) callback(false, err)
+        error: function (error) {
+            log(error)
+            if (callback) callback(false, { position: 'error at updateReviews ajax ', error: error })
         }
     })
 }
@@ -821,11 +825,9 @@ function updateReviews(productId, btn, callback) {
 function updateReiewsProducts(index, limitIndex) {
     let productId = globalProducts[index].id
     let btnUpdateReview = document.getElementsByClassName('btnUpdateReviews')[index];
-    
-    if ($('#cbFocusProductItem').is(':checked')) $(btnUpdateReview).focus()
-    //let spiner = $(btnUpdateReview).parent().prev()
-    //spiner.prop('class', 'fas fa-sync fa-spin')
-    updateReviews(productId, btnUpdateReview, function (done, error) {
+    if ($('#cbFocusProductItem').is(':checked'))
+        $(btnUpdateReview).focus()
+    updateReviews(productId, btnUpdateReview, index, function (done, error) {
         if (done === true) {
             index++
             if (index < limitIndex)
@@ -838,10 +840,19 @@ function updateReiewsProducts(index, limitIndex) {
             }
         }
         else
-            alert(error)
+            alert(JSON.stringify(error))
     })
 }
-
+function setProductItemStatus(productItem, statusId) {
+    switch (statusId) {
+        case 2:
+            productItem.addClass('productOff')
+            break
+        case 3:
+            productItem.addClass('productOnLeave')
+            break
+    }
+}
 // Will be remove in future
 function updateReiewsProducts2(index, limitIndex) {
     // use recursive native
