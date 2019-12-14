@@ -255,7 +255,6 @@
 
     <a href="javascript:void(0);" class="slider-arrow show">&raquo;</a>
     <div class="quick-controller">
-
         <button id="btnRefresh" type="button" class="btn btn-primary btn-small"><i
                 class="fa fa-refresh"></i><span></span>&nbsp; Refresh &nbsp;</button>
         <a onclick="" href="#form-search-control"><i class="fa fa-arrow-up" aria-hidden="true"
@@ -273,14 +272,24 @@
             <option value="time">Time</option>
             <option value="rating">Rating Count</option>
         </select>
-        <input class="inputSettings" type="checkbox" checked id="cbFocusProductItem">
-        <label>Focus to .productItem</label><br />
-        <input class="inputSettings" type="checkbox" checked id="cbHideProductCover">
-        <label>Hide cover</label><br />
-        <input class="inputSettings" type="checkbox" id="cbHideProductName">
-        <label>Hide name</label><br />
-        <input class="inputSettings" type="checkbox" id="cbUseCoverUrl">
-        <label>Use cover url</label><br />
+        <fieldset>
+            <legend>
+                <h6>Private Mode</h6>
+            </legend>
+            <input class="inputSettings" type="checkbox" id="cbPrivateMode">
+            <label>Private Mode</label><br />
+            <input class="inputSettings" type="checkbox" checked id="cbHideProductCover">
+            <label>Hide cover</label><br />
+        </fieldset>
+        <fieldset>
+            <legend>
+                <h6>Settings</h6>
+            </legend>
+            <input class="inputSettings" type="checkbox" checked id="cbFocusProductItem">
+            <label>Focus to .productItem</label><br />
+            <input class="inputSettings" type="checkbox" id="cbUseCoverUrl">
+            <label>Use cover url</label><br />
+        </fieldset>
     </div>
     <fieldset>
         <legend>

@@ -90,15 +90,6 @@ $().ready(function () {
         }
     })
 
-    $('#cbHideProductName').change(function () {
-        if ($(this).is(':checked')) {
-            $('.productName').css('display', 'none')
-        }
-        else {
-            $('.productName').css('display', '')
-        }
-    })
-
     $('#ddlSorting').change(function () {
         var typeSorting = $('#ddlSorting option:selected').val()
         var filteredStatus = $('#ddlProductStatus option:selected').val()
@@ -188,17 +179,15 @@ $().ready(function () {
     $('.slider-arrow').on('click mouseover', function () {
         if ($(this).hasClass('show')) {
             $(".slider-arrow, .quick-controller").animate({
-                left: "+=182"
+                left: "+=222"
             }, 200, function () {
-                // Animation complete.
             })
             $(this).html('&laquo;').removeClass('show').addClass('hide');
         }
         else {
             $(".slider-arrow, .quick-controller").animate({
-                left: "-=182"
+                left: "-=222"
             }, 200, function () {
-                // Animation complete.
             })
             $(this).html('&raquo;').removeClass('hide').addClass('show');
         }
@@ -216,13 +205,38 @@ $().ready(function () {
         todayHighlight: true,
     }).datepicker("setDate", 'now');
 
-    $('#ddlPrice, #ddlPriceFrom, #ddlPriceTo').change(function(){
-        if(this.value <= 300){
+    $('#ddlPrice, #ddlPriceFrom, #ddlPriceTo').change(function () {
+        if (this.value <= 300) {
             $('#cbIsFetchImageReview').prop('checked', false)
             $('#cbIsFetchImageProduct').prop('checked', false)
-        }else{
+        } else {
             $('#cbIsFetchImageReview').prop('checked', true)
             $('#cbIsFetchImageProduct').prop('checked', true)
+        }
+    })
+
+    $('#cbPrivateMode').change(function () {
+        if (this.checked) {
+            $('.productRegion').hide()
+            $('.productRegion').prev().hide()
+            $('.productPlace').hide()
+            $('.productPlace').prev().hide()
+            $('.productAuthor').hide()
+            $('.productAuthor').prev().hide()
+            $('.productName').hide()
+            $('.productPhone').hide()
+            $('.productPhone').prev().hide()
+        }
+        else {
+            $('.productRegion').show()
+            $('.productRegion').prev().show()
+            $('.productPlace').show()
+            $('.productPlace').prev().show()
+            $('.productAuthor').show()
+            $('.productAuthor').prev().show()
+            $('.productName').show()
+            $('.productPhone').show()
+            $('.productPhone').prev().show()
         }
     })
 })
@@ -366,6 +380,8 @@ function config() {
     // default photo count
     $('#conditionsPhotoCount option[value=">"]').prop('selected', 'selected')
     $('#txtPhotoCount').val(1)
+    // default rating count
+    $('#txtRatingCount').val(0)
     // fetchImage
     $('#cbIsFetchImageReview').prop('checked', true)
     $('#cbIsFetchImageProduct').prop('checked', true)
