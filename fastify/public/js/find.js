@@ -9,13 +9,20 @@ let log = console.log,
     globalErrorProducts = []
 /**
  * todo 
- *  - add setting bar for find page (hide all conditions, show cover ...)
- *  - stop/start focus when run scaper tool (done)
- *  - position of fetch all revews button and input startIndex must be fixed (bottom-right)
- *  - add month condition (done)
- *  - add id condition
- *  - FETCH ALL STOP IMEDIATELY -> ADD ERROR HANLDER AJAX NEXT (done)
- *  - show cover photo(latest photo type is cover) (done)
+ * Ad
+ *  - stop fetching
+ *  - write log product when update reviews
+ *  - authenticated user
+ * Co
+ *  - multi-languages
+ *  - public site (mobile and web) - make new branch
+ *  - split api to product and review path (need fix mongoose model again)
+ *  - caching performance 
+ *  - log query 
+ *  - write docs about knowledge during doing product
+ *  - write api docs
+ *  
+ *  - 
  *  - Fix : (node:20896) DeprecationWarning: current Server Discovery and Monitoring engine is deprecated, and will be removed in a future version. 
  *          To use the new Server Discover and Monitoring engine, pass option { useUnifiedTopology: true } to the MongoClient constructor.
  */
