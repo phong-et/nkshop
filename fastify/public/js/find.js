@@ -2,7 +2,9 @@ let log = console.log,
     globalProducts = [],
     globalDistricts = {},
     globalConfiguration = {},
-    globalUpdatedReviewProducts = []
+    globalReviewedProduct = [],
+    globalOffProducts = [],
+    globalOnLeaveProducts = []
 /**
  * todo 
  *  - add setting bar for find page (hide all conditions, show cover ...)
@@ -60,6 +62,7 @@ $().ready(function () {
                     log(e)
                 }
             },
+            timeout: 150000,
             error: function (err) {
                 log(err)
             }
@@ -97,7 +100,9 @@ $().ready(function () {
 
     $('#ddlSorting').change(function () {
         var typeSorting = $('#ddlSorting option:selected').val()
-        drawProduct(sort(typeSorting, globalProducts))
+        var filteredStatus = $('#ddlProductStatus option:selected').val()
+        var products = filterProductByStatus(filteredStatus)
+        drawProduct(sort(typeSorting, products))
     })
 
     $('#btnFetchListId').click(function () {
@@ -800,14 +805,14 @@ function updateReviews(productId, btn, index, callback) {
                     productItem.addClass('reviewUpdated')
                     $(btn).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
                     if (index)
-                        globalUpdatedReviewProducts.push(globalProducts[index])
+                        globalReviewedProduct.push(globalProducts[index])
                 } else
                     $(btn).html(`Updated<span>(0)</span>`)
 
                 var statuser = spiner.parent().parent().children().next().next().next().children().next().next().next()
                 var statusId = data.status
                 statuser.eq(0).text(globalConfiguration.statuses[statusId])
-                setProductItemStatus(productItem, statusId)
+                setProductItemStatus(productItem, statusId, index)
                 log(data)
                 if (callback) callback(true)
             } catch (error) {
@@ -833,26 +838,44 @@ function updateReiewsProducts(index, limitIndex) {
             if (index < limitIndex)
                 updateReiewsProducts(index, limitIndex)
             else {
+                alert('Done Update Reviews All Product')
                 log('Done Update Reviews All Product')
-                // use for sorting after updated reviews
-                globalProducts = globalUpdatedReviewProducts
-                //drawProduct(globalUpdatedReviewProducts)
             }
         }
         else
             alert(JSON.stringify(error))
     })
 }
-function setProductItemStatus(productItem, statusId) {
+function setProductItemStatus(productItem, statusId, index) {
     switch (statusId) {
         case 2:
             productItem.addClass('productOff')
+            if (index) globalOffProducts.push(globalProducts[index])
             break
         case 3:
             productItem.addClass('productOnLeave')
+            if (index) globalOnLeaveProducts.push(globalProducts[index])
             break
     }
 }
+function filterProductByStatus(status) {
+    var products = []
+    switch (status) {
+        case 'off':
+            products = globalOffProducts
+            break
+        case 'onleave':
+            products = globalOnLeaveProducts
+            break
+        case 'reviewed':
+            products = globalReviewedProduct
+            break
+        default: products = globalProducts
+            break
+    }
+    return products
+}
+
 // Will be remove in future
 function updateReiewsProducts2(index, limitIndex) {
     // use recursive native
@@ -879,7 +902,7 @@ function updateReiewsProducts2(index, limitIndex) {
                     $(btnUpdateReview).parent().parent().parent().addClass('reviewUpdated')
                     $(btnUpdateReview).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
                     // push updated product 
-                    globalUpdatedReviewProducts.push(globalProducts[index])
+                    globalReviewedProduct.push(globalProducts[index])
                 }
                 else
                     $(btnUpdateReview).html(`Updated<span>(0)</span>`)
@@ -894,8 +917,8 @@ function updateReiewsProducts2(index, limitIndex) {
                 else {
                     log('Done Update Reviews All Product')
                     // use for sorting after updated reviews
-                    globalProducts = globalUpdatedReviewProducts
-                    //drawProduct(globalUpdatedReviewProducts)
+                    globalProducts = globalReviewedProduct
+                    //drawProduct(globalReviewedProduct)
                 }
             } catch (error) {
                 // $(btnUpdateReview).parent().parent().parent().addClass('errorTry')
@@ -974,7 +997,7 @@ function deleteProducts(index, limitIndex) {
                     deleteProducts(index, limitIndex)
                 else {
                     log('Done Delete All Products')
-                    drawProduct(globalUpdatedReviewProducts)
+                    drawProduct(globalReviewedProduct)
                 }
             } catch (error) {
                 log(error)
