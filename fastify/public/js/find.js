@@ -1,6 +1,7 @@
 let log = console.log,
     globalProducts = [],
     globalDistricts = {},
+    globalCities = {},
     globalConfiguration = {},
     globalReviewedProduct = [],
     globalOffProducts = [],
@@ -402,6 +403,7 @@ function drawProduct(products) {
             _dateFormating = productLastUpdateTime.toLocaleDateString().split('/'),
             _date = _dateFormating[1] + '/' + _dateFormating[0] + '/' + _dateFormating[2],
             _region = product.attributes && product.attributes['68'] || 'N',
+            _city = globalCities[product.cityId]
             _status = product.meta && product.meta["onLeave"] ? 3 : product.status
         _cover = $('#cbUseCoverUrl').is(':checked') ? globalConfiguration.coverUrl + _cover : `/public/products/${product.id}/${_cover}`
         strHtml = strHtml + `
@@ -419,7 +421,8 @@ function drawProduct(products) {
                 <i class="fa fa-money"></i><span class="productPrice">${product.price} $</span>
                 <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalConfiguration.statuses[_status] || ''}">${globalConfiguration.statuses[_status]}</span><br />
                 <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span>
-                <i class="fas fa-map-marked-alt"></i><span class="productRegion">${globalConfiguration.regions[_region]}</span>
+                <!--<i class="fas fa-map-marked-alt"></i><span class="productRegion">${globalConfiguration.regions[_region]}</span>-->
+                <i class="fas fa-map-marked-alt"></i><span class="productRegion">${_city}</span>
                 <br />
                 <i class="fas fa-map-marker-alt"></i><span class="productPlace">${globalDistricts[product.districtId]}</span>
                 <i class="fa fa-user-plus"></i><span class="productRatingCount">${product.ratingCount}(${product.ratingCountTotal || 'N'})</span>
@@ -461,6 +464,7 @@ function drawProduct(products) {
             productItem.removeClass('selected')
     })
     $('#cbHideProductCover').trigger('change')
+    $('#cbPrivateMode').trigger('change')
 }
 
 //////////////////////////////////////// GENERATION FUNCTIONS GROUP ////////////////////////////////////////
@@ -637,7 +641,10 @@ function genCities(countryId) {
         type: 'GET',
         success: function (cities) {
             try {
-                cities.forEach(city => $('#ddlCity').append(`<option value="${city.id}">${city.name}</option>`))
+                cities.forEach(city => {
+                    $('#ddlCity').append(`<option value="${city.id}">${city.name}</option>`)
+                    globalCities[city.id] = city.name
+                })
             } catch (e) {
                 log(e)
             }

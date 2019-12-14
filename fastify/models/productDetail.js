@@ -176,7 +176,7 @@ async function findProductByConditions(conditions, productIds) {
     await db.connect(dbURL, { useNewUrlParser: true });
     let products = await ProductDetail.find(
       query,
-      'id name price ratingCount ratingScore lastUpdateStamp status attributes phone districtId cover ratingCountTotal author meta'
+      'id name price ratingCount ratingScore lastUpdateStamp status attributes phone districtId cityId cover ratingCountTotal author meta'
     ).exec()
     await db.connection.close()
     return products
