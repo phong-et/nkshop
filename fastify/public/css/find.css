@@ -141,6 +141,7 @@ span.productStatus-ACTIVE{color:#03ff22;font-weight: bold;}
 span.productStatus-OFF{color:#fd1fe2;font-weight: bold;}
 span.productStatus-FAKE{color:#ff0000;font-weight: bold;}
 span.productStatus-PENDING{color:#b19b01;font-weight: bold;}
+span.productStatus-ONLEAVE{color:#d68f24;font-weight: bold;}
 span.productAge{color:#2be82b}
 span a.btnUpdateReviews {color:#03ff22 !important;}
 span.productAuthor a{color: #eeeccc;}

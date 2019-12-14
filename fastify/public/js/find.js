@@ -4,7 +4,8 @@ let log = console.log,
     globalConfiguration = {},
     globalReviewedProduct = [],
     globalOffProducts = [],
-    globalOnLeaveProducts = []
+    globalOnLeaveProducts = [],
+    globalErrorProducts = []
 /**
  * todo 
  *  - add setting bar for find page (hide all conditions, show cover ...)
@@ -204,7 +205,7 @@ $().ready(function () {
     })
 
     $('#btnRefresh').click(function () {
-        drawProduct(globalProducts)
+        $('#ddlSorting').trigger('change')
     })
 
     $('#datepickerReview').datepicker({
@@ -374,7 +375,8 @@ function drawProduct(products) {
             productLastUpdateTime = new Date(product.lastUpdateStamp * 1000),
             _dateFormating = productLastUpdateTime.toLocaleDateString().split('/'),
             _date = _dateFormating[1] + '/' + _dateFormating[0] + '/' + _dateFormating[2],
-            _region = product.attributes && product.attributes['68'] || 'N'
+            _region = product.attributes && product.attributes['68'] || 'N',
+            _status = product.meta && product.meta["onLeave"] ? 3 : product.status
         _cover = $('#cbUseCoverUrl').is(':checked') ? globalConfiguration.coverUrl + _cover : `/public/products/${product.id}/${_cover}`
         strHtml = strHtml + `
         <div class="productItem">
@@ -389,7 +391,7 @@ function drawProduct(products) {
             </div>
             <div class="productInfo">
                 <i class="fa fa-money"></i><span class="productPrice">${product.price} $</span>
-                <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalConfiguration.statuses[product.status] || ''}">${globalConfiguration.statuses[product.status]}</span><br />
+                <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalConfiguration.statuses[_status] || ''}">${globalConfiguration.statuses[_status]}</span><br />
                 <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span>
                 <i class="fas fa-map-marked-alt"></i><span class="productRegion">${globalConfiguration.regions[_region]}</span>
                 <br />
@@ -817,6 +819,7 @@ function updateReviews(productId, btn, index, callback) {
                 if (callback) callback(true)
             } catch (error) {
                 log(error)
+                setProductItemStatus(productItem, statusId, index, error)
                 if (callback) callback(false, { position: 'error at success try catch', error: error })
             }
         },
@@ -833,20 +836,21 @@ function updateReiewsProducts(index, limitIndex) {
     if ($('#cbFocusProductItem').is(':checked'))
         $(btnUpdateReview).focus()
     updateReviews(productId, btnUpdateReview, index, function (done, error) {
-        if (done === true) {
-            index++
-            if (index < limitIndex)
-                updateReiewsProducts(index, limitIndex)
-            else {
-                alert('Done Update Reviews All Product')
-                log('Done Update Reviews All Product')
-            }
-        }
+        if (done === true)
+            log(done)
         else
-            alert(JSON.stringify(error))
+            log(JSON.stringify(error))
+
+        index++
+        if (index < limitIndex)
+            updateReiewsProducts(index, limitIndex)
+        else {
+            alert('Done Update Reviews All Product')
+            log('Done Update Reviews All Product')
+        }
     })
 }
-function setProductItemStatus(productItem, statusId, index) {
+function setProductItemStatus(productItem, statusId, index, error) {
     switch (statusId) {
         case 2:
             productItem.addClass('productOff')
@@ -857,6 +861,11 @@ function setProductItemStatus(productItem, statusId, index) {
             if (index) globalOnLeaveProducts.push(globalProducts[index])
             break
     }
+    if (error) {
+        productItem.addClass('productError')
+        if (index) globalErrorProducts.push(globalProducts[index])
+    }
+
 }
 function filterProductByStatus(status) {
     var products = []
