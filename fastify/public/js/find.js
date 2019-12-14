@@ -215,6 +215,16 @@ $().ready(function () {
         autoclose: true,
         todayHighlight: true,
     }).datepicker("setDate", 'now');
+
+    $('#ddlPrice, #ddlPriceFrom, #ddlPriceTo').change(function(){
+        if(this.value <= 300){
+            $('#cbIsFetchImageReview').prop('checked', false)
+            $('#cbIsFetchImageProduct').prop('checked', false)
+        }else{
+            $('#cbIsFetchImageReview').prop('checked', true)
+            $('#cbIsFetchImageProduct').prop('checked', true)
+        }
+    })
 })
 
 function genListId(startId, endId) {
