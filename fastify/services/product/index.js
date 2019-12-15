@@ -1,6 +1,7 @@
 'use strict'
 let log = console.log,
     ProductDetail = require('../../models/productDetail'),
+    ProductLog = require('../../models/productLog'),
     Review = require('../../models/review'),
     District = require('../../models/district'),
     City = require('../../models/city'),
@@ -149,6 +150,10 @@ module.exports = async function (fastify, opts, next) {
                 }))
                 await Review.insertMany(reviews)
             }
+            // write log onleave and off 
+            if ((product.meta && product.onLeave) || product.status !== 1)
+                ProductLog.insert({ id: product.id, date: new Date().getTime() })
+
             //oldReviewIds.sort((a, b) => a - b)
             //currentReviewIds.sort((a, b) => a - b)
             //newReviewIds.sort((a, b) => a - b)
@@ -156,7 +161,7 @@ module.exports = async function (fastify, opts, next) {
                 //oldReviewIds: oldReviewIds,
                 //currentReviewIds: currentReviewIds,
                 newReviewIds: newReviewIds,
-                status: (product.meta !== undefined && product.meta.onLeave === true) ? 3 : product.status
+                status: (product.meta && product.meta.onLeave) ? 3 : product.status
             })
         } catch (error) {
             reply.send(error)
