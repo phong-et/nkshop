@@ -14,7 +14,7 @@ function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, product
             //log(products)
             if (products === 503) { callback(503); return; }
             productIds = productIds.concat(products.map(product => parseInt(product.id)))
-            log('products:%s', products.length)
+            //log('products:%s', products.length)
             //log(products.map(product => product.id))
             fromPage++
             if (fromPage <= toPage) {
@@ -22,8 +22,7 @@ function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, product
                 return fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, productIds, callback)
             }
             else {
-                log('Done fetching product all %s page', toPage)
-                log(`Products :${productIds.length}`)
+                log(`Fetched ${productIds.length} products in ${toPage}`)
                 log(JSON.stringify(productIds))
                 callback(productIds)
             }
@@ -39,7 +38,7 @@ async function fetchProductsDetailByListId(url, productIdList, acceptedMinPrice)
             let productId = productIdList[i]
             await nk.delay(nk.wait('product', i, productId))
             var jsonProduct = await nk.fetchJsonOfProduct(url, productId)
-            if (jsonProduct) {
+            if (jsonProduct && jsonProduct.ratingCount) {
                 log(`price:${jsonProduct.price} || ratingCount:${jsonProduct.ratingCount}`)
                 await ProductDetail.insert(jsonProduct)
                 let reviewsJson = await nk.fetchReviewsOfProduct(cfg.reviewUrl, productId, jsonProduct.ratingCount)
@@ -52,7 +51,7 @@ async function fetchProductsDetailByListId(url, productIdList, acceptedMinPrice)
                     log(`Rejected => Price: ${jsonProduct.price}`)
             }
             else
-                log('Product NULL')
+                log('Product is NULL')
         }
     } catch (error) {
         log(error.message)
@@ -60,9 +59,9 @@ async function fetchProductsDetailByListId(url, productIdList, acceptedMinPrice)
 }
 module.exports = async function (fastify, opts, next) {
     fastify.get('/products/cities/:countryId', async function (request, reply) {
-        log('----request.query----')
+        //log('----request.query----')
         let countryId = request.params.countryId
-        log(countryId)
+        log(`countryId: ${countryId}`)
         try {
             reply.send(await City.fetchCities(countryId))
         } catch (error) {
@@ -70,9 +69,9 @@ module.exports = async function (fastify, opts, next) {
         }
     })
     fastify.get('/products/districts/:cityId', async function (request, reply) {
-        log('----request.query----')
+        //log('----request.query----')
         let cityId = request.params.cityId
-        log(cityId)
+        log(`cityId: ${cityId}`)
         try {
             reply.send(await District.fetchDistricts(cityId))
         } catch (error) {
@@ -81,7 +80,7 @@ module.exports = async function (fastify, opts, next) {
     })
 
     fastify.get('/products/findConditions', async function (request, reply) {
-        log('----request.query----')
+        //log('----request.query----')
         try {
             let query = JSON.parse(request.query['query']),
                 reviewDay = request.query['reviewDay'],
@@ -97,7 +96,7 @@ module.exports = async function (fastify, opts, next) {
     })
 
     fastify.get('/products/openFolder/:productId', function (request, reply) {
-        log('------ request.params ------------')
+        //log('------ request.params --------')
         log(request.params)
         require('child_process').exec('start ' + cfg.productFolder + '\\' + request.params.productId)
         reply.send(true)
@@ -131,7 +130,7 @@ module.exports = async function (fastify, opts, next) {
                 totalReviewIds = currentReviewIds.concat(oldReviewIds)
 
             totalReviewIds = [...new Set(totalReviewIds)]
-            ProductDetail.update(productId, product, totalReviewIds.length)
+            await ProductDetail.update(productId, product, totalReviewIds.length)
             if (isFetchImageProduct) nk.fetchImagesOfProduct(product)
             log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
@@ -178,7 +177,7 @@ module.exports = async function (fastify, opts, next) {
             let productId = request.params.productId,
                 product = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
                 currentReviewIds = await nk.fetchReviewIdsOfProduct(cfg.reviewUrl, productId, product.ratingCount)
-            ProductDetail.update(productId, product, currentReviewIds.length)
+            await ProductDetail.update(productId, product, currentReviewIds.length)
             //nk.fetchImagesOfProduct(product)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
             if (currentReviewIds.length > 0) {
@@ -293,5 +292,6 @@ module.exports = async function (fastify, opts, next) {
             })
         }
     })
+    
     next()
 }
