@@ -21,7 +21,6 @@ let log = console.log,
  *  - log query 
  *  - write docs about knowledge during doing product
  *  - write api docs
- *  
  *  - 
  *  - Fix : (node:20896) DeprecationWarning: current Server Discovery and Monitoring engine is deprecated, and will be removed in a future version. 
  *          To use the new Server Discover and Monitoring engine, pass option { useUnifiedTopology: true } to the MongoClient constructor.
@@ -51,8 +50,18 @@ $().ready(function () {
         if ($('#cbReview').is(':checked')) {
             // format layout : 14/11/2019
             // format database : d.toJSON() => 2019-11-14T13:49:40.346Z
-            var dateFormating = $('#datepickerReview').val().split('/'),
-                reviewDay = dateFormating[2] + '-' + dateFormating[1] + '-' + dateFormating[0]
+            var dateFormating = $('#datepickerReview').val().split('/')
+            switch ($('input[type=radio][name=datereview]:checked').val()) {
+                case "month":
+                    reviewDay = dateFormating[1] + '-' + dateFormating[0]
+                    break
+                case "year":
+                    reviewDay = dateFormating[0]
+                    break
+                case "day":
+                    reviewDay = dateFormating[2] + '-' + dateFormating[1] + '-' + dateFormating[0]
+                    break
+            }
         }
         $.ajax({
             url: '/products/findConditions',
@@ -183,7 +192,7 @@ $().ready(function () {
         if (code === 13) $('#btnSearch').trigger('click')
     })
 
-    // show hide lef quick-controller
+    // show hide left quick-controller
     $('.slider-arrow').on('click mouseover', function () {
         if ($(this).hasClass('show')) {
             $(".slider-arrow, .quick-controller").animate({
@@ -205,13 +214,35 @@ $().ready(function () {
         $('#ddlSorting').trigger('change')
     })
 
-    $('#datepickerReview').datepicker({
+    var options = {
         format: 'dd/mm/yyyy',
         setDate: new Date(),
         defaultViewDate: new Date(),
         autoclose: true,
         todayHighlight: true,
-    }).datepicker("setDate", 'now');
+    }
+
+    $('#datepickerReview').datepicker(options).datepicker("setDate", 'now')
+
+    $('input[name=datereview]').change(function () {
+        log(this.value)
+        var datePicker = $('#datepickerReview')
+        datePicker.datepicker('destroy');
+        switch (this.value) {
+            case "month":
+                options.format = 'mm/yyyy'
+                options.minViewMode = 1
+                break
+            case "year":
+                options.format = 'yyyy'
+                options.minViewMode = 2
+                break
+            case "day":
+                options.format = 'dd/mm/yyyy'
+                break
+        }
+        datePicker.datepicker(options).datepicker("setDate", 'now')
+    })
 
     $('#ddlPrice, #ddlPriceFrom, #ddlPriceTo').change(function () {
         if (this.value <= 300) {
@@ -325,7 +356,6 @@ function sort(type, products) {
 function config() {
     let checkboxsControl = [
         { cbCity: ['ddlCity'] },
-        { cbReview: ['datepickerContainer'] },
         { cbRegion: ['ddlRegion'] },
         { cbStatus: ['ddlStatus'] },
         { cbDistrict: ['ddlDisctrict'] },
@@ -337,6 +367,7 @@ function config() {
         { cbYear: ['lbYear', 'conditionsYear', 'ddlYear'] },
         { cbMonth: ['lbMonth', 'conditionsMonth', 'ddlMonth'] },
         { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
+        { cbReview: ['datepickerContainer', 'datepickerReviewFormat'] },
         { cbPhotoCount: ['lbPhotoCount', 'conditionsPhotoCount', 'txtPhotoCount'] },
         { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
         { cbPriceRange: ['lbPriceRange', 'conditionsPriceFrom', 'conditionsPriceTo', 'ddlPriceFrom', 'ddlPriceTo'] },
@@ -364,8 +395,8 @@ function config() {
             //case 'cbAge':
             //case 'cbYear':
             case 'cbStatus':
-                //case 'cbMonth':
-                //case 'cbReview':
+            //case 'cbMonth':
+            case 'cbReview':
                 $('#' + checkboxId).prop('checked', true).change();
                 break
             default:
@@ -411,7 +442,7 @@ function drawProduct(products) {
             _date = _dateFormating[1] + '/' + _dateFormating[0] + '/' + _dateFormating[2],
             _region = product.attributes && product.attributes['68'] || 'N',
             _city = globalCities[product.cityId]
-            _status = product.meta && product.meta["onLeave"] ? 3 : product.status
+        _status = product.meta && product.meta["onLeave"] ? 3 : product.status
         _cover = $('#cbUseCoverUrl').is(':checked') ? globalConfiguration.coverUrl + _cover : `/public/products/${product.id}/${_cover}`
         strHtml = strHtml + `
         <div class="productItem">

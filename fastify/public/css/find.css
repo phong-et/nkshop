@@ -39,6 +39,9 @@ form#form-search .form-control {
 form#form-search input {
     width: 98px !important
 }
+form#form-search input[type="radio"]{
+    width:30px !important
+}
 
 form#form-search label {
     margin-left: 15px;
