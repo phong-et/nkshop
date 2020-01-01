@@ -39,6 +39,7 @@ $().ready(function () {
     genPrices()
     genMonths()
     genYears()
+    genDays()
     genAges()
     config()
 
@@ -176,7 +177,14 @@ $().ready(function () {
 
     $('#cbId').change(function () {
         if (this.checked)
-            $('input[name!=id]').prop('checked', false).change()
+            $('input[id!=cbId]').prop('checked', false).change()
+    })
+    $('#cbPhone').change(function () {
+        if (this.checked)
+            $('input[id!=cbPhone]').prop('checked', false).change()
+    })
+    $('#txtPhone').focus(function () {
+        $(this).val('')
     })
 
     $('#btnOpenChart').click(function () {
@@ -187,9 +195,13 @@ $().ready(function () {
         fetchLastProductId()
     })
 
-    $('#txtName, #txtId').keyup(function (e) {
-        var code = e.which;
-        if (code === 13) $('#btnSearch').trigger('click')
+    $('#txtName, #txtId, #txtPhone').keyup(function (e) {
+        var code = e.which
+        if (e.target.id === 'txtPhone')
+            $(this).val($(this).val().replace(/\./g, ""))
+        if (code === 13) {
+            $('#btnSearch').trigger('click')
+        }
     })
 
     // show hide left quick-controller
@@ -238,6 +250,7 @@ $().ready(function () {
                 options.minViewMode = 2
                 break
             case "day":
+                delete options.minViewMode
                 options.format = 'dd/mm/yyyy'
                 break
         }
@@ -291,6 +304,8 @@ function getQueryConditions() {
     var query = []
     if ($('#cbId').is(':checked'))
         query.push(`id ${$('#conditionsId option:selected').text()} ${$('#txtId').val()}`)
+    if ($('#cbPhone').is(':checked') && $('#txtPhone').val() !== '')
+        query.push(`phone === '${$('#txtPhone').val().trim()}'`)
     if ($('#cbName').is(':checked') && $('#txtName').val() !== '')
         query.push(`name.toLowerCase().indexOf('${$('#txtName').val().toLowerCase()}')>-1`)
     if ($('#cbPrice').is(':checked'))
@@ -318,6 +333,8 @@ function getQueryConditions() {
     }
     if ($('#cbPhotoCount').is(':checked'))
         query.push(`photos.length ${$('#conditionsPhotoCount option:selected').text()} ${$('#txtPhotoCount').val()}`)
+    if ($('#cbDay').is(':checked'))
+        query.push(`parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(8,10)) ${$('#conditionsMonth option:selected').text()} ${$('#ddlDay option:selected').text()}`)
     if ($('#cbMonth').is(':checked'))
         query.push(`parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(5,7)) ${$('#conditionsMonth option:selected').text()} ${$('#ddlMonth option:selected').text()}`)
     if ($('#cbYear').is(':checked'))
@@ -360,10 +377,12 @@ function config() {
         { cbStatus: ['ddlStatus'] },
         { cbDistrict: ['ddlDisctrict'] },
         { cbName: ['lbName', 'txtName'] },
+        { cbPhone: ['lbPhone', 'txtPhone'] },
         { cbId: ['lbId', 'conditionsId', 'txtId'] },
         { cbV1: ['lbV1', 'conditionsV1', 'txtV1'] },
         { cbV3: ['lbV3', 'conditionsV3', 'txtV3'] },
         { cbAge: ['lbAge', 'conditionsAge', 'ddlAge'] },
+        { cbDay: ['lbDay', 'conditionsDay', 'ddlDay'] },
         { cbYear: ['lbYear', 'conditionsYear', 'ddlYear'] },
         { cbMonth: ['lbMonth', 'conditionsMonth', 'ddlMonth'] },
         { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
@@ -395,8 +414,8 @@ function config() {
             //case 'cbAge':
             //case 'cbYear':
             case 'cbStatus':
-            //case 'cbMonth':
-            case 'cbReview':
+                //case 'cbMonth':
+                //case 'cbReview':
                 $('#' + checkboxId).prop('checked', true).change();
                 break
             default:
@@ -411,7 +430,9 @@ function config() {
     $('#conditionsAge option[value="<="]').prop('selected', 'selected')
     $('#conditionsYear option[value="=="]').prop('selected', 'selected')
     $('#conditionsMonth option[value="=="]').prop('selected', 'selected')
-    $(`#ddlMonth option[value=${new Date().getMonth() + 1}]`).prop('selected', 'selected')
+    $('#conditionsDay option[value="=="]').prop('selected', 'selected')
+    $(`#ddlMonth option[value="${new Date().getMonth() + 1}"]`).prop('selected', 'selected')
+    $(`#ddlDay option[value="${new Date().getDate()}"]`).prop('selected', 'selected')
     // set default cover setting
     $('#cbHideProductCover').prop('checked')
     $('.productCover').css('display', 'none')
@@ -523,7 +544,7 @@ function genConditions() {
     let conditions = ['&gt;=', '&lt;=', '==', '&gt;', '&lt;', '!='],
         ddlIds = [
             'conditionsPrice', 'conditionsRatingCount',
-            'conditionsPhotoCount', 'conditionsMonth', 'conditionsYear',
+            'conditionsPhotoCount', 'conditionsMonth', 'conditionsYear', 'conditionsDay',
             'conditionsV1', 'conditionsV3',
             'conditionsAge', 'conditionsId'
         ]
@@ -548,7 +569,7 @@ function genPrices() {
 
 function genYears() {
     let strHtml = ''
-    for (let i = new Date().getFullYear(); i >= 2016; i--) {
+    for (let i = new Date().getFullYear(); i >= 2018; i--) {
         strHtml += `<option>${i}</option>`
     }
     $('#ddlYear').html(strHtml)
@@ -560,6 +581,12 @@ function genMonths() {
         strHtml += `<option value="${i}">${i}</option>`
     }
     $('#ddlMonth').html(strHtml)
+}
+function genDays() {
+    let strHtml = ''
+    for (let i = 1; i <= 31; i++)
+        strHtml += `<option value="${i}">${i}</option>`
+    $('#ddlDay').html(strHtml)
 }
 
 function genAges() {

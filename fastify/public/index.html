@@ -25,8 +25,10 @@
             </legend>
             <input type="checkbox" checked id="cbName">
             <label>Name</label>
-            <input type="checkbox" id="cbId" name="id">
+            <input type="checkbox" id="cbId">
             <label>Id</label>
+            <input type="checkbox" id="cbPhone">
+            <label>Phone</label>
         </fieldset>
 
         <fieldset class="controller-group">
@@ -67,6 +69,8 @@
             <label>Year</label>
             <input type="checkbox" checked id="cbMonth">
             <label>Month</label>
+            <input type="checkbox" checked id="cbDay">
+            <label>Day</label>
         </fieldset>
 
         <fieldset class="controller-group">
@@ -114,6 +118,8 @@
                 <input style="width:80px !important;" type="text" class="form-control" id="txtId" placeholder="id">
                 <label style="margin-left:0;" id="lbName">Name: </label>
                 <input style="width:250px !important;" type="text" class="form-control" id="txtName" placeholder="name">
+                <label style="margin-left:0;" id="lbPhone">Phone: </label>
+                <input style="width:117px !important;" type="text" class="form-control" id="txtPhone" placeholder="Phone">
             </fieldset>
 
             <fieldset class="query-group">
@@ -169,6 +175,10 @@
                 <legend>
                     <h6>Time</h6>
                 </legend>
+                <label id="lbDay">Day: </label>
+                <select class="form-control" id="conditionsDay"></select>
+                <select class="form-control" id="ddlDay"></select>
+
                 <label id="lbMonth">Month: </label>
                 <select class="form-control" id="conditionsMonth"></select>
                 <select class="form-control" id="ddlMonth"></select>
