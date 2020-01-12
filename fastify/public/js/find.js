@@ -266,9 +266,14 @@ $().ready(function () {
             $('#cbIsFetchImageProduct').prop('checked', true)
         }
     })
-
+    $('body').dblclick(function () {
+        $('#cbPrivateMode').prop('checked', true)
+        $('#cbPrivateMode').trigger('change')
+    })
     $('#cbPrivateMode').change(function () {
         if (this.checked) {
+            $('#cbHideProductCover').prop('checked', true)
+            $('#cbHideProductCover').trigger('change')
             $('.productRegion').hide()
             $('.productRegion').prev().hide()
             $('.productPlace').hide()
@@ -280,6 +285,8 @@ $().ready(function () {
             $('.productPhone').prev().hide()
         }
         else {
+            $('#cbHideProductCover').prop('checked', false)
+            $('#cbHideProductCover').trigger('change')
             $('.productRegion').show()
             $('.productRegion').prev().show()
             $('.productPlace').show()
@@ -477,7 +484,7 @@ function drawProduct(products) {
                 ${($('#cbHideProductCover').is(':checked') ? '' : `<img src="${_cover}">`)}
             </div>
             <div class="productInfo">
-                <i class="fa fa-money"></i><span class="productPrice">${product.price} $</span>
+                <i class="fa fa-money"></i><span class="productPrice">${product.price}<label class="productUnitPrice"> RM</label></span>
                 <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalConfiguration.statuses[_status] || ''}">${globalConfiguration.statuses[_status]}</span><br />
                 <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span>
                 <!--<i class="fas fa-map-marked-alt"></i><span class="productRegion">${globalConfiguration.regions[_region]}</span>-->
@@ -921,6 +928,7 @@ function updateReviews(productId, btn, index, callback) {
                 if (callback) callback(false, { position: 'error at success try catch', error: error })
             }
         },
+        timeout: 150000,
         error: function (error) {
             log(error)
             if (callback) callback(false, { position: 'error at updateReviews ajax ', error: error })
@@ -987,7 +995,7 @@ function filterProductByStatus(status) {
 function updateReiewsProducts2(index, limitIndex) {
     // use recursive native
     let productId = globalProducts[index].id
-    let btnUpdateReview = document.getElementsByClassName('btnUpdateReviews')[index];
+    let btnUpdateReview = document.getElementsByClassName('btnUpdateReviews')[index]
     $(btnUpdateReview).parent().parent().parent().addClass('active')
     if ($('#cbFocusProductItem').is(':checked')) $(btnUpdateReview).focus()
     let spiner = $(btnUpdateReview).parent().prev()
@@ -1039,6 +1047,7 @@ function updateReiewsProducts2(index, limitIndex) {
                 alert(error)
             }
         },
+        timeout: 150000,
         error: function (err) {
             $(btnUpdateReview).parent().parent().parent().addClass('errorAjax')
             index++
