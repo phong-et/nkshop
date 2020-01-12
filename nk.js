@@ -67,6 +67,7 @@ async function fetchJsonOfProduct(url, productId) {
             url: url + '/' + productId,
             headers: headers,
         }
+        log(`==> Fetched json of product id = ${productId} `)
         return JSON.parse(await rp(options))
     } catch (error) {
         throw error
@@ -131,7 +132,9 @@ function fetchImagesOfReview(reviewJsonPhotos, productId) {
             let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS
             let url = e.data.dimensions.original.url
             let encodeUrl = url.substring(0, url.lastIndexOf('review-of-') + 1) + encodeURIComponent(url.substring(url.lastIndexOf('review-of-') + 1, url.length))
-            //log(encodeUrl);
+            // let domainTemp = cfg.reviewImageUrl
+            // let encodeUrl = domainTemp + encodeURIComponent(url.substring(url.lastIndexOf('review-of-'), url.length))
+            log(encodeUrl);
             let fileName = dir + url.substring(url.lastIndexOf('/') + 1)
             downloadImage(fileName, encodeUrl, () => { })
         })
@@ -143,7 +146,7 @@ function fetchImagesOfReview(reviewJsonPhotos, productId) {
 
 async function fetchReviewIdsOfProduct(url, productId, reviewPerPageNumber) {
     try {
-        log(`productId=${productId} reviewPerPageNumber=${reviewPerPageNumber}`)
+        log(`Fetching productId=${productId} reviewPerPageNumber=${reviewPerPageNumber} ...`)
         var options = {
             url: url,
             headers: headers,
@@ -362,34 +365,6 @@ function createJar(cookies, request, url) {
     })
     return jar
 }
-function fetchProductByCTOnePageCookie(cityId, orderBy, currentPage) {
-    let offset = currentPage == 1 ? 0 : currentPage * 20
-    log(`offset = ${offset} || currentPage = ${currentPage}`)
-    var url = cfg.productUrl + '?cityCode=' + cityId + '&mode=directory&offset=' + offset + '&orderBy=' + orderBy
-    log(url)
-    var cookies = [
-        'cf_clearance=3678a865c8fad3368a80dc8e1b9aa6b4fdbbb28c-1575419888-0-150; __cfduid=d79dda5c55df68ac5e00f96b62a92a8f41575419888; 06cb36fc0e9a783099b7974a96a6d0c0=jkv7k33dunjlvl09k3o8merqp1; base_language_id=2; __utma=132440220.1526899330.1575419889.1575419889.1575419889.1; __utmc=132440220; __utmz=132440220.1575419889.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmt=1; __utmb=132440220.3.10.1575419889'
-    ]
-    let options = {
-        method: 'GET',
-        url: url,
-        headers: cfg.headers,
-        jar: createJar(cookies, request, cfg.productUrl),
-    }
-    request(options, function (error, response, body) {
-        if (error)
-            log(error)
-        log('statusCode:', response && response.statusCode);
-        log('headers:', response && response.headers);
-        if (response && response.statusCode === 503) {
-            log(503)
-            //log(body)
-        } else {
-            log(body)
-            //callback(JSON.parse(body));
-        }
-    })
-}
 module.exports = {
     fetchProduct: fetchProduct,
     fetchProducts: fetchProducts,
@@ -397,7 +372,6 @@ module.exports = {
     fetchImagesOfProduct: fetchImagesOfProduct,
     fetchProductsByIdRange: fetchProductsByIdRange,
     fetchProductByCTOnePage: fetchProductByCTOnePage,
-    fetchProductByCTOnePageCookie: fetchProductByCTOnePageCookie,
 
     fetchImagesOfReview: fetchImagesOfReview,
     fetchReviewOfProduct: fetchReviewOfProduct,
