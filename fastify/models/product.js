@@ -1,7 +1,7 @@
 const fs = require('fs')
 const db = require('../db')
-const dbURL = require('../../nk.cfg').dbUrl
-const Schema = db.Schema
+const mongoose = db.mongoose
+const Schema = mongoose.Schema
 const log = console.log
 const common = require('./common')
 const COLLECTION_NAME = 'products'
@@ -58,12 +58,12 @@ const productSchema = new Schema({
     address: String,
     slug: String
 });
-const Product = db.model('product', productSchema, COLLECTION_NAME);
+const Product = mongoose.model('product', productSchema, COLLECTION_NAME);
 function findProductByPRC(price, ratingCount) {
     var query = {
         '$where': 'this.price >= ' + price + ' && this.ratingCount >= ' + ratingCount
     }
-    db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     return Product.find(
         query,
         'id name price ratingCount lastUpdateStamp')
@@ -75,17 +75,17 @@ function findProductByPRC(price, ratingCount) {
                 e.lastUpdateStamp = new Date(e.lastUpdateStamp * 1000).toLocaleDateString()
             })
             log(data)
-            db.connection.close()
+            await db.close()
         })
 }
 
 async function insert(jsonProduct) {
     try {
-        db.connect(dbURL, { useNewUrlParser: true });
+        db.connect()
         common.convertStringToNumber(jsonProduct)
         let product = new Product(jsonProduct)
         await product.save()
-        await db.connection.close()
+        await db.close()
         log("Saved to %s collection.", product.collection.name);
     } catch (error) {
         log(error)
@@ -94,11 +94,11 @@ async function insert(jsonProduct) {
 // can not apply auto increment id
 function insertMany(jsonProducts, callback) {
     try {
-        db.connect(dbURL, { useNewUrlParser: true });
+        db.connect()
         Product.insertMany(jsonProducts, function (err) {
             if (err) return error(err);
             log("Saved all to %s collection.", Product.collection.name);
-            db.connection.close()
+            await db.close()
             callback()
         });
     } catch (error) {
@@ -106,7 +106,7 @@ function insertMany(jsonProducts, callback) {
     }
 }
 function saveAllProductIdToFile(fileName) {
-    db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     products = Product.find(
         {},
         'id ratingCount')
@@ -125,15 +125,15 @@ function saveAllProductIdToFile(fileName) {
                 var statusText = 'write file > ' + fileName + ' success'
                 log(statusText)
             })
-            db.connection.close()
+            await db.close()
         })
 }
 function getLatestProductId(callback) {
-    db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     Product.findOne({}).sort({ id: -1 }).exec((err, data) => {
         if (err) log(err)
         log(data.id)
-        db.connection.close()
+        await db.close()
         callback(data.id)
     })
 }

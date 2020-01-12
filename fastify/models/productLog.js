@@ -1,6 +1,6 @@
 const db = require('../db')
-const dbURL = require('../../nk.cfg').dbUrl
-const Schema = db.Schema
+const mongoose = db.mongoose
+const Schema = mongoose.Schema
 const log = console.log
 const common = require('./common')
 const COLLECTION_NAME = 'product_logs'
@@ -17,14 +17,14 @@ const productLogSchema = new Schema({
   ratingCountTotal: Number,
   date: Number
 })
-const ProductLog = db.model('ProductLog', productLogSchema, COLLECTION_NAME)
+const ProductLog = mongoose.model('ProductLog', productLogSchema, COLLECTION_NAME)
 async function insert(json) {
   try {
-    db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     common.convertStringToNumber(json)
     let productLog = new ProductLog(json)
     productLog = await productLog.save()
-    await db.connection.close()
+    await db.close()
     log(productLog.id + " saved to %s collection.", COLLECTION_NAME)
   } catch (error) {
     log(error)

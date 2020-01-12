@@ -1,6 +1,6 @@
 const db = require('../db')
-const dbURL = require('../../nk.cfg').dbUrl
-const Schema = db.Schema
+const mongoose = db.mongoose
+const Schema = mongoose.Schema
 const log = console.log
 const COLLECTION_NAME = 'cities'
 const citySchema = new Schema({
@@ -9,12 +9,12 @@ const citySchema = new Schema({
     name: String,
     countryId: Number,
 })
-const City = db.model('city', citySchema, COLLECTION_NAME);
+const City = mongoose.model('city', citySchema, COLLECTION_NAME);
 async function fetchCities(countryId) {
     var query = {
         '$where': 'this.countryId == ' + countryId
     }
-    db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     try {
         let cities = await City.find(
             query,
@@ -23,7 +23,7 @@ async function fetchCities(countryId) {
             .exec()
         log('cities.length=%s', cities.length)
         //log(districts)
-        await db.connection.close()
+        await db.close()
         return cities
     } catch (error) {
         log(error)

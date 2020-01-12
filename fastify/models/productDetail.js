@@ -1,8 +1,8 @@
 const db = require('../db')
-const dbURL = require('../../nk.cfg').dbUrl
-const Schema = db.Schema
+const mongoose = db.mongoose
+const Schema = mongoose.Schema
 const log = console.log
-const autoIncrement = require('mongoose-sequence')(db)
+const autoIncrement = require('mongoose-sequence')(mongoose)
 const common = require('./common')
 const COLLECTION_NAME = 'product_details'
 const _ = require('lodash')
@@ -86,27 +86,26 @@ const productDetailSchema = new Schema({
   slug: String
 })
 productDetailSchema.plugin(autoIncrement, { inc_field: '_id' })
-const ProductDetail = db.model('ProductDetail', productDetailSchema, COLLECTION_NAME)
-
+const ProductDetail = mongoose.model('ProductDetail', productDetailSchema, COLLECTION_NAME)
 async function insert(jsonProductDetail) {
   try {
-    db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     common.convertStringToNumber(jsonProductDetail)
     productDetail = new ProductDetail(jsonProductDetail)
     productDetail = await productDetail.save()
-    await db.connection.close()
     log(productDetail.id + " saved to %s collection.", COLLECTION_NAME)
+    await db.close()
   } catch (error) {
     log(error)
   }
 }
 async function updateByModelId(id, jsonProductDetail, ratingCountTotal) {
   try {
-    db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     common.convertStringToNumber(jsonProductDetail)
     jsonProductDetail.ratingCountTotal = ratingCountTotal
     await ProductDetail.findByIdAndUpdate(id, jsonProductDetail)
-    await db.connection.close()
+    await db.close()
     log(id + " Updated to %s collection.", COLLECTION_NAME)
   } catch (error) {
     log(error)
@@ -114,22 +113,22 @@ async function updateByModelId(id, jsonProductDetail, ratingCountTotal) {
 }
 async function update(productId, jsonProductDetail, ratingCountTotal) {
   try {
-    db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     common.convertStringToNumber(jsonProductDetail)
     jsonProductDetail.ratingCountTotal = ratingCountTotal
     //delete jsonProductDetail.phone
     await ProductDetail.findOneAndUpdate({ id: productId }, jsonProductDetail)
-    await db.connection.close()
-    log(productId + " Updated to %s collection.", COLLECTION_NAME)
+    log(`Updated productId=${productId} to ${COLLECTION_NAME} collection`)
+    await db.close()
   } catch (error) {
     log(error)
   }
 }
 async function deleteProduct(productId) {
   try {
-    db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     await ProductDetail.findOneAndDelete({ id: productId })
-    await db.connection.close()
+    await db.close()
     log(productId + " Delete to %s collection.", COLLECTION_NAME)
   } catch (error) {
     log(error)
@@ -142,10 +141,10 @@ async function fetchProductByIds(ids) {
       id: { $in: ids }
     }
     log(query)
-    db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     let products = await ProductDetail.find(query, 'id name price ratingCount ratingScore lastUpdateStamp status attributes phone districtId cover ratingCountTotal author').exec()
-    await db.connection.close()
     log(products.length)
+    await db.close()
     return products
   } catch (error) {
     log(error)
@@ -173,12 +172,12 @@ async function findProductByConditions(conditions, productIds) {
         query = { id: { $in: productIds } }
     }
     log(JSON.stringify(query))
-    await db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     let products = await ProductDetail.find(
       query,
       'id name price ratingCount ratingScore lastUpdateStamp status attributes phone districtId cityId cover ratingCountTotal author meta'
     ).exec()
-    await db.connection.close()
+    await db.close()
     return products
   } catch (error) {
     log(error)
@@ -187,9 +186,9 @@ async function findProductByConditions(conditions, productIds) {
 }
 async function fetchLatestProductId() {
   try {
-    db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     let products = await ProductDetail.find({}, 'id').exec()
-    await db.connection.close()
+    await db.close()
     return _.maxBy(products, 'id').id
   } catch (error) {
     log(error)

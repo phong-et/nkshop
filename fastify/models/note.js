@@ -1,6 +1,6 @@
 const db = require('../db')
-const dbURL = require('../../nk.cfg').dbUrl
-const Schema = db.Schema
+const mongoose = db.mongoose
+const Schema = mongoose.Schema
 const log = console.log
 const COLLECTION_NAME = 'notes'
 const noteSchema = new Schema({
@@ -9,13 +9,13 @@ const noteSchema = new Schema({
     noteType: Number,
     noteContent: String,
 })
-const Note = db.model('note', noteSchema, COLLECTION_NAME);
+const Note = mongoose.model('note', noteSchema, COLLECTION_NAME);
 async function insert(jsonNote) {
     try {
-        db.connect(dbURL, { useNewUrlParser: true });
+        db.connect()
         let note = new Note(jsonnote)
         await note.save()
-        await db.connection.close()
+        await db.close()
         log("Saved to %s collection.", note.collection.name);
     } catch (error) {
         log(error)
@@ -26,7 +26,7 @@ async function findNotesOfProduct(productId) {
         '$where': 'this.productId == ' + productId
     }
     log(`find note of product with query : ${JSON.stringify(query)}`)
-    db.connect(dbURL, { useNewUrlParser: true });
+    db.connect()
     try {
         let notes = await Note.find(
                 query,
@@ -35,7 +35,7 @@ async function findNotesOfProduct(productId) {
             .sort({ timeStamp: -1 })
             .exec()
         log('notes.length=%s', notes.length)
-        await db.connection.close()
+        await db.close()
         return notes
     } catch (error) {
         log(error)
