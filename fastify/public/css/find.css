@@ -91,6 +91,11 @@ fieldset.query-group label{ display: inline;}
 /* body {
     background-color:#eee;
 } */
+
+label.productUnitPrice{
+    font-size:11px;
+    color:red
+}
 label{color: #000;}
 .productItem {
     width: 500px;
@@ -156,7 +161,7 @@ i.fa-user-secret{color: #e25afb;}
 .errorAjax{color: palevioletred;}
 .productOnLeave{background: #735917 !important;;}
 .productOff{background: #500000 !important;}
-span.productIndex{position: absolute;
+span.productIndex{
     position: absolute;
     width: 34px;
     height: 34px;
