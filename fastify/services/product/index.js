@@ -116,11 +116,11 @@ module.exports = async function (fastify, opts, next) {
     })
 
     fastify.get('/products/review/update/:productId', async function (request, reply) {
-        log('----request.params----')
-        log(request.params)
-        let isFetchImageProduct = JSON.parse(request.query.isFetchImageProduct.toLowerCase()),
-            isFetchImageReview = JSON.parse(request.query.isFetchImageReview.toLowerCase())
-        log(`isFetchImageProduct = ${isFetchImageProduct}`)
+        log(`==> /products/review/update/${request.params.productId}`)
+        //log(request.params)
+        // let isFetchImageProduct = JSON.parse(request.query.isFetchImageProduct.toLowerCase()),
+        //     isFetchImageReview = JSON.parse(request.query.isFetchImageReview.toLowerCase())
+        //log(`isFetchImageProduct = ${isFetchImageProduct}`)
         try {
             let productId = request.params.productId,
                 oldReviewIds = await Review.fetchReviewIdsOfProduct(productId),
@@ -131,7 +131,8 @@ module.exports = async function (fastify, opts, next) {
 
             totalReviewIds = [...new Set(totalReviewIds)]
             await ProductDetail.update(productId, product, totalReviewIds.length)
-            if (isFetchImageProduct) nk.fetchImagesOfProduct(product)
+            //if (isFetchImageProduct) nk.fetchImagesOfProduct(product)
+            if (product.price >= cfg.minPriceFetchImage) await nk.fetchImagesOfProduct(product)
             log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
             log(`newReviewIds: ${JSON.stringify(newReviewIds)}`)
@@ -140,14 +141,21 @@ module.exports = async function (fastify, opts, next) {
                 let reviews = await Promise.all(newReviewIds.map(async reviewId => {
                     try {
                         let review = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
-                        if (isFetchImageReview) nk.fetchImagesOfReview(review.data.review.photos, productId)
+                        //if (isFetchImageReview) nk.fetchImagesOfReview(review.data.review.photos, productId)
+                        if (product.price >= cfg.minPriceFetchImage)
+                            await nk.fetchImagesOfReview(review.data.review.photos, productId)
                         review.data.review["productId"] = productId
                         return review.data.review
                     } catch (error) {
                         log(error)
                     }
                 }))
-                await Review.insertMany(reviews)
+                let filteredReviews = reviews.filter(review => {
+                    if (review.timeStamp != undefined)
+                        return reviews
+                })
+                if (filteredReviews.length > 0)
+                    await Review.insertMany(filteredReviews)
             }
             // write log onleave and off 
             if ((product.meta && product.onLeave) || product.status !== 1)
@@ -292,6 +300,6 @@ module.exports = async function (fastify, opts, next) {
             })
         }
     })
-    
+
     next()
 }
