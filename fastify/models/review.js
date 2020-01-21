@@ -40,7 +40,7 @@ const Review = mongoose.model('review', reviewSchema, COLLECTION_NAME);
 
 async function insert(jsonReview) {
     try {
-        await connect()
+        connect()
         common.convertStringToNumber(jsonReview)
         let review = new Review(jsonReview)
         await review.save()

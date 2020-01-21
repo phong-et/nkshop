@@ -33,8 +33,8 @@ process.on('SIGINT', function () {
     })
 })
 
-async function connect() {
-    await mongoose.connect(dbURL, { 
+function connect() {
+    mongoose.connect(dbURL, { 
         useNewUrlParser: true,
         useUnifiedTopology: true,
         poolSize: 5
