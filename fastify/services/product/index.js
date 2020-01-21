@@ -118,7 +118,8 @@ module.exports = async function (fastify, opts, next) {
     fastify.get('/products/review/update/:productId', async function (request, reply) {
         log(`==> /products/review/update/${request.params.productId}`)
         //log(request.params)
-        // let isFetchImageProduct = JSON.parse(request.query.isFetchImageProduct.toLowerCase()),
+        let isFetchImageProduct = JSON.parse(request.query.isFetchImageProduct.toLowerCase())
+        //,
         //     isFetchImageReview = JSON.parse(request.query.isFetchImageReview.toLowerCase())
         //log(`isFetchImageProduct = ${isFetchImageProduct}`)
         try {
@@ -126,13 +127,13 @@ module.exports = async function (fastify, opts, next) {
                 oldReviewIds = await Review.fetchReviewIdsOfProduct(productId),
                 product = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
                 currentReviewIds = await nk.fetchReviewIdsOfProduct(cfg.reviewUrl, productId, product.ratingCount),
-                newReviewIds = currentReviewIds.filter(value => !oldReviewIds.includes(value)),
+                newReviewIds = oldReviewIds.length > 0 ? currentReviewIds.filter(value => !oldReviewIds.includes(value)) : [],
                 totalReviewIds = currentReviewIds.concat(oldReviewIds)
 
             totalReviewIds = [...new Set(totalReviewIds)]
             await ProductDetail.update(productId, product, totalReviewIds.length)
             //if (isFetchImageProduct) nk.fetchImagesOfProduct(product)
-            if (product.price >= cfg.minPriceFetchImage) await nk.fetchImagesOfProduct(product)
+            if (product.price >= cfg.minPriceFetchImage && isFetchImageProduct) await nk.fetchImagesOfProduct(product)
             log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
             log(`newReviewIds: ${JSON.stringify(newReviewIds)}`)
