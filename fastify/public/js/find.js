@@ -484,7 +484,7 @@ function drawProduct(products) {
                 ${($('#cbHideProductCover').is(':checked') ? '' : `<img src="${_cover}">`)}
             </div>
             <div class="productInfo">
-                <i class="fa fa-money"></i><span class="productPrice">${product.price}<label class="productUnitPrice"> RM</label></span>
+                <i class="fa fa-money"></i><span class="productPrice">${product.price/100}<label class="productUnitPrice"> RM</label></span>
                 <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalConfiguration.statuses[_status] || ''}">${globalConfiguration.statuses[_status]}</span><br />
                 <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span>
                 <!--<i class="fas fa-map-marked-alt"></i><span class="productRegion">${globalConfiguration.regions[_region]}</span>-->
