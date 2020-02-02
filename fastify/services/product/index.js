@@ -112,6 +112,7 @@ module.exports = async function (fastify, opts, next) {
             errors: cfg.errors,
             coverUrl: cfg.coverUrl,
             regions: cfg.attributes["68"],
+            minPriceFetchImage:cfg.minPriceFetchImage
         })
     })
 

@@ -31,6 +31,7 @@ $().ready(function () {
         genRegions()
         genGroupBy()
         genStatus()
+        $('#txtAcceptedMinPrice').val(globalConfiguration.minPriceFetchImage)
     })
     genConditions()
     genBackground()
@@ -451,7 +452,7 @@ function config() {
     $('#txtRatingCount').val(0)
     // fetchImage
     $('#cbIsFetchImageReview').prop('checked', true)
-    $('#cbIsFetchImageProduct').prop('checked', true)
+    $('#cbIsFetchImageProduct').prop('checked', false)
 }
 
 function drawProduct(products) {
@@ -469,8 +470,9 @@ function drawProduct(products) {
             _dateFormating = productLastUpdateTime.toLocaleDateString().split('/'),
             _date = _dateFormating[1] + '/' + _dateFormating[0] + '/' + _dateFormating[2],
             _region = product.attributes && product.attributes['68'] || 'N',
-            _city = globalCities[product.cityId]
-        _status = product.meta && product.meta["onLeave"] ? 3 : product.status
+            _city = globalCities[product.cityId],
+            _onleave = product.meta && product.meta["onLeave"] ? '(on leave)' : '',
+            _status = product.status
         _cover = $('#cbUseCoverUrl').is(':checked') ? globalConfiguration.coverUrl + _cover : `/public/products/${product.id}/${_cover}`
         strHtml = strHtml + `
         <div class="productItem">
@@ -484,8 +486,8 @@ function drawProduct(products) {
                 ${($('#cbHideProductCover').is(':checked') ? '' : `<img src="${_cover}">`)}
             </div>
             <div class="productInfo">
-                <i class="fa fa-money"></i><span class="productPrice">${product.price/100}<label class="productUnitPrice"> RM</label></span>
-                <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalConfiguration.statuses[_status] || ''}">${globalConfiguration.statuses[_status]}</span><br />
+                <i class="fa fa-money"></i><span class="productPrice">${product.price / 100}<label class="productUnitPrice"> RM</label></span>
+                <i class="fa fa-bolt"></i><span class="productStatus${'-' + globalConfiguration.statuses[_status] || ''}">${globalConfiguration.statuses[_status] + _onleave}</span><br />
                 <i class="fa fa-phone"></i><span class="productPhone">${product.phone}</span>
                 <!--<i class="fas fa-map-marked-alt"></i><span class="productRegion">${globalConfiguration.regions[_region]}</span>-->
                 <i class="fas fa-map-marked-alt"></i><span class="productRegion">${_city}</span>
@@ -708,51 +710,66 @@ function fetchAllImagesReviews(productId, e) {
 }
 
 function genCities(countryId) {
-    $.ajax({
-        url: '/products/cities/' + countryId,
-        type: 'GET',
-        success: function (cities) {
-            try {
-                cities.forEach(city => {
-                    $('#ddlCity').append(`<option value="${city.id}">${city.name}</option>`)
-                    globalCities[city.id] = city.name
-                })
-            } catch (e) {
-                log(e)
-            }
-        },
-        error: function (err) {
-            log(err)
-        }
-    });
+    // $.ajax({
+    //     url: '/products/cities/' + countryId,
+    //     type: 'GET',
+    //     success: function (cities) {
+    //         try {
+    //             cities.forEach(city => {
+    //                 $('#ddlCity').append(`<option value="${city.id}">${city.name}</option>`)
+    //                 globalCities[city.id] = city.name
+    //             })
+    //         } catch (e) {
+    //             log(e)
+    //         }
+    //     },
+    //     error: function (err) {
+    //         log(err)
+    //     }
+    // });
+    let ddlCity = $('#ddlCity')
+    Object.keys(cities).forEach(id => {
+        ddlCity.append(`<option value="${id}">${cities[id].name}</option>`)
+        let districts = cities[id].districts
+        districts.forEach(district => {
+            globalDistricts[district.id] = district.name
+        })
+    })
+    log(globalDistricts)
 }
 
 function genDistricts(cityId) {
-    $.ajax({
-        url: '/products/districts/' + cityId,
-        type: 'GET',
-        success: function (districts) {
-            let html = ''
-            try {
-                districts.sort(function (a, b) {
-                    if (a.name < b.name) { return -1; }
-                    if (a.name > b.name) { return 1; }
-                    return 0;
-                })
-                districts.forEach(district => {
-                    html = html + `<option value="${district.id}">${district.name}</option>`
-                    globalDistricts[district.id] = district.name
-                })
-                log(globalDistricts)
-                $('#ddlDisctrict').html(html)
-            } catch (e) {
-                log(e)
-            }
-        },
-        error: function (err) {
-            log(err)
-        }
-    });
+    // removed ajax request improve performance loading
+    // $.ajax({
+    //     url: '/products/districts/' + cityId,
+    //     type: 'GET',
+    //     success: function (districts) {
+    //         let html = ''
+    //         try {
+    //             districts.sort(function (a, b) {
+    //                 if (a.name < b.name) { return -1; }
+    //                 if (a.name > b.name) { return 1; }
+    //                 return 0;
+    //             })
+    //             districts.forEach(district => {
+    //                 html = html + `<option value="${district.id}">${district.name}</option>`
+    //                 globalDistricts[district.id] = district.name
+    //             })
+    //             log(globalDistricts)
+    //             $('#ddlDisctrict').html(html)
+    //         } catch (e) {
+    //             log(e)
+    //         }
+    //     },
+    //     error: function (err) {
+    //         log(err)
+    //     }
+    // });
+    var districts = cities[cityId].districts
+    $('#ddlDisctrict').empty()
+    districts.forEach(district => {
+        $('#ddlDisctrict').append(`<option value="${district.id}">${district.name}</option>`)
+    })
 }
 
 function openChartReview(productId, productName) {
