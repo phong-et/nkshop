@@ -730,6 +730,7 @@ function genCities(countryId) {
     let ddlCity = $('#ddlCity')
     Object.keys(cities).forEach(id => {
         ddlCity.append(`<option value="${id}">${cities[id].name}</option>`)
+        globalCities[id] = cities[id].name
         let districts = cities[id].districts
         districts.forEach(district => {
             globalDistricts[district.id] = district.name
@@ -890,6 +891,12 @@ function genChart(products, type) {
                 window.chart.data = groups.map(group => {
                     let districtName = globalDistricts[group.districtId] || 'districtId=' + group.districtId
                     return { name: districtName, y: group.products.length }
+                }).value()
+                break;
+            case "cityId":
+                window.chart.data = groups.map(group => {
+                    let cityName = globalCities[group.cityId] || 'cityId=' + group.cityId
+                    return { name: cityName, y: group.products.length }
                 }).value()
                 break;
             case "status":
