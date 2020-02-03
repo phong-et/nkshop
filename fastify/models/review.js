@@ -119,12 +119,30 @@ async function fetchReviewsOfProduct(productId) {
         log(error)
     }
 }
+async function fetchReviewsByDate(date) {
+    try {
+        log(date)
+        var query = {
+            '$where': `new Date(this.timeStamp).toJSON().indexOf("${date}") >- 1`
+        }
+        log(query)
+        db.connect()
+        let reviews = await Review.find(query, 'photos title entityId userId score timeStamp active message upVoteCount downVoteCount id phone visiteTime location productId').exec()
+        await db.close()
+        log(reviews)
+        return reviews
+    } catch (error) {
+        log(error)
+        return []
+    }
+}
 module.exports = {
     insert: insert,
     insertMany: insertMany,
     fetchReviewIdsOfProduct: fetchReviewIdsOfProduct,
     fetchReviewsOfProduct: fetchReviewsOfProduct,
-    fetchProductIdByReviewDay: fetchProductIdByReviewDay
+    fetchProductIdByReviewDay: fetchProductIdByReviewDay,
+    fetchReviewsByDate: fetchReviewsByDate
 };
 // (async function () {
 //     var reviews = await fetchProductIdByReviewDay('2019-10-24')
