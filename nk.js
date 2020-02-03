@@ -127,9 +127,11 @@ async function fetchProducts(url, productIds) {
 ///////////////////////// REVIEW /////////////////////////
 function fetchImagesOfReview(reviewJsonPhotos, productId) {
     try {
+        let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS
+        shell.mkdir("-p", dir);
         //reviewJson.data.review.photos
         reviewJsonPhotos.forEach(e => {
-            let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS
+            //let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS
             let url = e.data.dimensions.original.url
             let encodeUrl = url.substring(0, url.lastIndexOf('review-of-') + 1) + encodeURIComponent(url.substring(url.lastIndexOf('review-of-') + 1, url.length))
             // let domainTemp = cfg.reviewImageUrl
@@ -178,10 +180,12 @@ async function fetchReviewOfProduct(url, reviewId, productId) {
             headers: headers,
         }
         let json = await rp(options)
-        shell.mkdir("-p", DIR_PRODUCTS + productId + '/' + DIR_REVIEWS);
+        // disabled -> moved to fetchImagesOfReview()
+        //shell.mkdir("-p", DIR_PRODUCTS + productId + '/' + DIR_REVIEWS);
         let reviewJson = JSON.parse(json)
         // locked
         //fetchImagesOfReview(reviewJson, productId)
+        //log(reviewJson)
         return reviewJson
     } catch (error) {
         log('fetchReviewOfProduct:')

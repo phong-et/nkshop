@@ -143,10 +143,13 @@ module.exports = async function (fastify, opts, next) {
                 let reviews = await Promise.all(newReviewIds.map(async reviewId => {
                     try {
                         let review = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
+                        //log(review.data)
                         //if (isFetchImageReview) nk.fetchImagesOfReview(review.data.review.photos, productId)
                         if (product.price >= cfg.minPriceFetchImage)
                             await nk.fetchImagesOfReview(review.data.review.photos, productId)
                         review.data.review["productId"] = productId
+                        // fixed missing out author field 3/2/2019 from (1/10/2019)
+                        review.data.review["author"] = review.data.author
                         return review.data.review
                     } catch (error) {
                         log(error)

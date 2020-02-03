@@ -22,18 +22,22 @@ const reviewSchema = new Schema({
     visiteTime: Number,
     location: String,
     author: {
-        urlInfo: {
-            routeName: String,
-            vars: {
-                username: String
-            }
+        avatar: {
+            urlInfo: {
+                routeName: String,
+                vars: {
+                    username: String
+                }
+            },
+            userId: Number,
+            src: String,
+            url: String,
+            title: String,
+            label: String,
+            labelColor: String
         },
-        userId: Number,
-        src: String,
-        url: String,
-        title: String,
-        label: String,
-        labelColor: String
+        online: Boolean,
+        allowChat: Boolean
     }
 })
 const Review = mongoose.model('review', reviewSchema, COLLECTION_NAME);
@@ -54,6 +58,7 @@ async function insert(jsonReview) {
 async function insertMany(jsonReviews) {
     try {
         db.connect()
+        log(jsonReviews)
         await Review.insertMany(jsonReviews)
         log("Saved all to %s collection.", Review.collection.name);
         await db.close()
