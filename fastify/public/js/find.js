@@ -88,34 +88,7 @@ $().ready(function () {
             }
         });
     })
-
-    $('#btnUpdateReviewsAllProducts').click(function () {
-        updateReiewsProducts($('#txtStartIndexUpdateReviews').val(), globalProducts.length)
-    })
-
-    $('#btnDeleteAllProducts').click(function () {
-        var isDeleted = confirm('Are you sure delete all product ?')
-        if (isDeleted) deleteProducts($('#txtStartIndexUpdateReviews').val(), globalProducts.length)
-    })
-
-    $('#cbHideProductCover').change(function () {
-        if ($(this).is(':checked')) {
-            $('.productCover').css('display', 'none')
-            $('.productItem').css('width', '300px')
-        }
-        else {
-            $('.productItem').css('width', '500px')
-            $('.productCover').css('display', '')
-        }
-    })
-
-    $('#ddlSorting').change(function () {
-        var typeSorting = $('#ddlSorting option:selected').val()
-        var filteredStatus = $('#ddlProductStatus option:selected').val()
-        var products = filterProductByStatus(filteredStatus)
-        drawProduct(sort(typeSorting, products))
-    })
-
+ 
     $('#ddlCity').change(function () {
         genDistricts(this.value)
     })
@@ -129,10 +102,12 @@ $().ready(function () {
         if (this.checked)
             $('input[id!=cbId]').prop('checked', false).change()
     })
+
     $('#cbPhone').change(function () {
         if (this.checked)
             $('input[id!=cbPhone]').prop('checked', false).change()
     })
+
     $('#txtPhone').focus(function () {
         $(this).val('')
     })
@@ -148,28 +123,6 @@ $().ready(function () {
         if (code === 13) {
             $('#btnSearch').trigger('click')
         }
-    })
-
-    // show hide left quick-controller
-    $('.slider-arrow').on('click mouseover', function () {
-        if ($(this).hasClass('show')) {
-            $(".slider-arrow, .quick-controller").animate({
-                left: "+=222"
-            }, 200, function () {
-            })
-            $(this).html('&laquo;').removeClass('show').addClass('hide');
-        }
-        else {
-            $(".slider-arrow, .quick-controller").animate({
-                left: "-=222"
-            }, 200, function () {
-            })
-            $(this).html('&raquo;').removeClass('hide').addClass('show');
-        }
-    })
-
-    $('#btnRefresh').click(function () {
-        $('#ddlSorting').trigger('change')
     })
 
     var options = {
@@ -212,46 +165,8 @@ $().ready(function () {
             $('#cbIsFetchImageProduct').prop('checked', true)
         }
     })
-    $('body').dblclick(function () {
-        $('#cbPrivateMode').prop('checked', true)
-        $('#cbPrivateMode').trigger('change')
-    })
-    $('#cbPrivateMode').change(function () {
-        if (this.checked) {
-            $('#cbHideProductCover').prop('checked', true)
-            $('#cbHideProductCover').trigger('change')
-            $('.productRegion').hide()
-            $('.productRegion').prev().hide()
-            $('.productPlace').hide()
-            $('.productPlace').prev().hide()
-            $('.productAuthor').hide()
-            $('.productAuthor').prev().hide()
-            $('.productName').hide()
-            $('.productPhone').hide()
-            $('.productPhone').prev().hide()
-        }
-        else {
-            $('#cbHideProductCover').prop('checked', false)
-            $('#cbHideProductCover').trigger('change')
-            $('.productRegion').show()
-            $('.productRegion').prev().show()
-            $('.productPlace').show()
-            $('.productPlace').prev().show()
-            $('.productAuthor').show()
-            $('.productAuthor').prev().show()
-            $('.productName').show()
-            $('.productPhone').show()
-            $('.productPhone').prev().show()
-        }
-    })
+   
 })
-
-function genListId(startId, endId) {
-    var listId = [];
-    for (i = startId + 1; i <= endId; i++)
-        listId.push(i)
-    return listId
-}
 // use for button update all product
 function getQueryConditions() {
     var query = []
@@ -482,6 +397,69 @@ function drawProduct(products) {
 }
 
 //////////////////////////////////////// GENERATION FUNCTIONS GROUP ////////////////////////////////////////
+function genCities(countryId) {
+    // $.ajax({
+    //     url: '/products/cities/' + countryId,
+    //     type: 'GET',
+    //     success: function (cities) {
+    //         try {
+    //             cities.forEach(city => {
+    //                 $('#ddlCity').append(`<option value="${city.id}">${city.name}</option>`)
+    //                 globalCities[city.id] = city.name
+    //             })
+    //         } catch (e) {
+    //             log(e)
+    //         }
+    //     },
+    //     error: function (err) {
+    //         log(err)
+    //     }
+    // });
+    let ddlCity = $('#ddlCity')
+    Object.keys(cities).forEach(id => {
+        ddlCity.append(`<option value="${id}">${cities[id].name}</option>`)
+        globalCities[id] = cities[id].name
+        let districts = cities[id].districts
+        districts.forEach(district => {
+            globalDistricts[district.id] = district.name
+        })
+    })
+    log(globalDistricts)
+}
+
+function genDistricts(cityId) {
+    // removed ajax request improve performance loading
+    // $.ajax({
+    //     url: '/products/districts/' + cityId,
+    //     type: 'GET',
+    //     success: function (districts) {
+    //         let html = ''
+    //         try {
+    //             districts.sort(function (a, b) {
+    //                 if (a.name < b.name) { return -1; }
+    //                 if (a.name > b.name) { return 1; }
+    //                 return 0;
+    //             })
+    //             districts.forEach(district => {
+    //                 html = html + `<option value="${district.id}">${district.name}</option>`
+    //                 globalDistricts[district.id] = district.name
+    //             })
+    //             log(globalDistricts)
+    //             $('#ddlDisctrict').html(html)
+    //         } catch (e) {
+    //             log(e)
+    //         }
+    //     },
+    //     error: function (err) {
+    //         log(err)
+    //     }
+    // });
+    var districts = cities[cityId].districts
+    $('#ddlDisctrict').empty()
+    districts.forEach(district => {
+        $('#ddlDisctrict').append(`<option value="${district.id}">${district.name}</option>`)
+    })
+}
 function genBackground() {
     //src : http://wallpaperswide.com
     //let bgRandomNumber = Math.floor(Math.random() * 8)
@@ -575,7 +553,6 @@ function openTabAuthor(authorName) {
     window.open(globalConfiguration.authorUrl + authorName, '_blank')
 }
 
-
 //////////////////////////////////////// AJAX FUNCTIONS GROUP ////////////////////////////////////////
 
 function openProductFolder(productId) {
@@ -611,95 +588,6 @@ function fetchConfiguration(callback) {
             console.log(err)
         }
     });
-}
-
-function fetchAllImagesReviews(productId, e) {
-    let spiner = $(e).parent().prev()
-    spiner.prop('class', 'fas fa-sync fa-spin')
-    $.ajax({
-        url: '/products/currentreviews/' + productId,
-        type: 'GET',
-        success: function (data) {
-            try {
-                spiner.prop('class', 'fa fa-refresh')
-                if (data.currentReviewIds.length > 0) {
-                    $(e).html(`Updated<span class="newReview">(${data.currentReviewIds.length})</span>`)
-                } else {
-                    $(e).html(`Updated<span>(${data.currentReviewIds.length})</span>`)
-                }
-                console.log(data)
-            } catch (e) {
-                console.log(e)
-            }
-        },
-        error: function (err) {
-            console.log(err)
-        }
-    });
-}
-
-function genCities(countryId) {
-    // $.ajax({
-    //     url: '/products/cities/' + countryId,
-    //     type: 'GET',
-    //     success: function (cities) {
-    //         try {
-    //             cities.forEach(city => {
-    //                 $('#ddlCity').append(`<option value="${city.id}">${city.name}</option>`)
-    //                 globalCities[city.id] = city.name
-    //             })
-    //         } catch (e) {
-    //             log(e)
-    //         }
-    //     },
-    //     error: function (err) {
-    //         log(err)
-    //     }
-    // });
-    let ddlCity = $('#ddlCity')
-    Object.keys(cities).forEach(id => {
-        ddlCity.append(`<option value="${id}">${cities[id].name}</option>`)
-        globalCities[id] = cities[id].name
-        let districts = cities[id].districts
-        districts.forEach(district => {
-            globalDistricts[district.id] = district.name
-        })
-    })
-    log(globalDistricts)
-}
-
-function genDistricts(cityId) {
-    // removed ajax request improve performance loading
-    // $.ajax({
-    //     url: '/products/districts/' + cityId,
-    //     type: 'GET',
-    //     success: function (districts) {
-    //         let html = ''
-    //         try {
-    //             districts.sort(function (a, b) {
-    //                 if (a.name < b.name) { return -1; }
-    //                 if (a.name > b.name) { return 1; }
-    //                 return 0;
-    //             })
-    //             districts.forEach(district => {
-    //                 html = html + `<option value="${district.id}">${district.name}</option>`
-    //                 globalDistricts[district.id] = district.name
-    //             })
-    //             log(globalDistricts)
-    //             $('#ddlDisctrict').html(html)
-    //         } catch (e) {
-    //             log(e)
-    //         }
-    //     },
-    //     error: function (err) {
-    //         log(err)
-    //     }
-    // });
-    var districts = cities[cityId].districts
-    $('#ddlDisctrict').empty()
-    districts.forEach(district => {
-        $('#ddlDisctrict').append(`<option value="${district.id}">${district.name}</option>`)
-    })
 }
 
 function openChartReview(productId, productName) {
@@ -845,237 +733,7 @@ function genChart(products, type) {
     window.open('chart.html', 'Chart', 'width=' + 1360 + ',height=' + 1000 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
 }
 
-function updateReviews(productId, btn, index, callback) {
-    let spiner = $(btn).parent().prev()
-    $(btn).parent().parent().parent().addClass('active')
-    spiner.prop('class', 'fas fa-sync fa-spin')
-    $.ajax({
-        url: '/products/review/update/' + productId,
-        type: 'GET',
-        data: {
-            isFetchImageProduct: $('#cbIsFetchImageProduct').is(':checked'),
-            isFetchImageReview: $('#cbIsFetchImageReview').is(':checked')
-        },
-        success: function (data) {
-            try {
-                spiner.prop('class', 'fa fa-refresh')
-                $(btn).parent().parent().parent().removeClass('active')
-                var productItem = $(btn).parent().parent().parent()
-                if (data.newReviewIds.length > 0) {
-                    productItem.addClass('reviewUpdated')
-                    $(btn).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
-                    if (index)
-                        globalReviewedProduct.push(globalProducts[index])
-                } else
-                    $(btn).html(`Updated<span>(0)</span>`)
-
-                var statuser = spiner.parent().parent().children().next().next().next().children().next().next().next()
-                var statusId = data.status
-                statuser.eq(0).text(globalConfiguration.statuses[statusId])
-                setProductItemStatus(productItem, statusId, index)
-                log(data)
-                if (callback) callback(true)
-            } catch (error) {
-                log(error)
-                setProductItemStatus(productItem, statusId, index, error)
-                if (callback) callback(false, { position: 'error at success try catch', error: error })
-            }
-        },
-        timeout: 150000,
-        error: function (error) {
-            log(error)
-            if (callback) callback(false, { position: 'error at updateReviews ajax ', error: error })
-        }
-    })
-}
-
-function updateReiewsProducts(index, limitIndex) {
-    let productId = globalProducts[index].id
-    let btnUpdateReview = document.getElementsByClassName('btnUpdateReviews')[index];
-    if ($('#cbFocusProductItem').is(':checked'))
-        $(btnUpdateReview).focus()
-    updateReviews(productId, btnUpdateReview, index, function (done, error) {
-        if (done === true)
-            log(done)
-        else
-            log(JSON.stringify(error))
-
-        index++
-        if (index < limitIndex)
-            updateReiewsProducts(index, limitIndex)
-        else {
-            alert('Done Update Reviews All Product')
-            log('Done Update Reviews All Product')
-        }
-    })
-}
-function setProductItemStatus(productItem, statusId, index, error) {
-    switch (statusId) {
-        case 2:
-            productItem.addClass('productOff')
-            if (index) globalOffProducts.push(globalProducts[index])
-            break
-        case 3:
-            productItem.addClass('productOnLeave')
-            if (index) globalOnLeaveProducts.push(globalProducts[index])
-            break
-    }
-    if (error) {
-        productItem.addClass('productError')
-        if (index) globalErrorProducts.push(globalProducts[index])
-    }
-
-}
-function filterProductByStatus(status) {
-    var products = []
-    switch (status) {
-        case 'off':
-            products = globalOffProducts
-            break
-        case 'onleave':
-            products = globalOnLeaveProducts
-            break
-        case 'reviewed':
-            products = globalReviewedProduct
-            break
-        default: products = globalProducts
-            break
-    }
-    return products
-}
-
-// Will be remove in future
-function updateReiewsProducts2(index, limitIndex) {
-    // use recursive native
-    let productId = globalProducts[index].id
-    let btnUpdateReview = document.getElementsByClassName('btnUpdateReviews')[index]
-    $(btnUpdateReview).parent().parent().parent().addClass('active')
-    if ($('#cbFocusProductItem').is(':checked')) $(btnUpdateReview).focus()
-    let spiner = $(btnUpdateReview).parent().prev()
-    spiner.prop('class', 'fas fa-sync fa-spin')
-    $.ajax({
-        url: '/products/review/update/' + productId,
-        type: 'GET',
-        data: {
-            isFetchImageProduct: $('#cbIsFetchImageProduct').is(':checked'),
-            isFetchImageReview: $('#cbIsFetchImageReview').is(':checked')
-        },
-        success: function (data) {
-            try {
-                $(btnUpdateReview).parent().parent().parent().removeClass('active')
-                spiner.prop('class', 'fa fa-refresh')
-
-                if (data.newReviewIds.length > 0) {
-                    // effect to html layout
-                    $(btnUpdateReview).parent().parent().parent().addClass('reviewUpdated')
-                    $(btnUpdateReview).html(`Updated<span class="newReview">(${data.newReviewIds.length})</span>`)
-                    // push updated product 
-                    globalReviewedProduct.push(globalProducts[index])
-                }
-                else
-                    $(btnUpdateReview).html(`Updated<span>(0)</span>`)
-
-                var statuser = spiner.parent().parent().children().next().next().next().children().next().next().next()
-                statuser.eq(0).text(globalConfiguration.statuses[data.status])
 
 
-                index++
-                if (index < limitIndex)
-                    updateReiewsProducts(index, limitIndex)
-                else {
-                    log('Done Update Reviews All Product')
-                    // use for sorting after updated reviews
-                    globalProducts = globalReviewedProduct
-                    //drawProduct(globalReviewedProduct)
-                }
-            } catch (error) {
-                // $(btnUpdateReview).parent().parent().parent().addClass('errorTry')
-                // index++
-                // if (index < limitIndex)
-                //     updateReiewsProducts(index, limitIndex)
-                // else
-                //     log('Done Update Reviews All Product')
-                log(error)
-                alert('error fetch reviews all product')
-                alert(error)
-            }
-        },
-        timeout: 150000,
-        error: function (err) {
-            $(btnUpdateReview).parent().parent().parent().addClass('errorAjax')
-            index++
-            if (index < limitIndex)
-                updateReiewsProducts(index, limitIndex)
-            else
-                log('Done Update Reviews All Product')
-            log(err)
-        }
-    });
-}
-
-function deleteProduct(productId, btnDelete) {
-    var isAccepted = confirm('Are you sure delete product has id=' + productId)
-    if (isAccepted) {
-        $.ajax({
-            url: '/products/delete/' + productId,
-            type: 'GET',
-            data: {
-                isDeleteAtDatabase: $('#cbDeleteProductAtDatabase').is(':checked')
-            },
-            success: function (res) {
-                try {
-                    if (res.success) {
-                        alert('deleted')
-                        $(btnDelete).parent().parent().parent().detach()
-                    }
-                    else
-                        log(res.responseText.msg)
-                } catch (e) {
-                    log(e)
-                }
-            },
-            error: function (err) {
-                log(err)
-            }
-        });
-    }
-}
-
-function deleteProducts(index, limitIndex) {
-    // use recursive native
-    let productId = globalProducts[index].id
-    let btnDelete = document.getElementsByClassName('btnDelete')[index];
-    $(btnDelete).parent().parent().parent().addClass('active')
-    if ($('#cbFocusProductItem').is(':checked')) $(btnDelete).focus()
-    let spiner = $(btnDelete).parent().prev()
-    spiner.prop('class', 'fas fa-sync fa-spin')
-    $.ajax({
-        url: '/products/delete/' + productId,
-        type: 'GET',
-        data: {
-            isDeleteAtDatabase: $('#cbDeleteProductAtDatabase').is(':checked')
-        },
-        success: function (res) {
-            try {
-                if (res.success) {
-                    $(btnDelete).parent().parent().parent().detach()
-                }
-                console.log(res)
-                index++
-                if (index < limitIndex)
-                    deleteProducts(index, limitIndex)
-                else {
-                    log('Done Delete All Products')
-                    drawProduct(globalReviewedProduct)
-                }
-            } catch (error) {
-                log(error)
-            }
-        },
-        error: function (err) {
-            log(err)
-        }
-    });
-}
 
 
