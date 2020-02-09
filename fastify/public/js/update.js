@@ -1,9 +1,11 @@
 let updatedSpiner;
-$().ready(function(){
-    updatedSpiner =  $('#btnUpdateReviewsAllProducts').children().eq(0)
+$().ready(function () {
+    updatedSpiner = $('#btnUpdateReviewsAllProducts').children().eq(0)
     $('#btnUpdateReviewsAllProducts').click(function () {
-        updatedSpiner.prop('class', 'fas fa-sync fa-spin')
-        updateReiewsProducts($('#txtStartIndexUpdateReviews').val() || 0, globalProducts.length)
+        if (globalProducts.length > 0) {
+            updatedSpiner.prop('class', 'fas fa-sync fa-spin')
+            updateReiewsProducts($('#txtStartIndexUpdateReviews').val() || 0, globalProducts.length)
+        }
     })
 })
 
@@ -66,7 +68,7 @@ function updateReiewsProducts(index, limitIndex) {
         if (index < limitIndex)
             updateReiewsProducts(index, limitIndex)
         else {
-            updatedSpiner.prop('class','fa fa-refresh')
+            updatedSpiner.prop('class', 'fa fa-refresh')
             alert('Done Update Reviews All Product')
             log('Done Update Reviews All Product')
         }
