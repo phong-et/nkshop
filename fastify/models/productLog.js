@@ -24,7 +24,7 @@ async function insert(json) {
     common.convertStringToNumber(json)
     let productLog = new ProductLog(json)
     productLog = await productLog.save()
-    await db.close()
+    db.close()
     log(productLog.id + " saved to %s collection.", COLLECTION_NAME)
   } catch (error) {
     log(error)

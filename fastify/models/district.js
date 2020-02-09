@@ -24,7 +24,7 @@ async function fetchDistricts(cityId) {
             .exec()
         log('districts.length=%s', districts.length)
         //log(districts)
-        await db.close()
+        db.close()
         return districts
     } catch (error) {
         log(error)

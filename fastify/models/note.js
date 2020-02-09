@@ -15,7 +15,7 @@ async function insert(jsonNote) {
         db.connect()
         let note = new Note(jsonnote)
         await note.save()
-        await db.close()
+        db.close()
         log("Saved to %s collection.", note.collection.name);
     } catch (error) {
         log(error)
@@ -35,7 +35,7 @@ async function findNotesOfProduct(productId) {
             .sort({ timeStamp: -1 })
             .exec()
         log('notes.length=%s', notes.length)
-        await db.close()
+        db.close()
         return notes
     } catch (error) {
         log(error)

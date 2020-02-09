@@ -44,11 +44,11 @@ const Review = mongoose.model('review', reviewSchema, COLLECTION_NAME);
 
 async function insert(jsonReview) {
     try {
-        connect()
+        db.connect()
         common.convertStringToNumber(jsonReview)
         let review = new Review(jsonReview)
         await review.save()
-        await db.connection.close()
+        db.close()
         log("Saved to %s collection.", review.collection.name);
     } catch (error) {
         log(error)
@@ -58,10 +58,10 @@ async function insert(jsonReview) {
 async function insertMany(jsonReviews) {
     try {
         db.connect()
-        log(jsonReviews)
+        //log(jsonReviews)
         await Review.insertMany(jsonReviews)
         log("Saved all to %s collection.", Review.collection.name);
-        await db.close()
+        db.close()
     } catch (error) {
         log(error)
     }
@@ -80,7 +80,7 @@ async function fetchReviewIdsOfProduct(productId) {
             .sort({ timeStamp: -1 })
             .exec()
         log('reviews.length=%s', reviews.length)
-        await db.close()
+        db.close()
         return reviews.map(review => review.id)
     } catch (error) {
         log(error)
@@ -96,7 +96,7 @@ async function fetchProductIdByReviewDay(reviewDay) {
         log(query)
         db.connect()
         let reviews = await Review.find(query, 'id productId').exec()
-        await db.close()
+        db.close()
         log(reviews)
         return reviews.map(review => review.productId);
     } catch (error) {
@@ -118,7 +118,7 @@ async function fetchReviewsOfProduct(productId) {
             .sort({ timeStamp: -1 })
             .exec()
         log('reviews.length=%s', reviews.length)
-        await db.close()
+        db.close()
         return reviews
     } catch (error) {
         log(error)
@@ -133,7 +133,7 @@ async function fetchReviewsByDate(date) {
         log(query)
         db.connect()
         let reviews = await Review.find(query, 'photos title entityId userId score timeStamp active message upVoteCount downVoteCount id phone visiteTime location productId').exec()
-        await db.close()
+        db.close()
         log(reviews)
         return reviews
     } catch (error) {

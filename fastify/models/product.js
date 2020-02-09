@@ -75,7 +75,7 @@ function findProductByPRC(price, ratingCount) {
                 e.lastUpdateStamp = new Date(e.lastUpdateStamp * 1000).toLocaleDateString()
             })
             log(data)
-            await db.close()
+            db.close()
         })
 }
 
@@ -85,7 +85,7 @@ async function insert(jsonProduct) {
         common.convertStringToNumber(jsonProduct)
         let product = new Product(jsonProduct)
         await product.save()
-        await db.close()
+        db.close()
         log("Saved to %s collection.", product.collection.name);
     } catch (error) {
         log(error)
@@ -98,7 +98,7 @@ function insertMany(jsonProducts, callback) {
         Product.insertMany(jsonProducts, function (err) {
             if (err) return error(err);
             log("Saved all to %s collection.", Product.collection.name);
-            await db.close()
+            db.close()
             callback()
         });
     } catch (error) {
@@ -125,7 +125,7 @@ function saveAllProductIdToFile(fileName) {
                 var statusText = 'write file > ' + fileName + ' success'
                 log(statusText)
             })
-            await db.close()
+            db.close()
         })
 }
 function getLatestProductId(callback) {
@@ -133,7 +133,7 @@ function getLatestProductId(callback) {
     Product.findOne({}).sort({ id: -1 }).exec((err, data) => {
         if (err) log(err)
         log(data.id)
-        await db.close()
+        db.close()
         callback(data.id)
     })
 }

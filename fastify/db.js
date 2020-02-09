@@ -34,13 +34,18 @@ process.on('SIGINT', function () {
 })
 
 function connect() {
-    mongoose.connect(dbURL, { 
+    // mongoose.connect(dbURL, {
+    //     useNewUrlParser: true,
+    //     useUnifiedTopology: true,
+    //     //poolSize: 5
+    // })
+    mongoose.connect(dbURL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        poolSize: 5
-    })
+        serverSelectionTimeoutMS: 10000
+    }).catch(err => console.log(err.reason));
 }
-async function close() {
-    await mongoose.connection.close()
+function close() {
+    mongoose.connection.close()
 }
-module.exports = { mongoose: mongoose, connect: connect, close:close }
+module.exports = { mongoose: mongoose, connect: connect, close: close }
