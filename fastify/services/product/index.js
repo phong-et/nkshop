@@ -163,12 +163,8 @@ module.exports = async function (fastify, opts, next) {
                     await Review.insertMany(filteredReviews)
             }
             // write log onleave and off 
-            if ((product.meta && product.onLeave) || product.status !== 1)
-                ProductLog.insert({ id: product.id, date: new Date().getTime() })
-
-            //oldReviewIds.sort((a, b) => a - b)
-            //currentReviewIds.sort((a, b) => a - b)
-            //newReviewIds.sort((a, b) => a - b)
+            // if ((product.meta && product.onLeave) || product.status !== 1)
+            //     await ProductLog.insert({ id: product.id, date: new Date().getTime() })
             reply.send({
                 //oldReviewIds: oldReviewIds,
                 //currentReviewIds: currentReviewIds,
