@@ -100,12 +100,12 @@ async function fetchImagesOfProduct(productJson) {
             downloadImage(fileName, url, () => { })
             // download cover image
             if (e.type === 'cover') {
-                log('download cover')
                 let productId = productJson.id,
                     dir = DIR_PRODUCTS + productId + '/',
                     url = e.data.dimensions.small.url,
                     fileName = dir + url.substring(url.lastIndexOf('/') + 1)
-                log(fileName)
+                //log(fileName)
+                log('Downloaded cover')
                 downloadImage(fileName, url, () => { })
             }
         })
