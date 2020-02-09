@@ -42,8 +42,9 @@ function connect() {
     mongoose.connect(dbURL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        //serverSelectionTimeoutMS: 30000
-    }).catch(err => console.log(err.reason));
+        //serverSelectionTimeoutMS: 150000
+    })
+    //.catch(err => console.log(err.reason));
 }
 function close() {
     mongoose.connection.close()
