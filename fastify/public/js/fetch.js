@@ -70,4 +70,10 @@ function fetchLastProductId() {
         }
     });
 }
+function genListId(startId, endId) {
+    var listId = [];
+    for (i = startId + 1; i <= endId; i++)
+        listId.push(i)
+    return listId
+}
 ///////////////////////////////////// FETCH REVIEW /////////////////////////////////////
