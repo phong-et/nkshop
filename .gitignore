@@ -1,7 +1,7 @@
 
 node_modules/
 
-products/
+api/public/products/
 
 nk\.cfg\.js
 
@@ -40,3 +40,5 @@ fastify/public/js/gen.js
 fastify/public/js/cd.js
 
 api/public/img/bg/
+
+api/public/js/cd.js
