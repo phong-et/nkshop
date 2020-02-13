@@ -131,12 +131,14 @@ function fetchImagesOfReview(reviewJsonPhotos, productId) {
         shell.mkdir("-p", dir);
         //reviewJson.data.review.photos
         reviewJsonPhotos.forEach(e => {
-            //let dir = DIR_PRODUCTS + productId + '/' + DIR_REVIEWS
             let url = e.data.dimensions.original.url
+            //// new review url
             let encodeUrl = url.substring(0, url.lastIndexOf('review-of-') + 1) + encodeURIComponent(url.substring(url.lastIndexOf('review-of-') + 1, url.length))
+            //// old review url
             // let domainTemp = cfg.reviewImageUrl
             // let encodeUrl = domainTemp + encodeURIComponent(url.substring(url.lastIndexOf('review-of-'), url.length))
-            log(encodeUrl);
+
+            log(encodeUrl)
             let fileName = dir + url.substring(url.lastIndexOf('/') + 1)
             downloadImage(fileName, encodeUrl, () => { })
         })

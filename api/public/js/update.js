@@ -48,6 +48,8 @@ function updateReviews(productId, btn, index, callback) {
         timeout: 150000,
         error: function (error) {
             log(error)
+            if (index) globalErrorProducts.push(globalProducts[index])
+            //setProductItemStatus(productItem, statusId, index, error)
             if (callback) callback(false, { position: 'error at updateReviews ajax ', error: error })
         }
     })

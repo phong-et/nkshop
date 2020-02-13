@@ -5,7 +5,7 @@
   "main": "nk.cfg.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cd fastify && npm start"
+    "start": "cd api && npm start"
   },
   "author": "",
   "license": "ISC",

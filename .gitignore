@@ -38,3 +38,5 @@ fastify/public/js/commits.json
 fastify/public/js/gen.js
 
 fastify/public/js/cd.js
+
+api/public/img/bg/
