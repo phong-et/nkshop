@@ -47,7 +47,7 @@ function connect() {
     })
     .catch(err => console.log(err.reason));
 }
-function close() {
-    mongoose.connection.close()
+async function close() {
+    await mongoose.connection.close()
 }
 module.exports = { mongoose: mongoose, connect: connect, close: close }

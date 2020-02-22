@@ -23,7 +23,7 @@ async function fetchCities(countryId) {
             .exec()
         log('cities.length=%s', cities.length)
         //log(districts)
-        db.close()
+        await db.close()
         return cities
     } catch (error) {
         log(error)

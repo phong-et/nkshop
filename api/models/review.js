@@ -48,7 +48,7 @@ async function insert(jsonReview) {
         common.convertStringToNumber(jsonReview)
         let review = new Review(jsonReview)
         await review.save()
-        db.close()
+        await db.close()
         log("Saved to %s collection.", review.collection.name);
     } catch (error) {
         log(error)
@@ -61,7 +61,7 @@ async function insertMany(jsonReviews) {
         //log(jsonReviews)
         await Review.insertMany(jsonReviews)
         log("Saved all to %s collection.", Review.collection.name);
-        db.close()
+        await db.close()
     } catch (error) {
         log(error)
     }
@@ -77,10 +77,10 @@ async function fetchReviewIdsOfProduct(productId) {
             query,
             'id productId'
         )
-            .sort({ timeStamp: -1 })
-            .exec()
+        .sort({ timeStamp: -1 })
+        .exec()
         log('reviews.length=%s', reviews.length)
-        db.close()
+        await db.close()
         return reviews.map(review => review.id)
     } catch (error) {
         log(error)
@@ -96,7 +96,7 @@ async function fetchProductIdByReviewDay(reviewDay) {
         log(query)
         db.connect()
         let reviews = await Review.find(query, 'id productId').exec()
-        db.close()
+        await db.close()
         log(reviews)
         return reviews.map(review => review.productId);
     } catch (error) {
@@ -118,7 +118,7 @@ async function fetchReviewsOfProduct(productId) {
             .sort({ timeStamp: -1 })
             .exec()
         log('reviews.length=%s', reviews.length)
-        db.close()
+        await db.close()
         return reviews
     } catch (error) {
         log(error)
@@ -133,7 +133,7 @@ async function fetchReviewsByDate(date) {
         log(query)
         db.connect()
         let reviews = await Review.find(query, 'photos title entityId userId score timeStamp active message upVoteCount downVoteCount id phone visiteTime location productId').exec()
-        db.close()
+        await db.close()
         log(reviews)
         return reviews
     } catch (error) {

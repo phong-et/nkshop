@@ -94,7 +94,7 @@ async function insert(jsonProductDetail) {
     productDetail = new ProductDetail(jsonProductDetail)
     productDetail = await productDetail.save()
     log(productDetail.id + " saved to %s collection.", COLLECTION_NAME)
-    db.close()
+    await db.close()
   } catch (error) {
     log(error)
   }
@@ -105,7 +105,7 @@ async function updateByModelId(id, jsonProductDetail, ratingCountTotal) {
     common.convertStringToNumber(jsonProductDetail)
     jsonProductDetail.ratingCountTotal = ratingCountTotal
     await ProductDetail.findByIdAndUpdate(id, jsonProductDetail)
-    db.close()
+    await db.close()
     log(id + " Updated to %s collection.", COLLECTION_NAME)
   } catch (error) {
     log(error)
@@ -119,7 +119,7 @@ async function update(productId, jsonProductDetail, ratingCountTotal) {
     //delete jsonProductDetail.phone
     await ProductDetail.findOneAndUpdate({ id: productId }, jsonProductDetail)
     log(`Updated productId=${productId} to ${COLLECTION_NAME} collection`)
-    db.close()
+    await db.close()
   } catch (error) {
     log(error)
   }
@@ -128,7 +128,7 @@ async function deleteProduct(productId) {
   try {
     db.connect()
     await ProductDetail.findOneAndDelete({ id: productId })
-    db.close()
+    await db.close()
     log(productId + " Delete to %s collection.", COLLECTION_NAME)
   } catch (error) {
     log(error)
@@ -144,7 +144,7 @@ async function fetchProductByIds(ids) {
     db.connect()
     let products = await ProductDetail.find(query, 'id name price ratingCount ratingScore lastUpdateStamp status attributes phone districtId cover ratingCountTotal author').exec()
     log(products.length)
-    db.close()
+    await db.close()
     return products
   } catch (error) {
     log(error)
@@ -177,7 +177,7 @@ async function findProductByConditions(conditions, productIds) {
       query,
       'id name price ratingCount ratingScore lastUpdateStamp status attributes phone districtId cityId cover ratingCountTotal author meta'
     ).exec()
-    db.close()
+    await db.close()
     return products
   } catch (error) {
     log(error)
@@ -188,7 +188,7 @@ async function fetchLatestProductId() {
   try {
     db.connect()
     let products = await ProductDetail.find({}, 'id').exec()
-    db.close()
+    await db.close()
     return _.maxBy(products, 'id').id
   } catch (error) {
     log(error)
