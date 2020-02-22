@@ -75,7 +75,8 @@ $().ready(function () {
                     globalProducts = products
                     var typeSorting = $('#ddlSorting option:selected').val()
                     $('#productTitleCount').text(`Product Result [${products.length}]`)
-                    drawProduct(sort(typeSorting, products))
+                    globalProducts = sort(typeSorting, products)
+                    drawProduct(globalProducts)
                     //log(`[${products.map(product => product.id).sort((a, b) => a - b).toString()}]`)
                     //log(products.map(product => product.id).sort((a, b) => a - b).toString())
                 } catch (e) {
@@ -88,7 +89,7 @@ $().ready(function () {
             }
         });
     })
- 
+
     $('#ddlCity').change(function () {
         genDistricts(this.value)
     })
@@ -165,7 +166,7 @@ $().ready(function () {
             $('#cbIsFetchImageProduct').prop('checked', true)
         }
     })
-   
+
 })
 // use for button update all product
 function getQueryConditions() {
@@ -192,12 +193,21 @@ function getQueryConditions() {
     if ($('#cbRatingCount').is(':checked'))
         query.push(`ratingCount ${$('#conditionsRatingCount option:selected').text()} ${$('#txtRatingCount').val()}`)
     if ($('#cbStatus').is(':checked')) {
-        var status = parseInt($('#ddlStatus option:selected').val())
-        if (status === 3) {
-            query.push('meta !== undefined')
-            query.push(`meta.onLeave === true`)
+        var statusId = +$('#ddlStatus option:selected').val()
+        switch (statusId) {
+            case 3:
+                query.push('meta !== undefined')
+                query.push(`meta.onLeave === true`)
+                break
+            case 2: 
+                query.push('meta !== undefined')
+                query.push(`meta.onLeave === undefined`)
+                //query.push(`meta.onLeave === false`)
+                query.push(`status === ${statusId}`)
+                break
+            default: query.push(`status === ${statusId}`)
+                break
         }
-        else query.push(`status === ${status}`)
     }
     if ($('#cbPhotoCount').is(':checked'))
         query.push(`photos.length ${$('#conditionsPhotoCount option:selected').text()} ${$('#txtPhotoCount').val()}`)
