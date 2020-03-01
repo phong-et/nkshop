@@ -60,14 +60,11 @@ profile*
 # generated code
 examples/typescript-server.js
 test/types/index.js
-
-nk.cfg.js
-
 public/img/bg/
-
 public/js/cd.js
-
 public/js/commits.json
 public/products/
-
 note
+nk.cfg.bk.js
+*.zip
+ecr.js
