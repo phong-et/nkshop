@@ -1,5 +1,5 @@
-let nk = require('../nk')
-let cfg = require('../nk.cfg')
+let nk = require('./nk')
+let cfg = require('./nk.cfg')
 let Product = require('../fastify/models/product')
 const log = console.log
 

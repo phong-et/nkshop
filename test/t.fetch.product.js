@@ -1,5 +1,5 @@
-let nk = require('../nk'),
-cfg = require('../nk.cfg'),
+let nk = require('./nk'),
+cfg = require('./nk.cfg'),
 Product = require('./api/model/product')
 // fetch
 // nk.fetchProducts(cfg.productUrl,

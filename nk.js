@@ -7,7 +7,7 @@ let cfg = require('./nk.cfg.js'),
     rp = cfg.activedCF ? require('cloudscraper') : require('request-promise'),
     request = require('request'),
     fs = require('fs')
-const DIR_PRODUCTS = cfg.productFolder + '\\'
+const DIR_PRODUCTS = __dirname + cfg.productFolder + '/'
 const DIR_REVIEWS = 'reviews/'
 
 //////////////////////////////////////////// UTIL ///////////////////////////////////////////

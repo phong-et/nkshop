@@ -1,8 +1,8 @@
 // fetch product include product(save to disk), image product, review(save to disk), image review
 let productIdList = [
 ],
-    nk = require('../nk'),
-    cfg = require('../nk.cfg'),
+    nk = require('./nk'),
+    cfg = require('./nk.cfg'),
     ProductDetail = require('../fastify/models/productDetail'),
     Review = require('../fastify/models/review'),
     log = console.log

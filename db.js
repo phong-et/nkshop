@@ -2,7 +2,7 @@ let mongoose = require('mongoose'),
     //require chalk module to give colors to console text
     chalk = require('chalk'),
     //require database URL from properties file
-    dbURL = require('../nk.cfg').dbUrl,
+    dbURL = require('./nk.cfg').dbUrl,
     // color
     connected = chalk.bold.cyan,
     error = chalk.bold.yellow,

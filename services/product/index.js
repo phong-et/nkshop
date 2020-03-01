@@ -1,12 +1,12 @@
 'use strict'
 let log = console.log,
     ProductDetail = require('../../models/productDetail'),
-    ProductLog = require('../../models/productLog'),
+    //ProductLog = require('../../models/productLog'),
     Review = require('../../models/review'),
     District = require('../../models/district'),
     City = require('../../models/city'),
-    cfg = require('../../../nk.cfg'),
-    nk = require('../../../nk'),
+    cfg = require('../../nk.cfg'),
+    nk = require('../../nk'),
     rimraf = require('rimraf')
 function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, productIds, callback) {
     try {
@@ -98,7 +98,11 @@ module.exports = async function (fastify, opts, next) {
     fastify.get('/products/openFolder/:productId', function (request, reply) {
         //log('------ request.params --------')
         log(request.params)
-        require('child_process').exec('start ' + cfg.productFolder + '\\' + request.params.productId)
+        let path = require('path');
+        let pathFolder = path.dirname(require.main.filename).split(path.sep)
+        pathFolder.pop()
+        pathFolder.pop()
+        require('child_process').exec('start ' + pathFolder.join('/') +  cfg.productFolder + '/' + request.params.productId)
         reply.send(true)
     })
 
@@ -128,7 +132,8 @@ module.exports = async function (fastify, opts, next) {
                 oldReviewIds = await Review.fetchReviewIdsOfProduct(productId),
                 product = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
                 currentReviewIds = await nk.fetchReviewIdsOfProduct(cfg.reviewUrl, productId, product.ratingCount),
-                newReviewIds = oldReviewIds.length > 0 ? currentReviewIds.filter(value => !oldReviewIds.includes(value)) : [],
+                //newReviewIds = oldReviewIds.length > 0 ? currentReviewIds.filter(value => !oldReviewIds.includes(value)) : [],
+                newReviewIds = currentReviewIds.filter(value => !oldReviewIds.includes(value)), 
                 totalReviewIds = currentReviewIds.concat(oldReviewIds)
 
             totalReviewIds = [...new Set(totalReviewIds)]
@@ -270,7 +275,11 @@ module.exports = async function (fastify, opts, next) {
         try {
             let productId = request.params.productId
             log('delete productId = ' + productId)
-            var pathFolder = cfg.productFolder + productId
+            let path = require('path');
+            let pathFolder = path.dirname(require.main.filename).split(path.sep)
+            pathFolder.pop()
+            pathFolder.pop()
+            pathFolder = pathFolder.join('/') + cfg.productFolder + productId
             log('pathFolder', pathFolder)
             rimraf(pathFolder, function (e) {
                 log(e)

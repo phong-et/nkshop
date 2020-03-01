@@ -1,24 +1,29 @@
 {
-  "name": "nk",
+  "name": "nkapi",
   "version": "1.0.0",
   "description": "",
-  "main": "nk.cfg.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cd api && npm start"
+  "main": "app.js",
+  "directories": {
+    "test": "test"
   },
+  "scripts": {
+    "test": "tap test/**/*.test.js",
+    "start": "fastify start -l info app.js",
+    "dev": "fastify start -l info -P app.js"
+  },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chalk": "^2.4.2",
-    "cheerio": "^1.0.0-rc.3",
-    "cloudscraper": "^4.5.0",
-    "eval": "^0.1.4",
-    "mongoose": "^5.7.6",
-    "mongoose-sequence": "^5.2.2",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.4",
-    "rimraf": "^3.0.0",
-    "shelljs": "^0.8.3"
+    "fastify": "^2.12.0",
+    "fastify-autoload": "^1.2.1",
+    "fastify-cli": "^1.4.0",
+    "fastify-plugin": "^1.6.0",
+    "fastify-static": "^2.6.0",
+    "lodash": "^4.17.15",
+    "mongoose": "^5.8.12"
+  },
+  "devDependencies": {
+    "tap": "^12.5.3"
   }
 }
