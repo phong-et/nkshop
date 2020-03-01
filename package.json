@@ -15,20 +15,20 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cloudscraper": "*",
+    "cloudscraper": "^4.6.0",
     "crypto-js": "^4.0.0",
-    "fastify": "*",
-    "fastify-autoload": "*",
-    "fastify-cli": "*",
-    "fastify-plugin": "*",
-    "fastify-static": "*",
-    "lodash": "*",
-    "mongoose": "*",
-    "mongoose-sequence": "*",
-    "request": "*",
-    "request-promise": "*",
-    "rimraf": "*",
-    "shelljs": "*"
+    "fastify": "^2.12.1",
+    "fastify-autoload": "^1.2.2",
+    "fastify-cli": "^1.4.0",
+    "fastify-plugin": "^1.6.1",
+    "fastify-static": "^2.6.0",
+    "lodash": "^4.17.15",
+    "mongoose": "^5.9.2",
+    "mongoose-sequence": "^5.2.2",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5",
+    "rimraf": "^3.0.2",
+    "shelljs": "^0.8.3"
   },
   "devDependencies": {
     "tap": "^14.10.6"
