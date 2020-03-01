@@ -343,7 +343,7 @@ function drawProduct(products) {
             _city = globalCities[product.cityId],
             _onleave = product.meta && product.meta["onLeave"] ? '(on leave)' : '',
             _status = product.status
-        _cover = $('#cbUseCoverUrl').is(':checked') ? globalConfiguration.coverUrl + _cover : `/public/products/${product.id}/${_cover}`
+        _cover = $('#cbUseCoverUrl').is(':checked') ? globalConfiguration.coverUrl + _cover : `/products/${product.id}/${_cover}`
         strHtml = strHtml + `
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
