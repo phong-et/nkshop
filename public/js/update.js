@@ -1,4 +1,4 @@
-let updatedSpiner;
+let STOP = false, updatedSpiner
 $().ready(function () {
     updatedSpiner = $('#btnUpdateReviewsAllProducts').children().eq(0)
     $('#btnUpdateReviewsAllProducts').click(function () {
@@ -8,7 +8,20 @@ $().ready(function () {
         }
     })
 })
-
+var START = true;
+function stopSyncReview() {
+    if(START){
+        STOP = true
+        $('#btnStopSync').html('<i class="fa fa-play"></i> Start Sync')
+        START = false
+    }
+    else{
+        STOP = false
+        $('#btnStopSync').html('<i class="fa fa-stop"></i> Stop Sync')
+        $('#btnUpdateReviewsAllProducts').trigger('click')
+        START = true
+    }
+}
 function updateReviews(productId, btn, index, callback) {
     let spiner = $(btn).parent().prev()
     $(btn).parent().parent().parent().addClass('active')
@@ -67,12 +80,19 @@ function updateReiewsProducts(index, limitIndex) {
             log(JSON.stringify(error))
 
         index++
-        if (index < limitIndex)
+        if (index < limitIndex && !STOP)
             updateReiewsProducts(index, limitIndex)
         else {
+            if (STOP) {
+                $('#txtStartIndexUpdateReviews').val(index);
+                //alert('Stopped Sync')
+            }
+            else {
+                alert('Done Update Reviews All Product')
+                log('Done Update Reviews All Product')
+            }
             updatedSpiner.prop('class', 'fa fa-refresh')
-            alert('Done Update Reviews All Product')
-            log('Done Update Reviews All Product')
+
         }
     })
 }

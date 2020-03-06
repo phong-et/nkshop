@@ -222,7 +222,7 @@ module.exports = async function (fastify, opts, next) {
         let productId = await ProductDetail.fetchLatestProductId()
         reply.send(productId)
     })
-
+    // 30131
     // fastify.get('/products/add/:id', async function (request, reply) {
     //     try {
     //         let id = request.params.id
