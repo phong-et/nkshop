@@ -113,6 +113,30 @@ async function fetchImagesOfProduct(productJson) {
         log(error)
     }
 }
+function fetchCoverImagesOfProduct(productJson) {
+    try {
+        let coverUrl = ''
+        productJson.photos.forEach(e => {
+            if (e.type === 'cover') {
+                let productId = productJson.id,
+                    dir = DIR_PRODUCTS + productId + '/',
+                    url = e.data.dimensions.small.url,
+                    fileName = url.substring(url.lastIndexOf('/') + 1)
+                log(fileName)
+                shell.mkdir("-p", dir);
+                downloadImage(dir + fileName, url, () => { 
+                    
+                })
+                log('Downloaded cover')
+                coverUrl = cfg.productFolder + productId + '/' + fileName
+            }
+        })
+        return coverUrl;
+    } catch (error) {
+        log(error)
+    }
+}
+
 async function fetchProducts(url, productIds) {
     try {
         for (let i = 0; i < productIds.length; i++) {
@@ -385,6 +409,7 @@ module.exports = {
     fetchReviewIdsOfProduct: fetchReviewIdsOfProduct,
     fetchReviewsOfProductSafe: fetchReviewsOfProductSafe,
 
+    fetchCoverImagesOfProduct: fetchCoverImagesOfProduct,
     wait: wait,
     delay: delay,
     downloadImage: downloadImage

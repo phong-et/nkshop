@@ -268,4 +268,20 @@ router.get('/review/:productId', async function (req, res) {
     })
   }
 })
+router.get('/update/cover/:productId', async function (req, res) {
+  log(req.params)
+  try {
+    let productId = req.params.productId,
+      jsonProduct = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
+      coverUrl = nk.fetchCoverImagesOfProduct(jsonProduct)
+      log(coverUrl)
+    res.send({
+      coverUrl
+    })
+  } catch (error) {
+    res.send({
+      error
+    })
+  }
+})
 module.exports = router;

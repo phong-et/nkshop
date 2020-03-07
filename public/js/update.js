@@ -10,17 +10,32 @@ $().ready(function () {
 })
 var START = true;
 function stopSyncReview() {
-    if(START){
+    if (START) {
         STOP = true
         $('#btnStopSync').html('<i class="fa fa-play"></i> Start Sync')
         START = false
     }
-    else{
+    else {
         STOP = false
         $('#btnStopSync').html('<i class="fa fa-stop"></i> Stop Sync')
         $('#btnUpdateReviewsAllProducts').trigger('click')
         START = true
     }
+}
+function updateCover(productId) {
+    $.ajax({
+        url: '/products/update/cover/' + productId,
+        type: 'GET',
+        success: function (data) {
+            setTimeout(() => {
+                $('#cover-product-' + productId).prop('src', data.coverUrl.substr(8))
+            }, 3000)
+        },
+        timeout: 150000,
+        error: function (error) {
+            log(error)
+        }
+    })
 }
 function updateReviews(productId, btn, index, callback) {
     let spiner = $(btn).parent().prev()
