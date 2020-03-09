@@ -1,33 +1,36 @@
 "# nkshop" 
 
 # Features in Future
-
-- Server RESTful API to fetch, statistic product by multi-conditions
-- Client Single Page to view, filter, statistic product
-- Server GraphQL to insert delete update product, review
+    - Sync review
+    - Latest review page
+    - Fetch new product
+    - Statistic charts
+    - Admin page (desktop)
+    - User page (mobile)
 
 # Server RESTful API
-
-- fetchProductByPriceAndReviewCount 
-    - input range of page to statistic
-    - data json return :
-        ```js
-        {
-            productId:1234,
-            Price:'100$',
-            ratringCount:5
-            title:'Product title'
-        }
-        ``` 
-
-# Server GraphQL
- - Don't use Sequelize. Because It's a promise-based ORM(Object Relational Mapping). Examples of ORMs are nHibernate, Entity Framework, Dapper and more...
- - Mongodb is a ODM (Object Document Mapper) so we can't apply ORM tool to Mongodb
+- Server RESTful API
+    - products: 
+        - /review/update/:productId
+        - /currentreviews/:productId
+        - /latest
+        - /add
+        - /new/listid/:pageRange
+        ...
 
 # Knowledge
-
-# Bypass cloudflare JS challenge
-    This site was built using [GitHub Pages](https://pages.github.com/).
+    - Don't use Sequelize. Because It's a promise-based ORM(Object Relational Mapping). Examples of ORMs are nHibernate, Entity Framework, Dapper and more...
+    - Mongodb is a ODM (Object Document Mapper) so we can't apply ORM tool to Mongodb
+    - Bypass cloudflare JS challenge
+    - Recursive return value
+    - Recursive delete all files and folders.
+    - Clean code 
+    - Design pattern
+        - Core lib
+        - Each function is one task.
+    - fastify vs express 
+        - fastify : don't work with ip and linux 
+        - express is more better
 
 # Test output all date functions
     d.toLocaleDateString() => 11/14/2019
