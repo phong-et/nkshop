@@ -343,17 +343,17 @@ function drawProduct(products) {
             _city = globalCities[product.cityId],
             _onleave = product.meta && product.meta["onLeave"] ? '(on leave)' : '',
             _status = product.status
-        _cover = $('#cbUseCoverUrl').is(':checked') ? globalConfiguration.coverUrl + _cover : `/public/products/${product.id}/${_cover}`
+        _cover = $('#cbUseCoverUrl').is(':checked') ? globalConfiguration.coverUrl + _cover : `/products/${product.id}/${_cover}`
         strHtml = strHtml + `
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
             <div class="productIdName">
             <i class="fa fa-user"></i>
             <a href="#" onclick="openTabProduct('${product.id}'); return false;">[${product.id}]</a>
-            <span class="productName"> ${product.name}</span>
+            <span class="productName"> ${product.name}</span> <img style="cursor:pointer" onclick="updateCover('${product.id}')" src="img/refresh-cover.png" />
             </div>
             <div class="productCover">
-                ${($('#cbHideProductCover').is(':checked') ? '' : `<img src="${_cover}">`)}
+                ${($('#cbHideProductCover').is(':checked') ? '' : `<img id="cover-product-${product.id}" src="${_cover}">`)}
             </div>
             <div class="productInfo">
                 <i class="fa fa-money"></i><span class="productPrice">${product.price / 100}<label class="productUnitPrice"> RM</label></span>

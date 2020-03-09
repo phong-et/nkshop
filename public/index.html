@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -119,7 +120,8 @@
                 <label style="margin-left:0;" id="lbName">Name: </label>
                 <input style="width:250px !important;" type="text" class="form-control" id="txtName" placeholder="name">
                 <label style="margin-left:0;" id="lbPhone">Phone: </label>
-                <input style="width:117px !important;" type="text" class="form-control" id="txtPhone" placeholder="Phone">
+                <input style="width:117px !important;" type="text" class="form-control" id="txtPhone"
+                    placeholder="Phone">
             </fieldset>
 
             <fieldset class="query-group">
@@ -232,6 +234,9 @@
                 Search</button>
             <button id="btnUpdateReviewsAllProducts" type="button" class="btn btn-primary btn-small"><i
                     class="fa fa-refresh"></i><span></span> Sync Reviews</button>
+            <button onclick="stopSyncReview()" id="btnStopSync" type="button" class="btn btn-primary btn-small"><i
+                    class="fa fa-stop"></i>
+                Stop Sync</button>&nbsp;&nbsp;
             <input type="number" class="form-control" value="0" id="txtStartIndexUpdateReviews" placeholder="number" />
             <input class="inputSettings" type="checkbox" id="cbIsFetchImageProduct">
             <label>Fetch Image Product &nbsp;</label>
@@ -315,7 +320,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
-    </script>
+        </script>
     <script src="js/bootstrap-datepicker.min.js"></script>
     <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
@@ -328,4 +333,5 @@
     <script src="js/delete.js"></script>
     <script src="js/update.js"></script>
 </body>
+
 </html>

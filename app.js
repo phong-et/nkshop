@@ -1,32 +1,41 @@
-'use strict'
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
 
-const path = require('path')
-const AutoLoad = require('fastify-autoload')
-const Static = require('fastify-static')
-module.exports = function (fastify, opts, next) {
-  // Place here your custom code!
-  fastify.register(Static, {
-    root: path.join(__dirname, 'public'),
-    prefix: '/public/', // optional: default '/'
-  })
+var indexRouter = require('./routes/index');
+var productRouter = require('./routes/product');
 
-  // Do not touch the following lines
+var app = express();
 
-  // This loads all plugins defined in plugins
-  // those should be support plugins that are reused
-  // through your application
-  fastify.register(AutoLoad, {
-    dir: path.join(__dirname, 'plugins'),
-    options: Object.assign({}, opts)
-  })
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
 
-  // This loads all plugins defined in services
-  // define your routes in one of these
-  fastify.register(AutoLoad, {
-    dir: path.join(__dirname, 'services'),
-    options: Object.assign({}, opts)
-  })
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
-  // Make sure to call next when done
-  next()
-}
+app.use('/', indexRouter);
+app.use('/products', productRouter);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+
+module.exports = app;
