@@ -1,16 +1,23 @@
 "# nkshop" 
 
 # Features in Future
-    - Sync review
-    - Latest review page
-    - Fetch new product
-    - Statistic charts
-    - Admin page (desktop)
-    - User page (mobile)
+- Sync review
+- Latest review page
+- Fetch new product
+- Statistic charts
+- Admin page (desktop)
+- User page (mobile)
+- Encrypt 
+    - key start server.
+        - only release one time when server start 
+            if(!key) = await requestKey('url')
+        - only 
+    - encrypt request param & response data
+- Authenticate admin user
 
 # Server RESTful API
 - Server RESTful API
-    - products: 
+    - products/
         - /review/update/:productId
         - /currentreviews/:productId
         - /latest
