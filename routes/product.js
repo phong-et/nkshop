@@ -2,10 +2,8 @@ let express = require('express'),
   router = express.Router(),
   log = console.log,
   ProductDetail = require('../models/productDetail'),
-  //ProductLog = require('../models/productLog'),
+  ProductLog = require('../models/productLog'),
   Review = require('../models/review'),
-  //District = require('../models/district'),
-  //City = require('../models/city'),
   cfg = require('../nk.cfg'),
   nk = require('../nk')
 //rimraf = require('rimraf')
@@ -182,9 +180,7 @@ router.get('/currentreviews/:productId', async function (req, res) {
       currentReviewIds: currentReviewIds,
     })
   } catch (error) {
-    res.send({
-      error
-    })
+    res.send({ error })
   }
 })
 
@@ -259,13 +255,9 @@ router.get('/review/:productId', async function (req, res) {
   try {
     let productId = req.params.productId,
       reviews = await Review.fetchReviewsOfProduct(productId)
-    res.send({
-      reviews: reviews,
-    })
+    res.send({ reviews: reviews, })
   } catch (error) {
-    res.send({
-      error
-    })
+    res.send({ error })
   }
 })
 router.get('/update/cover/:productId', async function (req, res) {
@@ -274,14 +266,20 @@ router.get('/update/cover/:productId', async function (req, res) {
     let productId = req.params.productId,
       jsonProduct = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
       coverUrl = nk.fetchCoverImagesOfProduct(jsonProduct)
-      log(coverUrl)
-    res.send({
-      coverUrl
-    })
+    //log(coverUrl)
+    res.send({ coverUrl })
   } catch (error) {
-    res.send({
-      error
-    })
+    res.send({ error })
+  }
+})
+router.get('/update/logs/', async function (req, res) {
+  log(req.body.logs)
+  try {
+    let logs = req.body.logs
+    await ProductLog.insertMany(logs)
+    res.send({ success: true })
+  } catch (error) {
+    res.send({ error })
   }
 })
 module.exports = router;

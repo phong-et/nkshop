@@ -1,4 +1,4 @@
-let STOP = false, updatedSpiner
+let STOP = false, updatedSpiner, logs = []
 $().ready(function () {
     updatedSpiner = $('#btnUpdateReviewsAllProducts').children().eq(0)
     $('#btnUpdateReviewsAllProducts').click(function () {
@@ -66,6 +66,7 @@ function updateReviews(productId, btn, index, callback) {
                 statuser.eq(0).text(globalConfiguration.statuses[statusId])
                 setProductItemStatus(productItem, statusId, index)
                 log(data)
+                if (statusId !== 1) logs.push({ productId: productId, status: statusId, date: new Date().getTime() })
                 if (callback) callback(true)
             } catch (error) {
                 log(error)
@@ -105,6 +106,14 @@ function updateReiewsProducts(index, limitIndex) {
             else {
                 alert('Done Update Reviews All Product')
                 log('Done Update Reviews All Product')
+                request('POST', 'products/update/logs', {
+                    success: function (data) {
+                        alert(data)
+                    },
+                    error: function (err) {
+                        log(err)
+                    }, logs
+                })
             }
             updatedSpiner.prop('class', 'fa fa-refresh')
 
