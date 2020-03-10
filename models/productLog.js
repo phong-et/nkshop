@@ -2,50 +2,41 @@ const db = require('../db')
 const mongoose = db.mongoose
 const Schema = mongoose.Schema
 const log = console.log
-const common = require('./common')
 const COLLECTION_NAME = 'product_logs'
-const _ = require('lodash')
 const productLogSchema = new Schema({
-  id: Number,
-  name: String,
-  price: Number,
+  productId: Number,
   status: Number,
-  lastUpdateStamp: Number,
-  districtId: Number,
-  cityId: Number,
-  ratingCount: Number,
-  ratingCountTotal: Number,
-  date: Number
+  date: String
 })
 const ProductLog = mongoose.model('ProductLog', productLogSchema, COLLECTION_NAME)
-async function insert(json) {
+async function insertMany(jsonProductLogs) {
   try {
     db.connect()
-    common.convertStringToNumber(json)
-    let productLog = new ProductLog(json)
-    productLog = await productLog.save()
+    await ProductLog.insertMany(jsonProductLogs)
     await db.close()
-    log(productLog.id + " saved to %s collection.", COLLECTION_NAME)
+    log('saved to %s collection.', COLLECTION_NAME)
   } catch (error) {
     log(error)
   }
 }
 ///////////////////////////////// Export part /////////////////////////////////
 module.exports = {
-  insert: insert,
+  insertMany: insertMany,
 };
 
 ///////////////////////////////// Testing part /////////////////////////////////
 // (async function () {
-//   log(await insert({
-//     id: 1234,
-//     name: 'String',
-//     price: 1234,
-//     status: 1,
-//     lastUpdateStamp: 12345,
-//     districtId: 30,
-//     cityId: 1,
-//     ratingCount: 1,
-//     ratingCountTotal: 1,
-//   }))
+//   await insertMany([{
+//     productId:1234,
+//     status:2,
+//     date: new Date().toJSON()
+//   },{
+//     productId:1234,
+//     status:2,
+//     date: new Date().toJSON()
+//   },{
+//     productId:1234,
+//     status:2,
+//     date: new Date().toJSON()
+//   }])
 // }())
