@@ -87,7 +87,7 @@ module.exports = async function (fastify, opts, next) {
                 productIdsOfReview
             if (reviewDay)
                 productIdsOfReview = await Review.fetchProductIdByReviewDay(reviewDay)
-            let products = await ProductDetail.findProductByConditions(query, productIdsOfReview)
+            let products = await ProductDetail.fetchProductByConditions(query, productIdsOfReview)
             log(products.length)
             reply.send(products)
         } catch (error) {

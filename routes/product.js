@@ -65,7 +65,7 @@ router.get('/findConditions', async function (req, res) {
       productIdsOfReview
     if (reviewDay)
       productIdsOfReview = await Review.fetchProductIdByReviewDay(reviewDay)
-    let products = await ProductDetail.findProductByConditions(query, productIdsOfReview)
+    let products = await ProductDetail.fetchProductByConditions(query, productIdsOfReview)
     log(products.length)
     res.send(products)
   } catch (error) {
