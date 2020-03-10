@@ -134,7 +134,7 @@ async function fetchReviewsByDate(date) {
         db.connect()
         let reviews = await Review.find(query, 'photos title entityId userId score timeStamp active message upVoteCount downVoteCount id phone visiteTime location productId').exec()
         await db.close()
-        log(reviews)
+        log(reviews.length)
         return reviews
     } catch (error) {
         log(error)
