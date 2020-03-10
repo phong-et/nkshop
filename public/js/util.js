@@ -9,7 +9,7 @@ const requestConfig = {
 }
 const log = console.log
 
-function request(type, url, calbackObject, requestPayload) {
+function request(type, url, callbackObject, requestPayload) {
     var ajaxOptions = {
         url: url,
         type: type,
@@ -17,9 +17,9 @@ function request(type, url, calbackObject, requestPayload) {
     }
     if (requestPayload)
         ajaxOptions['data'] = requestPayload
-    if (calbackObject && calbackObject.success)
-        ajaxOptions['success'] = calbackObject.success
-    if (calbackObject && calbackObject.error)
-        ajaxOptions['error'] = calbackObject.error
+    if (callbackObject && callbackObject.success)
+        ajaxOptions['success'] = callbackObject.success
+    if (callbackObject && callbackObject.error)
+        ajaxOptions['error'] = callbackObject.error
     $.ajax(ajaxOptions)
 }
