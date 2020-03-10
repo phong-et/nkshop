@@ -1,6 +1,7 @@
 let express = require('express'),
   router = express.Router()
 const Review = require('../models/review')
+const ProductDetail = require('../models/productDetail')
 
 router.get('/products/:productIds', async function (req, res) {
   log(req.params)
@@ -22,12 +23,14 @@ router.get('/products/:productIds', async function (req, res) {
 router.get('/last', async function (req, res) {
   let reviews = await Review.fetchReviewsByDate(new Date().toJSON().substr(0,10))
   res.send(reviews)
-  //reply.send(`this is latest reviews of ${request.params.day} `)
 })
 
 router.get('/:day', async function (req, res) {
-  let reviews = await Review.fetchReviewsByDate(req.params.day)
-  res.send(reviews)
+  let reviews = await Review.fetchReviewsByDate(req.params.day),
+  productIds = reviews.map(review => review.productId),
+  products = await ProductDetail.fetchProductsByIds(productIds)
+
+  res.send({reviews, products})
 })
 
 module.exports = router;
