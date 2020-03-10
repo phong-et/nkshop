@@ -134,7 +134,7 @@ async function deleteProduct(productId) {
     log(error)
   }
 }
-async function fetchProductByIds(ids) {
+async function fetchProductsByIds(ids) {
   try {
     log(ids)
     var query = {
@@ -151,7 +151,7 @@ async function fetchProductByIds(ids) {
     return []
   }
 }
-async function findProductByConditions(conditions, productIds) {
+async function fetchProductByConditions(conditions, productIds) {
   try {
     //productIds = [26871, 26470]
     var query = {
@@ -198,15 +198,15 @@ async function fetchLatestProductId() {
 ///////////////////////////////// Export part /////////////////////////////////
 module.exports = {
   insert: insert,
-  findProductByConditions: findProductByConditions,
+  fetchProductByConditions: fetchProductByConditions,
   fetchLatestProductId: fetchLatestProductId,
   update: update,
   deleteProduct: deleteProduct,
-  fetchProductByIds: fetchProductByIds
+  fetchProductsByIds: fetchProductsByIds
 };
 
 ///////////////////////////////// Testing part /////////////////////////////////
 //moved t.14
 // (async function () {
-//   log(await fetchProductByIds([8181, 25869]))
+//   log(await fetchProductsByIds([8181, 25869]))
 // }())
