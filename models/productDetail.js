@@ -136,7 +136,7 @@ async function deleteProduct(productId) {
 }
 async function fetchProductsByIds(ids) {
   try {
-    log(ids)
+    //log(ids)
     var query = {
       id: { $in: ids }
     }
