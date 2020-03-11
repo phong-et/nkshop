@@ -272,13 +272,15 @@ router.get('/update/cover/:productId', async function (req, res) {
     res.send({ error })
   }
 })
-router.get('/update/logs/', async function (req, res) {
+router.post('/update/logs', async function (req, res) {
   log(req.body.logs)
   try {
-    let logs = req.body.logs
+    let logs = JSON.parse(req.body.logs)
+    log(logs)
     await ProductLog.insertMany(logs)
     res.send({ success: true })
   } catch (error) {
+    log(error)
     res.send({ error })
   }
 })

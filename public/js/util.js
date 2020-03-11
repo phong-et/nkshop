@@ -15,6 +15,8 @@ function request(type, url, callbackObject, requestPayload) {
         type: type,
         timeout: requestConfig.TIMEOUT
     }
+    if(type === requestType.POST)
+        ajaxOptions['content-type'] = 'application/json'
     if (requestPayload)
         ajaxOptions['data'] = requestPayload
     if (callbackObject && callbackObject.success)
