@@ -8,20 +8,22 @@ const requestConfig = {
     TIMEOUT: 15000
 }
 const log = console.log
-
 function request(type, url, callbackObject, requestPayload) {
     var ajaxOptions = {
         url: url,
         type: type,
         timeout: requestConfig.TIMEOUT
     }
-    if(type === requestType.POST)
-        ajaxOptions['content-type'] = 'application/json'
+    // if(type === requestType.POST){
+    //     ajaxOptions['dataType'] = 'json'
+    //     ajaxOptions['contentType'] = 'application/json'
+    // }
     if (requestPayload)
         ajaxOptions['data'] = requestPayload
     if (callbackObject && callbackObject.success)
         ajaxOptions['success'] = callbackObject.success
     if (callbackObject && callbackObject.error)
         ajaxOptions['error'] = callbackObject.error
+    log(ajaxOptions)
     $.ajax(ajaxOptions)
 }

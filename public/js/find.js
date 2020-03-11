@@ -1,5 +1,5 @@
-let log = console.log,
-    globalProducts = [],
+
+let globalProducts = [],
     globalDistricts = {},
     globalCities = {},
     globalConfiguration = {},
@@ -199,7 +199,7 @@ function getQueryConditions() {
                 query.push('meta !== undefined')
                 query.push(`meta.onLeave === true`)
                 break
-            case 2: 
+            case 2:
                 query.push('meta !== undefined')
                 query.push(`meta.onLeave === undefined`)
                 //query.push(`meta.onLeave === false`)

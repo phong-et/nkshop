@@ -66,7 +66,7 @@ function updateReviews(productId, btn, index, callback) {
                 statuser.eq(0).text(globalConfiguration.statuses[statusId])
                 setProductItemStatus(productItem, statusId, index)
                 log(data)
-                if (statusId !== 1) logs.push({ productId: productId, status: statusId, date: new Date().getTime() })
+                if (statusId !== 1) logs.push({ productId: productId, status: statusId, date: new Date().toJSON() })
                 if (callback) callback(true)
             } catch (error) {
                 log(error)
@@ -106,17 +106,20 @@ function updateReiewsProducts(index, limitIndex) {
             else {
                 alert('Done Update Reviews All Product')
                 log('Done Update Reviews All Product')
+
+            }
+            if (logs.length > 0)
                 request('POST', 'products/update/logs', {
                     success: function (data) {
-                        alert(data)
+                        alert(JSON.stringify(data))
+                        logs = []
                     },
                     error: function (err) {
                         log(err)
-                    }, logs
-                })
-            }
-            updatedSpiner.prop('class', 'fa fa-refresh')
+                    }
+                }, { logs: JSON.stringify(logs) })
 
+            updatedSpiner.prop('class', 'fa fa-refresh')
         }
     })
 }
