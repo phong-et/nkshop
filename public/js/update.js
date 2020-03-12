@@ -28,7 +28,7 @@ function updateCover(productId) {
         type: 'GET',
         success: function (data) {
             setTimeout(() => {
-                $('#cover-product-' + productId).prop('src', data.coverUrl.substr(8))
+                $('#cover-product-' + productId).prop('src', data.coverUrl)
             }, 3000)
         },
         timeout: 150000,

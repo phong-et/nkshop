@@ -115,6 +115,7 @@ router.get('/review/update/:productId', async function (req, res) {
     await ProductDetail.update(productId, product, totalReviewIds.length)
     //if (isFetchImageProduct) nk.fetchImagesOfProduct(product)
     if (product.price >= cfg.minPriceFetchImage && isFetchImageProduct) await nk.fetchImagesOfProduct(product)
+    nk.downloadCoverProduct(nk.findCoverUrl(product))
     log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
     log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
     log(`newReviewIds: ${JSON.stringify(newReviewIds)}`)
@@ -265,8 +266,10 @@ router.get('/update/cover/:productId', async function (req, res) {
   try {
     let productId = req.params.productId,
       jsonProduct = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
-      coverUrl = nk.fetchCoverImageOfProduct(jsonProduct)
-    //log(coverUrl)
+      coverUrl = nk.findCoverUrl(jsonProduct)
+      nk.downloadCoverProduct(coverUrl)
+      coverUrl = coverUrl.substring(coverUrl.lastIndexOf('/') + 1)
+      coverUrl = cfg.coverFolder + coverUrl
     res.send({ coverUrl })
   } catch (error) {
     res.send({ error })

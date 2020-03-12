@@ -88,50 +88,42 @@ async function fetchProduct(url, productId, jsonProduct) {
     }
 }
 
-async function fetchImagesOfProduct(productJson) {
+async function fetchImagesOfProduct(jsonProduct) {
     try {
-        productJson.photos.forEach(e => {
-            let productId = productJson.id,
+        jsonProduct.photos.forEach(e => {
+            let productId = jsonProduct.id,
                 dir = DIR_PRODUCTS + productId + '/',
                 url = e.data.dimensions.original.url,
                 fileName = dir + url.substring(url.lastIndexOf('/') + 1)
 
             shell.mkdir("-p", dir);
             downloadImage(fileName, url, () => { })
-            // download cover image
-            if (e.type === 'cover') {
-                let productId = productJson.id,
-                    dir = DIR_PRODUCTS + productId + '/',
-                    url = e.data.dimensions.small.url,
-                    fileName = dir + url.substring(url.lastIndexOf('/') + 1)
-                //log(fileName)
-                log('Downloaded cover')
-                downloadImage(fileName, url, () => { })
-            }
         })
     } catch (error) {
         log(error)
     }
 }
-function fetchCoverImageOfProduct(productJson) {
+function findCoverUrl(jsonProduct) {
     try {
-        let coverUrl = ''
-        productJson.photos.forEach(e => {
-            if (e.type === 'cover') {
-                let productId = productJson.id,
-                    dir = DIR_PRODUCTS + productId + '/',
-                    url = e.data.dimensions.small.url,
-                    fileName = url.substring(url.lastIndexOf('/') + 1)
-                log(fileName)
-                shell.mkdir("-p", dir);
-                downloadImage(dir + fileName, url, () => { 
-                    
-                })
-                log('Downloaded cover')
-                coverUrl = cfg.productFolder + productId + '/' + fileName
-            }
-        })
-        return coverUrl;
+        for (let i = jsonProduct.photos.length - 1; i > 0; i--) {
+            let e = jsonProduct.photos[i]
+            log(e.data.dimensions.small.url)
+            if (e.type === 'cover')
+                return e.data.dimensions.small.url
+        }
+        return null
+    } catch (error) {
+        log(error)
+    }
+}
+function downloadCoverProduct(coverUrl) {
+    try {
+        //let coverUrl = findCoverUrl(jsonProduct),
+        coverName = coverUrl.substring(coverUrl.lastIndexOf('/') + 1)
+        dir = __dirname + cfg.coverFolder
+        shell.mkdir("-p", dir);
+        downloadImage(dir + coverName, coverUrl, () => { })
+        log('Downloaded cover')
     } catch (error) {
         log(error)
     }
@@ -409,7 +401,8 @@ module.exports = {
     fetchReviewIdsOfProduct: fetchReviewIdsOfProduct,
     fetchReviewsOfProductSafe: fetchReviewsOfProductSafe,
 
-    fetchCoverImageOfProduct: fetchCoverImageOfProduct,
+    downloadCoverProduct: downloadCoverProduct,
+    findCoverUrl: findCoverUrl,
     wait: wait,
     delay: delay,
     downloadImage: downloadImage
