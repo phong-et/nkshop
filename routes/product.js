@@ -265,7 +265,7 @@ router.get('/update/cover/:productId', async function (req, res) {
   try {
     let productId = req.params.productId,
       jsonProduct = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
-      coverUrl = nk.fetchCoverImagesOfProduct(jsonProduct)
+      coverUrl = nk.fetchCoverImageOfProduct(jsonProduct)
     //log(coverUrl)
     res.send({ coverUrl })
   } catch (error) {

@@ -113,7 +113,7 @@ async function fetchImagesOfProduct(productJson) {
         log(error)
     }
 }
-function fetchCoverImagesOfProduct(productJson) {
+function fetchCoverImageOfProduct(productJson) {
     try {
         let coverUrl = ''
         productJson.photos.forEach(e => {
@@ -409,7 +409,7 @@ module.exports = {
     fetchReviewIdsOfProduct: fetchReviewIdsOfProduct,
     fetchReviewsOfProductSafe: fetchReviewsOfProductSafe,
 
-    fetchCoverImagesOfProduct: fetchCoverImagesOfProduct,
+    fetchCoverImageOfProduct: fetchCoverImageOfProduct,
     wait: wait,
     delay: delay,
     downloadImage: downloadImage
