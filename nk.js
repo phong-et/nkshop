@@ -119,14 +119,19 @@ function findCoverUrl(jsonProduct) {
 function downloadCoverProduct(coverUrl) {
     try {
         //let coverUrl = findCoverUrl(jsonProduct),
-        coverName = coverUrl.substring(coverUrl.lastIndexOf('/') + 1)
-        dir = __dirname + cfg.coverFolder
+        let coverName = coverUrl.substring(coverUrl.lastIndexOf('/') + 1),
+            dir = __dirname + cfg.coverFolder
         shell.mkdir("-p", dir);
         downloadImage(dir + coverName, coverUrl, () => { })
         log('Downloaded cover')
     } catch (error) {
         log(error)
     }
+}
+function isExistedCover(coverUrl) {
+    let coverName = coverUrl.substring(coverUrl.lastIndexOf('/') + 1),
+        dir = __dirname + cfg.coverFolder
+    return fs.existsSync(dir + coverName)
 }
 
 async function fetchProducts(url, productIds) {
@@ -403,6 +408,8 @@ module.exports = {
 
     downloadCoverProduct: downloadCoverProduct,
     findCoverUrl: findCoverUrl,
+    isExistedCover: isExistedCover,
+    
     wait: wait,
     delay: delay,
     downloadImage: downloadImage
