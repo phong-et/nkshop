@@ -50,8 +50,11 @@ function updateReviews(productId, btn, index, callback) {
         },
         success: function (data) {
             try {
+                // stop icon spin and blinking
                 spiner.prop('class', 'fa fa-refresh')
                 $(btn).parent().parent().parent().removeClass('active')
+
+                // update number review
                 var productItem = $(btn).parent().parent().parent()
                 if (data.newReviewIds.length > 0) {
                     productItem.addClass('reviewUpdated')
@@ -60,12 +63,19 @@ function updateReviews(productId, btn, index, callback) {
                         globalReviewedProduct.push(globalProducts[index])
                 } else
                     $(btn).html(`Updated<span>(0)</span>`)
-
+                
+                // set status background item
                 var statuser = spiner.parent().parent().children().next().next().next().children().next().next().next()
                 var statusId = data.status
                 statuser.eq(0).text(globalConfiguration.statuses[statusId])
                 setProductItemStatus(productItem, statusId, index)
-                log(data)
+
+                // update cover 
+                setTimeout(() => {
+                    $('#cover-product-' + productId).prop('src', data.coverName)
+                }, 2000)
+
+                // set log product
                 if (statusId !== 1) logs.push({ productId: productId, status: statusId, date: new Date().toJSON() })
                 if (callback) callback(true)
             } catch (error) {

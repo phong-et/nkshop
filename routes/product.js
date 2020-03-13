@@ -148,11 +148,14 @@ router.get('/review/update/:productId', async function (req, res) {
     // write log onleave and off 
     // if ((jsonProduct.meta && jsonProduct.onLeave) || jsonProduct.status !== 1)
     //     await ProductLog.insert({ id: jsonProduct.id, date: new Date().getTime() })
+    let coverName = coverUrl.substring(coverUrl.lastIndexOf('/') + 1)
+    coverName = 'covers/' + coverName
     res.send({
       //oldReviewIds: oldReviewIds,
       //currentReviewIds: currentReviewIds,
       newReviewIds: newReviewIds,
-      status: (jsonProduct.meta && jsonProduct.meta.onLeave) ? 3 : jsonProduct.status
+      status: (jsonProduct.meta && jsonProduct.meta.onLeave) ? 3 : jsonProduct.status,
+      coverName
     })
   } catch (error) {
     res.send(error)
