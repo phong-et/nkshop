@@ -42,6 +42,7 @@ async function fetchProductsDetailByListId(url, productIdList, acceptedMinPrice)
         await ProductDetail.insert(jsonProduct)
         let reviewsJson = await nk.fetchReviewsOfProduct(cfg.reviewUrl, productId, jsonProduct.ratingCount)
         await Review.insertMany(reviewsJson)
+        nk.downloadCoverProduct(nk.findCoverUrl(jsonProduct))
         if (jsonProduct.price >= acceptedMinPrice) {
           nk.fetchImagesOfProduct(jsonProduct)
           reviewsJson.forEach(reviewJson => nk.fetchImagesOfReview(reviewJson.photos, productId))
