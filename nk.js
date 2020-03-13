@@ -105,11 +105,14 @@ async function fetchImagesOfProduct(jsonProduct) {
 }
 function findCoverUrl(jsonProduct) {
     try {
-        for (let i = jsonProduct.photos.length - 1; i > 0; i--) {
+        for (let i = jsonProduct.photos.length - 1; i >= 0; i--) {
             let e = jsonProduct.photos[i]
             log(e.data.dimensions.small.url)
-            if (e.type === 'cover')
+            if (e.type === 'cover') {
+                log('cover: %s', e.data.dimensions.small.url)
                 return e.data.dimensions.small.url
+            }
+
         }
         return null
     } catch (error) {
@@ -409,7 +412,7 @@ module.exports = {
     downloadCoverProduct: downloadCoverProduct,
     findCoverUrl: findCoverUrl,
     isExistedCover: isExistedCover,
-    
+
     wait: wait,
     delay: delay,
     downloadImage: downloadImage
