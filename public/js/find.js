@@ -217,7 +217,7 @@ function getQueryConditions() {
         query.push(`parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(5,7)) ${$('#conditionsMonth option:selected').text()} ${$('#ddlMonth option:selected').text()}`)
     if ($('#cbYear').is(':checked'))
         query.push(`parseInt(new Date(this.lastUpdateStamp * 1000).toJSON().slice(0,4)) ${$('#conditionsYear option:selected').text()} ${$('#ddlYear option:selected').text()}`)
-    if ($('#cbV1').is(':checked') || $('#cbV3').is(':checked') || $('#cbAge').is(':checked')) {
+    if ($('#cbV1').is(':checked') || $('#cbV3').is(':checked') || $('#cbAge').is(':checked') || $('#cbRegion').is(':checked')) {
         query.push('attributes !== undefined')
         if ($('#cbV1').is(':checked'))
             query.push(`attributes['51'] ${$('#conditionsV1 option:selected').text()} ${$('#txtV1').val()}`)
@@ -225,6 +225,8 @@ function getQueryConditions() {
             query.push(`attributes['49'] ${$('#conditionsV3 option:selected').text()} ${$('#txtV3').val()}`)
         if ($('#cbAge').is(':checked'))
             query.push(`new Date(this.attributes['42']*1000).getFullYear() ${$('#conditionsAge option:selected').text()} ${$('#ddlAge option:selected').text()}`)
+        if ($('#cbRegion').is(':checked'))
+            query.push(`attributes['68'] == ${$('#ddlRegion option:selected').val()}`)
     }
     return query
 }
