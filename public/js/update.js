@@ -121,7 +121,7 @@ function updateReiewsProducts(index, limitIndex) {
             if (logs.length > 0)
                 request('POST', 'products/update/logs', {
                     success: function (data) {
-                        alert(JSON.stringify(data))
+                        log(JSON.stringify(data))
                         logs = []
                     },
                     error: function (err) {
