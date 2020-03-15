@@ -87,7 +87,7 @@ async function fetchReviewIdsOfProduct(productId) {
     }
 }
 
-async function fetchProductIdByReviewDay(reviewDay) {
+async function fetchProductIdInReivews(reviewDay) {
     try {
         log(reviewDay)
         var query = {
@@ -146,10 +146,10 @@ module.exports = {
     insertMany: insertMany,
     fetchReviewIdsOfProduct: fetchReviewIdsOfProduct,
     fetchReviewsOfProduct: fetchReviewsOfProduct,
-    fetchProductIdByReviewDay: fetchProductIdByReviewDay,
+    fetchProductIdInReivews: fetchProductIdInReivews,
     fetchReviewsByDate: fetchReviewsByDate
 };
 // (async function () {
-//     var reviews = await fetchProductIdByReviewDay('2019-10-24')
+//     var reviews = await fetchProductIdInReivews('2019-10-24')
 //     log(reviews.length)
 // }())
