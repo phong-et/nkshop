@@ -60,10 +60,24 @@ async function fetchProductsDetailByListId(url, productIdList, acceptedMinPrice)
 router.get('/findConditions', async function (req, res) {
   try {
     let query = JSON.parse(req.query['query']),
-      reviewDay = req.query['reviewDay'],
+      expandedQuery = req.query['expandedQuery'],
       productIdsOfReview
-    if (reviewDay)
-      productIdsOfReview = await Review.fetchProductIdByReviewDay(reviewDay)
+    if (expandedQuery) {
+      let date = expandedQuery['date'],
+      productIds = []
+      switch (expandedQuery['collection']) {
+        case 'review':
+          productIds = await Review.fetchProductIdInReivews(date)
+          break;
+        case 'log':
+          productIds = await Review.fetchProductIdInReivews(date)
+          break;
+          // todo, union two array
+          case 'review-log':
+          break;
+      }
+    }
+    productIdsOfReview = await Review.fetchProductIdInReivews(inLogAndReviewDate)
     let products = await ProductDetail.fetchProductByConditions(query, productIdsOfReview)
     log(products.length)
     res.send(products)

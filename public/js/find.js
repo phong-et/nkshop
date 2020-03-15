@@ -45,30 +45,38 @@ $().ready(function () {
     config()
 
     $('#btnSearch').click(function () {
-        let spiner = $(this).children()
+        let spiner = $(this).children(),
+            data = {},
+            expandedQuery
+        data['query'] = JSON.stringify(getQueryConditions()),
         spiner.prop('class', 'fas fa-sync fa-spin')
-        var query = getQueryConditions()
-        var reviewDay;
-        if ($('#cbReview').is(':checked')) {
+        if ($('#cbInReview').is(':checked') || $('#cbInLog').is(':checked')) {
             // format layout : 14/11/2019
             // format database : d.toJSON() => 2019-11-14T13:49:40.346Z
             var dateFormating = $('#datepickerReview').val().split('/')
             switch ($('input[type=radio][name=datereview]:checked').val()) {
                 case "month":
-                    reviewDay = dateFormating[1] + '-' + dateFormating[0]
+                    expandedQuery['date'] = dateFormating[1] + '-' + dateFormating[0]
                     break
                 case "year":
-                    reviewDay = dateFormating[0]
+                    expandedQuery['date'] = dateFormating[0]
                     break
                 case "day":
-                    reviewDay = dateFormating[2] + '-' + dateFormating[1] + '-' + dateFormating[0]
+                    expandedQuery['date'] = dateFormating[2] + '-' + dateFormating[1] + '-' + dateFormating[0]
                     break
             }
+            if ($('#cbInReview').is(':checked'))
+                expandedQuery['collection'] = 'review'
+            else if ($('#cbInReview').is(':checked'))
+                expandedQuery['collection'] = 'log'
+            else if ($('#cbInReview').is(':checked') && $('#cbInLog').is(':checked'))
+                expandedQuery['collection'] = 'review-log'
+            data['expandedQuery'] = expandedQuery
         }
         $.ajax({
             url: '/products/findConditions',
             type: 'GET',
-            data: { query: JSON.stringify(query), reviewDay: reviewDay },
+            data: data,
             success: function (products) {
                 spiner.prop('class', 'fab fa-searchengin')
                 try {
@@ -266,7 +274,8 @@ function config() {
         { cbYear: ['lbYear', 'conditionsYear', 'ddlYear'] },
         { cbMonth: ['lbMonth', 'conditionsMonth', 'ddlMonth'] },
         { cbPrice: ['lbPrice', 'conditionsPrice', 'ddlPrice'] },
-        { cbReview: ['datepickerContainer', 'datepickerReviewFormat'] },
+        { cbInReview: ['datepickerContainer', 'datepickerInReviewAndLogFormat'] },
+        { cbInLog: ['datepickerContainer', 'datepickerInReviewAndLogFormat'] },
         { cbPhotoCount: ['lbPhotoCount', 'conditionsPhotoCount', 'txtPhotoCount'] },
         { cbRatingCount: ['lbRatingCount', 'conditionsRatingCount', 'txtRatingCount'] },
         { cbPriceRange: ['lbPriceRange', 'conditionsPriceFrom', 'conditionsPriceTo', 'ddlPriceFrom', 'ddlPriceTo'] },
@@ -295,7 +304,7 @@ function config() {
             //case 'cbYear':
             case 'cbStatus':
                 //case 'cbMonth':
-                //case 'cbReview':
+                //case 'cbInReview':
                 $('#' + checkboxId).prop('checked', true).change();
                 break
             default:
