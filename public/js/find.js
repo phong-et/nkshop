@@ -47,9 +47,9 @@ $().ready(function () {
     $('#btnSearch').click(function () {
         let spiner = $(this).children(),
             data = {},
-            expandedQuery
+            expandedQuery = {}
         data['query'] = JSON.stringify(getQueryConditions()),
-        spiner.prop('class', 'fas fa-sync fa-spin')
+            spiner.prop('class', 'fas fa-sync fa-spin')
         if ($('#cbInReview').is(':checked') || $('#cbInLog').is(':checked')) {
             // format layout : 14/11/2019
             // format database : d.toJSON() => 2019-11-14T13:49:40.346Z
@@ -65,13 +65,15 @@ $().ready(function () {
                     expandedQuery['date'] = dateFormating[2] + '-' + dateFormating[1] + '-' + dateFormating[0]
                     break
             }
-            if ($('#cbInReview').is(':checked'))
-                expandedQuery['collection'] = 'review'
-            else if ($('#cbInReview').is(':checked'))
-                expandedQuery['collection'] = 'log'
-            else if ($('#cbInReview').is(':checked') && $('#cbInLog').is(':checked'))
+
+            if ($('#cbInReview').is(':checked') && $('#cbInLog').is(':checked'))
                 expandedQuery['collection'] = 'review-log'
-            data['expandedQuery'] = expandedQuery
+            else if ($('#cbInReview').is(':checked'))
+                expandedQuery['collection'] = 'review'
+            else if ($('#cbInLog').is(':checked'))
+                expandedQuery['collection'] = 'log'
+            data['expandedQuery'] = JSON.stringify(expandedQuery)
+            log(expandedQuery)
         }
         $.ajax({
             url: '/products/findConditions',

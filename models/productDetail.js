@@ -153,7 +153,7 @@ async function fetchProductsByIds(ids) {
 }
 async function fetchProductByConditions(conditions, productIds) {
   try {
-    //productIds = [26871, 26470]
+    //log(productIds)
     var query = {
       '$where': conditions.map(condition => {
         if (condition.indexOf('new') > -1)

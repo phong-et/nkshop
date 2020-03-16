@@ -89,7 +89,7 @@ async function fetchReviewIdsOfProduct(productId) {
 
 async function fetchProductIdInReivews(date) {
     try {
-        log(date)
+        log('fetchProductIdInReivews:')
         var query = {
             '$where': `new Date(this.timeStamp).toJSON().indexOf("${date}") >- 1`
         }
@@ -97,7 +97,7 @@ async function fetchProductIdInReivews(date) {
         db.connect()
         let reviews = await Review.find(query, 'id productId').exec()
         await db.close()
-        log(reviews)
+        log('reviews.length = %s ', reviews.length)
         return reviews.map(review => review.productId);
     } catch (error) {
         log(error)

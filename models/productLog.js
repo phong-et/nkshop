@@ -21,15 +21,15 @@ async function insertMany(jsonProductLogs) {
 }
 async function fetchProductIdInLogs(date) {
   try {
-    log(date)
+    log('fetchProductIdInLogs:')
     var query = {
-      '$where': `new Date(this.timeStamp).toJSON().indexOf("${date}") >- 1`
+      '$where': `new Date(this.date).toJSON().indexOf("${date}") >- 1`
     }
     log(query)
     db.connect()
-    let logs = await Log.find(query, 'id productId').exec()
+    let logs = await ProductLog.find(query, 'id productId').exec()
     await db.close()
-    log(logs)
+    log('logs.length = %s', logs.length)
     return logs.map(log => log.productId);
   } catch (error) {
     log(error)
