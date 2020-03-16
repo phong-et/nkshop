@@ -61,7 +61,6 @@ router.get('/findConditions', async function (req, res) {
   try {
     let query = JSON.parse(req.query['query']),
       expandedQuery = req.query['expandedQuery'],
-      productIdsOfReview
     if (expandedQuery) {
       let date = expandedQuery['date'],
       productIds = []
@@ -70,15 +69,15 @@ router.get('/findConditions', async function (req, res) {
           productIds = await Review.fetchProductIdInReivews(date)
           break;
         case 'log':
-          productIds = await Review.fetchProductIdInReivews(date)
+          productIds = await ProductLog.fetchProductIdInLogs(date)
           break;
           // todo, union two array
           case 'review-log':
+          productIds = Array.from(new Set([...await Review.fetchProductIdInReivews(date),...await ProductLog.fetchProductIdInLogs(date)]))
           break;
       }
     }
-    productIdsOfReview = await Review.fetchProductIdInReivews(inLogAndReviewDate)
-    let products = await ProductDetail.fetchProductByConditions(query, productIdsOfReview)
+    let products = await ProductDetail.fetchProductByConditions(query, productIds)
     log(products.length)
     res.send(products)
   } catch (error) {

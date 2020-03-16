@@ -97,10 +97,12 @@
         </fieldset>
         <fieldset class="controller-group">
             <legend>
-                <h6>Products have review at day</h6>
+                <h6>Products In...</h6>
             </legend>
-            <input type="checkbox" checked id="cbReview">
-            <label>Review of day</label>
+            <input type="checkbox" checked id="cbInReview">
+            <label>Has In Reviews</label>
+            <input type="checkbox" checked id="cbInLog">
+            <label>Has In Logs</label>
         </fieldset>
     </form>
     <!--</fieldset> -->
@@ -208,13 +210,13 @@
             </fieldset>
             <fieldset class="query-group">
                 <legend>
-                    <h6>Products have review at day</h6>
+                    <h6>Products In..</h6>
                 </legend>
                 <div id="datepickerContainer" class="input-group-prepend">
                     <i class="far fa-calendar-alt fa-2x" style="margin-top: 2px;color: #000;"></i>
                     <input id="datepickerReview" style="width:110px!important;" type="text" class="form-control">
                 </div>
-                <div id="datepickerReviewFormat">
+                <div id="datepickerInReviewAndLogFormat">
                     <input type="radio" name="datereview" value="day" checked> Day
                     <input type="radio" name="datereview" value="month">Month
                     <input type="radio" name="datereview" value="year"> Year

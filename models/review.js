@@ -87,11 +87,11 @@ async function fetchReviewIdsOfProduct(productId) {
     }
 }
 
-async function fetchProductIdInReivews(reviewDay) {
+async function fetchProductIdInReivews(date) {
     try {
-        log(reviewDay)
+        log(date)
         var query = {
-            '$where': `new Date(this.timeStamp).toJSON().indexOf("${reviewDay}") >- 1`
+            '$where': `new Date(this.timeStamp).toJSON().indexOf("${date}") >- 1`
         }
         log(query)
         db.connect()

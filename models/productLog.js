@@ -19,9 +19,27 @@ async function insertMany(jsonProductLogs) {
     log(error)
   }
 }
+async function fetchProductIdInLogs(date) {
+  try {
+    log(date)
+    var query = {
+      '$where': `new Date(this.timeStamp).toJSON().indexOf("${date}") >- 1`
+    }
+    log(query)
+    db.connect()
+    let logs = await Log.find(query, 'id productId').exec()
+    await db.close()
+    log(logs)
+    return logs.map(log => log.productId);
+  } catch (error) {
+    log(error)
+    return []
+  }
+}
 ///////////////////////////////// Export part /////////////////////////////////
 module.exports = {
   insertMany: insertMany,
+  fetchProductIdInLogs: fetchProductIdInLogs
 };
 
 ///////////////////////////////// Testing part /////////////////////////////////
