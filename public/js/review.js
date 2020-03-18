@@ -12,7 +12,7 @@ function fetchReviewsByDate(date) {
 function fetchReviewsToday() {
     request('GET', 'reviews/last', {
         success: function (data) {
-            document.write(data)
+            document.write(JSON.stringify(data))
         },
         error: function (error) {
             log(error)
@@ -22,9 +22,9 @@ function fetchReviewsToday() {
 $().ready(function () {
     fetchReviewsToday()
     // day
-    fetchReviewsByDate(new Date().toJSON().substring(0,10))
+    //fetchReviewsByDate(new Date().toJSON().substring(0,10))
     // month
-    fetchReviewsByDate(new Date().toJSON().substring(0,7))
+    //fetchReviewsByDate(new Date().toJSON().substring(0,7))
     // year
-    fetchReviewsByDate(new Date().toJSON().substring(0,4))
+    //fetchReviewsByDate(new Date().toJSON().substring(0,4))
 })
