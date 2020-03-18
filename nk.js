@@ -107,9 +107,9 @@ function findCoverUrl(jsonProduct) {
     try {
         for (let i = jsonProduct.photos.length - 1; i >= 0; i--) {
             let e = jsonProduct.photos[i]
-            log(e.data.dimensions.small.url)
+            //log(e.data.dimensions.small.url)
             if (e.type === 'cover') {
-                log('cover: %s', e.data.dimensions.small.url)
+                //log('cover: %s', e.data.dimensions.small.url)
                 return e.data.dimensions.small.url
             }
 
@@ -126,7 +126,7 @@ function downloadCoverProduct(coverUrl) {
             dir = __dirname + cfg.coverFolder
         shell.mkdir("-p", dir);
         downloadImage(dir + coverName, coverUrl, () => { })
-        log('Downloaded cover')
+        log('==> Downloaded cover')
     } catch (error) {
         log(error)
     }
