@@ -5,8 +5,8 @@ let express = require('express'),
   ProductLog = require('../models/productLog'),
   Review = require('../models/review'),
   cfg = require('../nk.cfg'),
-  nk = require('../nk')
-//rimraf = require('rimraf')
+  nk = require('../nk'),
+  rimraf = require('rimraf')
 function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, productIds, callback) {
   try {
     return nk.fetchProductByCTOnePage(cityId, orderBy, fromPage, products => {
@@ -255,13 +255,11 @@ router.get('/delete/:productId', async function (req, res) {
     let path = require('path');
     let pathFolder = path.dirname(require.main.filename).split(path.sep)
     pathFolder.pop()
-    pathFolder.pop()
+    //pathFolder.pop()
     pathFolder = pathFolder.join('/') + cfg.productFolder + productId
     log('pathFolder', pathFolder)
-    rimraf(pathFolder, function (e) {
-      log(e)
-    })
-    log(req.query.isDeleteAtDatabase)
+    rimraf(pathFolder, e => log(e))
+    //log(req.query.isDeleteAtDatabase)
     if (req.query.isDeleteAtDatabase) {
       await ProductDetail.deleteProduct(productId)
     }
