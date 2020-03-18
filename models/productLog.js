@@ -30,7 +30,9 @@ async function fetchProductIdInLogs(date) {
     let logs = await ProductLog.find(query, 'id productId').exec()
     await db.close()
     log('logs.length = %s', logs.length)
-    return logs.map(log => log.productId);
+    let productIds =  Array.from(new Set(logs.map(log => log.productId)))
+    log('productIds.length = %s', productIds.length)
+    return productIds
   } catch (error) {
     log(error)
     return []
