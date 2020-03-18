@@ -83,6 +83,14 @@ $().ready(function () {
                 spiner.prop('class', 'fab fa-searchengin')
                 try {
                     globalProducts = products
+                    // show duplicate product ids
+                    let productIds = products.map(product => product.id);
+                    //productIds = Array.from(new Set(productIds))
+                    log(productIds.length)
+                    globalProducts = products
+                    let ids = _u.filter(productIds, (val, i, iteratee) => _u.includes(iteratee, val, i + 1));
+                    log('duplicate product ids:')
+                    log(ids)
                     var typeSorting = $('#ddlSorting option:selected').val()
                     $('#productTitleCount').text(`Product Result [${products.length}]`)
                     globalProducts = sort(typeSorting, products)
