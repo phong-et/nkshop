@@ -85,12 +85,20 @@ const productDetailSchema = new Schema({
   },
   slug: String
 })
+
 productDetailSchema.plugin(autoIncrement, { inc_field: '_id' })
+
+// test later
+function addPlugin() {
+  productDetailSchema.plugin(autoIncrement, { inc_field: '_id' })
+}
 const ProductDetail = mongoose.model('ProductDetail', productDetailSchema, COLLECTION_NAME)
 async function insert(jsonProductDetail) {
   try {
     db.connect()
     common.convertStringToNumber(jsonProductDetail)
+    // test later
+    // addPlugin()
     productDetail = new ProductDetail(jsonProductDetail)
     productDetail = await productDetail.save()
     log(productDetail.id + " saved to %s collection.", COLLECTION_NAME)
