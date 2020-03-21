@@ -137,7 +137,7 @@ module.exports = async function (fastify, opts, next) {
                 totalReviewIds = currentReviewIds.concat(oldReviewIds)
 
             totalReviewIds = [...new Set(totalReviewIds)]
-            await ProductDetail.update(productId, product, totalReviewIds.length)
+            await ProductDetail.updateRatingCount(productId, product, totalReviewIds.length)
             //if (isFetchImageProduct) nk.fetchImagesOfProduct(product)
             if (product.price >= cfg.minPriceFetchImage && isFetchImageProduct) await nk.fetchImagesOfProduct(product)
             log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
@@ -191,7 +191,7 @@ module.exports = async function (fastify, opts, next) {
             let productId = request.params.productId,
                 product = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
                 currentReviewIds = await nk.fetchReviewIdsOfProduct(cfg.reviewUrl, productId, product.ratingCount)
-            await ProductDetail.update(productId, product, currentReviewIds.length)
+            await ProductDetail.updateRatingCount(productId, product, currentReviewIds.length)
             //nk.fetchImagesOfProduct(product)
             log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
             if (currentReviewIds.length > 0) {
