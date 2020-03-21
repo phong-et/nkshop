@@ -7,6 +7,8 @@ let express = require('express'),
   cfg = require('../nk.cfg'),
   nk = require('../nk'),
   rimraf = require('rimraf')
+const DELETED = 99
+
 function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, productIds, callback) {
   try {
     return nk.fetchProductByCTOnePage(cityId, orderBy, fromPage, products => {
@@ -116,65 +118,83 @@ router.get('/configurations', async function (_, res) {
 router.get('/review/update/:productId', async function (req, res) {
   log(`==> /products/review/update/${req.params.productId}`)
   //log(req.params)
-  let isFetchImageProduct = JSON.parse(req.query.isFetchImageProduct.toLowerCase())
-  //,
-  //     isFetchImageReview = JSON.parse(req.query.isFetchImageReview.toLowerCase())
+  //let isFetchImageProduct = JSON.parse(req.query.isFetchImageProduct.toLowerCase()),
+  //isFetchImageReview = JSON.parse(req.query.isFetchImageReview.toLowerCase())
   //log(`isFetchImageProduct = ${isFetchImageProduct}`)
   try {
     let productId = req.params.productId,
       oldReviewIds = await Review.fetchReviewIdsOfProduct(productId),
-      jsonProduct = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
-      currentReviewIds = await nk.fetchReviewIdsOfProduct(cfg.reviewUrl, productId, jsonProduct.ratingCount),
-      //newReviewIds = oldReviewIds.length > 0 ? currentReviewIds.filter(value => !oldReviewIds.includes(value)) : [],
-      newReviewIds = currentReviewIds.filter(value => !oldReviewIds.includes(value)),
-      totalReviewIds = currentReviewIds.concat(oldReviewIds)
-
-    totalReviewIds = [...new Set(totalReviewIds)]
-    await ProductDetail.update(productId, jsonProduct, totalReviewIds.length)
-    //if (isFetchImageProduct) nk.fetchImagesOfProduct(jsonProduct)
-    //if (jsonProduct.price >= cfg.minPriceFetchImage && isFetchImageProduct) await nk.fetchImagesOfProduct(jsonProduct)
-    let coverUrl = nk.findCoverUrl(jsonProduct)
-    if (!nk.isExistedCover(coverUrl)) nk.downloadCoverProduct(coverUrl)
-    log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
-    log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
-    log(`newReviewIds: ${JSON.stringify(newReviewIds)}`)
-    if (newReviewIds.length > 0) {
-      log(`Update images & json ${newReviewIds.length} review`)
-      let reviews = await Promise.all(newReviewIds.map(async reviewId => {
-        try {
-          let review = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
-          //log(review.data)
-          //if (isFetchImageReview) nk.fetchImagesOfReview(review.data.review.photos, productId)
-          if (jsonProduct.price >= cfg.minPriceFetchImage)
-            await nk.fetchImagesOfReview(review.data.review.photos, productId)
-          review.data.review["productId"] = productId
-          // fixed missing out author field 3/2/2019 from (1/10/2019)
-          review.data.review["author"] = review.data.author
-          return review.data.review
-        } catch (error) {
-          log(error)
-        }
-      }))
-      let filteredReviews = reviews.filter(review => {
-        if (review.timeStamp != undefined)
-          return reviews
+      jsonProduct = await nk.fetchJsonOfProduct(cfg.productUrl, productId)
+    // Update status = DELETED
+    if (jsonProduct === null) {
+      let productDetailObject = await ProductDetail.fetchProductById(productId)
+      productDetailObject.status = DELETED
+      let productDetailJson = JSON.stringify(productDetailObject)
+      productDetailJson = JSON.parse(productDetailJson)
+      delete productDetailJson._id
+      delete productDetailJson.__v
+      //log(productDetailJson)
+      await ProductDetail.update(productId, productDetailJson)
+      log('ProductId=%s was DELETED', productId)
+      res.send({
+        newReviewIds: [],
+        status: DELETED
       })
-      if (filteredReviews.length > 0)
-        await Review.insertMany(filteredReviews)
     }
-    // write log onleave and off 
-    // if ((jsonProduct.meta && jsonProduct.onLeave) || jsonProduct.status !== 1)
-    //     await ProductLog.insert({ id: jsonProduct.id, date: new Date().getTime() })
-    let coverName = coverUrl.substring(coverUrl.lastIndexOf('/') + 1)
-    coverName = 'covers/' + coverName
-    res.send({
-      //oldReviewIds: oldReviewIds,
-      //currentReviewIds: currentReviewIds,
-      newReviewIds: newReviewIds,
-      status: (jsonProduct.meta && jsonProduct.meta.onLeave) ? 3 : jsonProduct.status,
-      coverName
-    })
+    else {
+      let currentReviewIds = await nk.fetchReviewIdsOfProduct(cfg.reviewUrl, productId, jsonProduct.ratingCount),
+        //newReviewIds = oldReviewIds.length > 0 ? currentReviewIds.filter(value => !oldReviewIds.includes(value)) : [],
+        newReviewIds = currentReviewIds.filter(value => !oldReviewIds.includes(value)),
+        totalReviewIds = currentReviewIds.concat(oldReviewIds)
+
+      totalReviewIds = [...new Set(totalReviewIds)]
+      await ProductDetail.updateRatingCount(productId, jsonProduct, totalReviewIds.length)
+      //if (isFetchImageProduct) nk.fetchImagesOfProduct(jsonProduct)
+      //if (jsonProduct.price >= cfg.minPriceFetchImage && isFetchImageProduct) await nk.fetchImagesOfProduct(jsonProduct)
+      let coverUrl = nk.findCoverUrl(jsonProduct)
+      if (!nk.isExistedCover(coverUrl)) nk.downloadCoverProduct(coverUrl)
+      log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
+      log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
+      log(`newReviewIds: ${JSON.stringify(newReviewIds)}`)
+      if (newReviewIds.length > 0) {
+        log(`Update images & json ${newReviewIds.length} review`)
+        let reviews = await Promise.all(newReviewIds.map(async reviewId => {
+          try {
+            let review = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
+            //log(review.data)
+            //if (isFetchImageReview) nk.fetchImagesOfReview(review.data.review.photos, productId)
+            if (jsonProduct.price >= cfg.minPriceFetchImage)
+              await nk.fetchImagesOfReview(review.data.review.photos, productId)
+            review.data.review["productId"] = productId
+            // fixed missing out author field 3/2/2019 from (1/10/2019)
+            review.data.review["author"] = review.data.author
+            return review.data.review
+          } catch (error) {
+            log(error)
+          }
+        }))
+        let filteredReviews = reviews.filter(review => {
+          if (review.timeStamp != undefined)
+            return reviews
+        })
+        if (filteredReviews.length > 0)
+          await Review.insertMany(filteredReviews)
+      }
+      // write log onleave and off 
+      // if ((jsonProduct.meta && jsonProduct.onLeave) || jsonProduct.status !== 1)
+      //     await ProductLog.insert({ id: jsonProduct.id, date: new Date().getTime() })
+      let coverName = coverUrl.substring(coverUrl.lastIndexOf('/') + 1)
+      coverName = 'covers/' + coverName
+      res.send({
+        //oldReviewIds: oldReviewIds,
+        //currentReviewIds: currentReviewIds,
+        newReviewIds: newReviewIds,
+        status: (jsonProduct.meta && jsonProduct.meta.onLeave) ? 3 : jsonProduct.status,
+        coverName
+      })
+    }
   } catch (error) {
+    log(error)
     res.send(error)
   }
 })
@@ -183,7 +203,7 @@ router.get('/currentreviews/:productId', async function (req, res) {
     let productId = req.params.productId,
       jsonProduct = await nk.fetchJsonOfProduct(cfg.productUrl, productId),
       currentReviewIds = await nk.fetchReviewIdsOfProduct(cfg.reviewUrl, productId, jsonProduct.ratingCount)
-    await ProductDetail.update(productId, jsonProduct, currentReviewIds.length)
+    await ProductDetail.updateRatingCount(productId, jsonProduct, currentReviewIds.length)
     //nk.fetchImagesOfProduct(jsonProduct)
     log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
     if (currentReviewIds.length > 0) {

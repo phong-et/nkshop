@@ -99,19 +99,18 @@ async function insert(jsonProductDetail) {
     log(error)
   }
 }
-async function updateByModelId(id, jsonProductDetail, ratingCountTotal) {
+async function update(productId, jsonProductDetail) {
   try {
     db.connect()
-    common.convertStringToNumber(jsonProductDetail)
-    jsonProductDetail.ratingCountTotal = ratingCountTotal
-    await ProductDetail.findByIdAndUpdate(id, jsonProductDetail)
+    //common.convertStringToNumber(jsonProductDetail)
+    await ProductDetail.findOneAndUpdate({ id: productId }, jsonProductDetail)
     await db.close()
-    log(id + " Updated to %s collection.", COLLECTION_NAME)
+    log(productId + " Updated to %s collection.", COLLECTION_NAME)
   } catch (error) {
     log(error)
   }
 }
-async function update(productId, jsonProductDetail, ratingCountTotal) {
+async function updateRatingCount(productId, jsonProductDetail, ratingCountTotal) {
   try {
     db.connect()
     common.convertStringToNumber(jsonProductDetail)
@@ -124,6 +123,18 @@ async function update(productId, jsonProductDetail, ratingCountTotal) {
     log(error)
   }
 }
+async function fetchProductById(productId) {
+  try {
+    db.connect()
+    let jsonProduct = await ProductDetail.findOne({ id: productId })
+    //log(jsonProduct)
+    await db.close()
+    return jsonProduct
+  } catch (error) {
+    log(error)
+  }
+}
+
 async function deleteProduct(productId) {
   try {
     db.connect()
@@ -200,13 +211,16 @@ module.exports = {
   insert: insert,
   fetchProductByConditions: fetchProductByConditions,
   fetchLatestProductId: fetchLatestProductId,
+  updateRatingCount: updateRatingCount,
   update: update,
   deleteProduct: deleteProduct,
-  fetchProductsByIds: fetchProductsByIds
+  fetchProductsByIds: fetchProductsByIds,
+  fetchProductById: fetchProductById
 };
 
 ///////////////////////////////// Testing part /////////////////////////////////
 //moved t.14
 // (async function () {
 //   log(await fetchProductsByIds([8181, 25869]))
+//   log(await fetchProductById(8181))
 // }())
