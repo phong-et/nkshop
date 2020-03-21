@@ -175,6 +175,10 @@ function setProductItemStatus(productItem, statusId, index, error) {
             productItem.addClass('productOnLeave')
             if (index) globalOnLeaveProducts.push(globalProducts[index])
             break
+        case 99:
+            productItem.addClass('productDelete')
+            if (index) globalOnLeaveProducts.push(globalProducts[index])
+            break
     }
     if (error) {
         productItem.addClass('productError')

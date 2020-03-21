@@ -161,6 +161,8 @@ i.fa-user-secret{color: #e25afb;}
 .errorAjax{color: palevioletred;}
 .productOnLeave{background: #735917 !important;;}
 .productOff{background: #500000 !important;}
+.productDelete{background: #b5a1a1 !important;}
+
 span.productIndex{
     position: absolute;
     width: 34px;
@@ -186,6 +188,7 @@ span.productIndex{
 #txtStartIndexUpdateReviews{width:80px;}
 #btnDeleteAllProducts{margin: 5px;}
 .inputSettings{ margin: 5px !important;}
+
 div.active {
     animation-duration: 900ms;
     animation-name: blink;
