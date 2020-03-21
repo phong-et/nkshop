@@ -363,8 +363,11 @@ function drawProduct(products) {
             _region = product.attributes && product.attributes['68'] || 'N',
             _city = globalCities[product.cityId],
             _onleave = product.meta && product.meta["onLeave"] ? '(on leave)' : '',
-            _status = product.status
-        _cover = $('#cbUseCoverUrl').is(':checked') ? globalConfiguration.coverUrl + _cover : `/covers/${_cover}`
+            _status = product.status,
+            isFindingDeletedProduct = +$('#ddlStatus option:selected').val(),
+            coverDeletedProduct = '/products/' + product.id + '/' + _cover,
+            coverProduct = `/covers/${_cover}`
+        _cover = $('#cbUseCoverUrl').is(':checked') ? globalConfiguration.coverUrl + _cover : isFindingDeletedProduct ? coverDeletedProduct : coverProduct
         strHtml = strHtml + `
         <div class="productItem">
             <span class="productIndex rounded-circle">${index + 1}</span>
