@@ -63,7 +63,7 @@ function updateReviews(productId, btn, index, callback) {
                         globalReviewedProduct.push(globalProducts[index])
                 } else
                     $(btn).html(`Updated<span>(0)</span>`)
-                
+
                 // set status background item
                 var statuser = spiner.parent().parent().children().next().next().next().children().next().next().next()
                 var statusId = data.status
@@ -74,9 +74,15 @@ function updateReviews(productId, btn, index, callback) {
                 setTimeout(() => {
                     $('#cover-product-' + productId).prop('src', data.coverName)
                 }, 2000)
-
+                let isActivedProduct = statusId === 1,
+                    isProductInLog = $('#cbInLog').is(':checked'),
+                    isIgnoreLog = $('#cbIgnoreLog').is(':checked')
                 // set log product
-                if (statusId !== 1) logs.push({ productId: productId, status: statusId, date: new Date().toJSON() })
+                if (!isIgnoreLog) {
+                    if ((!isActivedProduct && !isProductInLog))
+                        logs.push({ productId: productId, status: statusId, date: new Date().toJSON() })
+                }
+
                 if (callback) callback(true)
             } catch (error) {
                 log(error)
