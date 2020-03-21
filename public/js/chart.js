@@ -43,9 +43,10 @@ let chart = opener.window.chart,
         //     headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
         //     pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.percent:.1f} %</b> of total<br/>'
         // },
+        tootip:false,
         series: [
             {
-                name: "Price",
+                name: 'Chart Statistic',
                 colorByPoint: true,
                 data: data
             }
