@@ -74,12 +74,14 @@ function updateReviews(productId, btn, index, callback) {
                 setTimeout(() => {
                     $('#cover-product-' + productId).prop('src', data.coverName)
                 }, 2000)
-                let isActivedProduct = statusId === 1,
+                let isFindingActiveProduct = +$('#ddlStatus option:selected').val() === 1,
+                    isNotActiveProduct = statusId !== 1,
                     isProductInLog = $('#cbInLog').is(':checked'),
                     isIgnoreLog = $('#cbIgnoreLog').is(':checked')
                 // set log product
-                if (!isIgnoreLog) {
-                    if ((!isActivedProduct && !isProductInLog))
+
+                if (!isIgnoreLog && !isProductInLog) {
+                    if (isFindingActiveProduct && isNotActiveProduct)
                         logs.push({ productId: productId, status: statusId, date: new Date().toJSON() })
                 }
 
