@@ -117,7 +117,6 @@ router.get('/configurations', async function (_, res) {
 
 router.get('/review/update/:productId', async function (req, res) {
   log(`==> /products/review/update/${req.params.productId}`)
-  //log(req.params)
   //let isFetchImageProduct = JSON.parse(req.query.isFetchImageProduct.toLowerCase()),
   //isFetchImageReview = JSON.parse(req.query.isFetchImageReview.toLowerCase())
   //log(`isFetchImageProduct = ${isFetchImageProduct}`)
@@ -180,14 +179,9 @@ router.get('/review/update/:productId', async function (req, res) {
         if (filteredReviews.length > 0)
           await Review.insertMany(filteredReviews)
       }
-      // write log onleave and off 
-      // if ((jsonProduct.meta && jsonProduct.onLeave) || jsonProduct.status !== 1)
-      //     await ProductLog.insert({ id: jsonProduct.id, date: new Date().getTime() })
       let coverName = coverUrl.substring(coverUrl.lastIndexOf('/') + 1)
       coverName = 'covers/' + coverName
       res.send({
-        //oldReviewIds: oldReviewIds,
-        //currentReviewIds: currentReviewIds,
         newReviewIds: newReviewIds,
         status: (jsonProduct.meta && jsonProduct.meta.onLeave) ? 3 : jsonProduct.status,
         coverName
@@ -275,11 +269,9 @@ router.get('/delete/:productId', async function (req, res) {
     let path = require('path');
     let pathFolder = path.dirname(require.main.filename).split(path.sep)
     pathFolder.pop()
-    //pathFolder.pop()
     pathFolder = pathFolder.join('/') + cfg.productFolder + productId
     log('pathFolder', pathFolder)
     rimraf(pathFolder, e => log(e))
-    //log(req.query.isDeleteAtDatabase)
     if (req.query.isDeleteAtDatabase) {
       await ProductDetail.deleteProduct(productId)
     }
