@@ -83,18 +83,28 @@ $().ready(function () {
                 spiner.prop('class', 'fab fa-searchengin')
                 try {
                     globalProducts = products
-                    // show duplicate product ids
+                    ////////////////////////////// calc duplicate product ids ///////////////////////////////
                     let productIds = products.map(product => product.id);
                     //productIds = Array.from(new Set(productIds))
                     log(productIds.length)
-                    globalProducts = products
                     let ids = _u.filter(productIds, (val, i, iteratee) => _u.includes(iteratee, val, i + 1));
-                    log('duplicate product ids:')
+                    log('Duplicate product ids:')
                     log(ids)
+                    ////////////////////////////// calc duplicate phone number ///////////////////////////////
+                    let phones = products.map(product => product.phone);
+                    //phones = Array.from(new Set(phones))
+                    log(phones.length)
+                    let duplicatePhones = _u.filter(phones, (val, i, iteratee) => _u.includes(iteratee, val, i + 1));
+                    log('duplicate phones:')
+                    log(duplicatePhones)
+                    log(duplicatePhones.toString())
+                    //////////////////////////////////////////////////////////////////////////////////////////
                     var typeSorting = $('#ddlSorting option:selected').val()
                     $('#productTitleCount').text(`Product Result [${products.length}]`)
                     globalProducts = sort(typeSorting, products)
-                    drawProduct(globalProducts)
+
+                    let isRenderProduct = $('#cbRenderProduct').is(':checked')
+                    if(isRenderProduct) drawProduct(globalProducts)
                     //log(`[${products.map(product => product.id).sort((a, b) => a - b).toString()}]`)
                     //log(products.map(product => product.id).sort((a, b) => a - b).toString())
                 } catch (e) {
@@ -213,11 +223,13 @@ function getQueryConditions() {
     if ($('#cbStatus').is(':checked')) {
         var statusId = +$('#ddlStatus option:selected').val()
         switch (statusId) {
-            case 3:
+            case 3: // LEAVE
                 query.push('meta !== undefined')
                 query.push(`meta.onLeave === true`)
+                //query.push(`status != 2`)
+                query.push(`status != 99`)
                 break
-            case 2:
+            case 2: // OFF
                 query.push('meta !== undefined')
                 query.push(`meta.onLeave === undefined`)
                 //query.push(`meta.onLeave === false`)
@@ -364,7 +376,7 @@ function drawProduct(products) {
             _city = globalCities[product.cityId],
             _onleave = product.meta && product.meta["onLeave"] ? '(on leave)' : '',
             _status = product.status,
-            isFindingDeletedProduct = +$('#ddlStatus option:selected').val(),
+            isFindingDeletedProduct = +$('#ddlStatus option:selected').val() === 99,
             coverDeletedProduct = '/products/' + product.id + '/' + _cover,
             coverProduct = `/covers/${_cover}`
         _cover = $('#cbUseCoverUrl').is(':checked') ? globalConfiguration.coverUrl + _cover : isFindingDeletedProduct ? coverDeletedProduct : coverProduct
@@ -373,7 +385,7 @@ function drawProduct(products) {
             <span class="productIndex rounded-circle">${index + 1}</span>
             <div class="productIdName">
             <i class="fa fa-user"></i>
-            <a href="#" onclick="openTabProduct('${product.id}'); return false;">[${product.id}]</a>
+            <a href="#" onclick="openTabProduct('${product.id}'); return false;">${product.id}</a>
             <span class="productName"> ${product.name}</span> <img style="cursor:pointer" onclick="updateCover('${product.id}')" src="img/refresh-cover.png" />
             </div>
             <div class="productCover">
