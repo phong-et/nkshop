@@ -21,12 +21,13 @@ function appendFile(fileName, content) {
         })
     })
 }
-function downloadImage(fileName, url, callback) {
-    request.head(url, (error, response, body) => {
+// currently image was  protected by cloudfire, can't use this function
+function downloadImage2(fileName, url, callback) {
+    rp.head(url, (error, response, body) => {
         if (error) log('downloadImage.request.head:' + error)
         else {
             try {
-                request(url, (error, response, body) => {
+                rp(url, (error, response, body) => {
                     try {
                         if (error) log('downloadImage.request.head.request:' + error)
                     } catch (error) {
@@ -44,6 +45,10 @@ function downloadImage(fileName, url, callback) {
             }
         }
     })
+}
+// download image protected cloudfire
+async function downloadImage(fileName, url, callback) {
+    rp.get({ uri: url, encoding: null }).then(bufferAsBody => fs.writeFileSync(fileName, bufferAsBody))
 }
 
 async function delay(ms) {
@@ -126,6 +131,7 @@ function downloadCoverProduct(coverUrl) {
             dir = __dirname + cfg.coverFolder
         shell.mkdir("-p", dir);
         downloadImage(dir + coverName, coverUrl, () => { })
+        log(coverUrl)
         log('==> Downloaded cover')
     } catch (error) {
         log(error)
@@ -417,8 +423,18 @@ module.exports = {
     delay: delay,
     downloadImage: downloadImage
 };
-// (async function () {
-//   //{"data":null,"type":"exception","message":"review not found"}
-//   //await fetchReviewOfProduct(cfg.reviewUrl, 89009, 24842)
-//   //fetchProductByCTOnePageCookie(cfg.cities[0], cfg.orderBy[0], 1, 1, function(){})
-// }())
+(async function () {
+    //{"data":null,"type":"exception","message":"review not found"}
+    //await fetchReviewOfProduct(cfg.reviewUrl, 89009, 24842)
+    //fetchProductByCTOnePageCookie(cfg.cities[0], cfg.orderBy[0], 1, 1, function(){})
+    // downloadImage2('a.jpg',
+    //     'https://cdn.gai.to/kn-static/userfiles/plugins/escort/nu-sinh-vien-lam-kin-evil-rose-u2000-chi-nhan-2-vi-vua-1-ngay-1112435-small.jpg',
+    //     () => { });
+    // downloadImage2('b.jpg',
+    //     'https://cdn.tuoitre.vn/zoom/504_315/2020/4/7/can-ho-new-saigon-15862111404861423949553-crop-15863547860821851417473.jpg',
+    //     () => { });
+
+    //downloadImage2()
+
+
+}())

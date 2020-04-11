@@ -775,8 +775,12 @@ function genChart(products, type) {
         group.percent = (group.y / sumOfYValue) * 100
         return group
     })
+    window.chart.data = sortYChart(window.chart.data)
     log(window.chart)
     window.open('chart.html', 'Chart', 'width=' + 1360 + ',height=' + 1000 + ',toolbars=no,scrollbars=no,status=no,resizable=no');
+}
+function sortYChart(array, order) {
+    return _u.orderBy(array, ['y'], [order ? 'asc' : order]).reverse()
 }
 
 
