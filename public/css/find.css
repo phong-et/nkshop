@@ -142,7 +142,6 @@ i.fa, i.fas, i.far{color: #d7eee5;}
 }
 
 span a.action{color:#efe936;}
-span a.action-delete{color:#ff0000;}
 span.productDate{color:#eeffee}
 span.productPrice{color: #ff5858; font-weight: bold;} 
 span.productStatus {color:#71ff71}
@@ -212,3 +211,6 @@ div.active {
         background-color:#4c4141;
     }
 }
+
+.fa-trash-alt{color:red !important; cursor: pointer;}
+.fa-folder-open{color: yellow !important; cursor: pointer;}

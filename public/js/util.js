@@ -1,7 +1,7 @@
 const requestType = {
     GET: 'GET',
     POST: 'POST',
-    PUT: 'DELETE',
+    PUT: 'PUT',
     DELETE: 'DELETE'
 }
 const requestConfig = {

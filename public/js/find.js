@@ -418,10 +418,10 @@ function drawProduct(products) {
                 <span><a class="action" href="#" onclick="openProductFolder('${product.id}'); return false">Open Folder</a></span>
                 <i class="fas fa-globe"></i>
                 <span><a class="action" href="#" onclick="openWeb('${product.id}'); return false;">Open Web</a></span><br />
-                <i class="fa fa-cloud-download-alt"></i><span>
+                <i class="fa fa-cloud-download-alt" title="Fetch All Reviews"></i><span>
                 <a class="btnFetchAllReviews action" href="#" onclick="fetchAllImagesReviews('${product.id}', this); return false;">Fetch All Reviews</a></span>
-                <i class="fa fa-trash-alt"></i>
-                <span><a class="action-delete btnDelete" href="#" onclick="deleteProduct('${product.id}', this); return false;">Delete</a></span><br />
+                <i onclick="deleteProduct('${product.id}', this); return false;" class="fa fa-trash-alt"></i>
+                <br />
                 <i class="fas fa-chart-line"></i>
                 <span><a class="action" href="#" onclick="openChartReview('${product.id}','${product.name}'); return false;">Open Statistic Chart</a></span><br />
             </div>
