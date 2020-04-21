@@ -127,6 +127,7 @@ function updateReiewsProducts(index, limitIndex) {
 
             }
             if (logs.length > 0)
+                // Postman : http://prntscr.com/rzn5b9
                 request('POST', 'products/update/logs', {
                     success: function (data) {
                         log(JSON.stringify(data))
@@ -184,5 +185,4 @@ function setProductItemStatus(productItem, statusId, index, error) {
         productItem.addClass('productError')
         if (index) globalErrorProducts.push(globalProducts[index])
     }
-
 }
