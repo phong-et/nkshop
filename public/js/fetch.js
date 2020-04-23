@@ -2,28 +2,29 @@ $().ready(function(){
     $('#btnFetchLastId').click(function () {
         fetchLastProductId()
     })
-    $('#btnFetchListId').click(function () {
-        let btnFetchListId = $(this),
-            spiner = btnFetchListId.children(),
-            txtListId = $('#txtListId')
-        spiner.prop('class', 'fas fa-sync fa-spin')
-        var pageRange = txtListId.val()
-        $.ajax({
-            url: '/products/new/listid/' + pageRange,
-            type: 'GET',
-            success: function (data) {
-                if (data === 503) alert(globalConfiguration.errors["503"])
-                else {
-                    btnFetchListId.html(`<i class="fa fa-cloud-download-alt"></i> Fetch New Products (${data.length})`)
-                    txtListId.val(data)
-                }
-            },
-            error: function (err) {
-                spiner.prop('class', 'fa fa-cloud-download-alt')
-                log(err)
-            }
-        })
-    })
+    // disable because of stopping service by cloudfire
+    // $('#btnFetchListId').click(function () {
+    //     let btnFetchListId = $(this),
+    //         spiner = btnFetchListId.children(),
+    //         txtListId = $('#txtListId')
+    //     spiner.prop('class', 'fas fa-sync fa-spin')
+    //     var pageRange = txtListId.val()
+    //     $.ajax({
+    //         url: '/products/new/listid/' + pageRange,
+    //         type: 'GET',
+    //         success: function (data) {
+    //             if (data === 503) alert(globalConfiguration.errors["503"])
+    //             else {
+    //                 btnFetchListId.html(`<i class="fa fa-cloud-download-alt"></i> Fetch New Products (${data.length})`)
+    //                 txtListId.val(data)
+    //             }
+    //         },
+    //         error: function (err) {
+    //             spiner.prop('class', 'fa fa-cloud-download-alt')
+    //             log(err)
+    //         }
+    //     })
+    // })
     
     $('#btnFetchNewProducts').click(function () {
         let btnFetchNewProduct = $(this),
