@@ -741,7 +741,6 @@ function sortYChart(array, order) {
 }
 function copyPhone(e){
     $(e).select()
-    //$(e).SelectionRange(0, 99999); /*For mobile devices*/
     document.execCommand("copy");
 }
 
