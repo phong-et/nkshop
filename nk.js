@@ -423,18 +423,5 @@ module.exports = {
     delay: delay,
     downloadImage: downloadImage
 };
-(async function () {
-    //{"data":null,"type":"exception","message":"review not found"}
-    //await fetchReviewOfProduct(cfg.reviewUrl, 89009, 24842)
-    //fetchProductByCTOnePageCookie(cfg.cities[0], cfg.orderBy[0], 1, 1, function(){})
-    // downloadImage2('a.jpg',
-    //     'https://cdn.gai.to/kn-static/userfiles/plugins/escort/nu-sinh-vien-lam-kin-evil-rose-u2000-chi-nhan-2-vi-vua-1-ngay-1112435-small.jpg',
-    //     () => { });
-    // downloadImage2('b.jpg',
-    //     'https://cdn.tuoitre.vn/zoom/504_315/2020/4/7/can-ho-new-saigon-15862111404861423949553-crop-15863547860821851417473.jpg',
-    //     () => { });
-
-    //downloadImage2()
-
-
-}())
+// test main
+//(async function () {}())
