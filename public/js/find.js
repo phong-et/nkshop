@@ -444,23 +444,6 @@ function drawProduct(products) {
 
 //////////////////////////////////////// GENERATION FUNCTIONS GROUP ////////////////////////////////////////
 function genCities(countryId) {
-    // $.ajax({
-    //     url: '/products/cities/' + countryId,
-    //     type: 'GET',
-    //     success: function (cities) {
-    //         try {
-    //             cities.forEach(city => {
-    //                 $('#ddlCity').append(`<option value="${city.id}">${city.name}</option>`)
-    //                 globalCities[city.id] = city.name
-    //             })
-    //         } catch (e) {
-    //             log(e)
-    //         }
-    //     },
-    //     error: function (err) {
-    //         log(err)
-    //     }
-    // });
     let ddlCity = $('#ddlCity')
     Object.keys(cities).forEach(id => {
         ddlCity.append(`<option value="${id}">${cities[id].name}</option>`)
@@ -474,32 +457,6 @@ function genCities(countryId) {
 }
 
 function genDistricts(cityId) {
-    // removed ajax request improve performance loading
-    // $.ajax({
-    //     url: '/products/districts/' + cityId,
-    //     type: 'GET',
-    //     success: function (districts) {
-    //         let html = ''
-    //         try {
-    //             districts.sort(function (a, b) {
-    //                 if (a.name < b.name) { return -1; }
-    //                 if (a.name > b.name) { return 1; }
-    //                 return 0;
-    //             })
-    //             districts.forEach(district => {
-    //                 html = html + `<option value="${district.id}">${district.name}</option>`
-    //                 globalDistricts[district.id] = district.name
-    //             })
-    //             log(globalDistricts)
-    //             $('#ddlDisctrict').html(html)
-    //         } catch (e) {
-    //             log(e)
-    //         }
-    //     },
-    //     error: function (err) {
-    //         log(err)
-    //     }
-    // });
     var districts = cities[cityId].districts
     $('#ddlDisctrict').empty()
     districts.forEach(district => {
