@@ -104,7 +104,7 @@ $().ready(function () {
                     globalProducts = sort(typeSorting, products)
 
                     let isRenderProduct = $('#cbRenderProduct').is(':checked')
-                    if(isRenderProduct) drawProduct(globalProducts)
+                    if (isRenderProduct) drawProduct(globalProducts)
                     //log(`[${products.map(product => product.id).sort((a, b) => a - b).toString()}]`)
                     //log(products.map(product => product.id).sort((a, b) => a - b).toString())
                 } catch (e) {
@@ -135,6 +135,7 @@ $().ready(function () {
     $('#cbPhone').change(function () {
         if (this.checked)
             $('input[id!=cbPhone]').prop('checked', false).change()
+        $('#cbRenderProduct').prop('checked', true)
     })
 
     $('#txtPhone').focus(function () {
@@ -739,7 +740,7 @@ function genChart(products, type) {
 function sortYChart(array, order) {
     return _u.orderBy(array, ['y'], [order ? 'asc' : order]).reverse()
 }
-function copyPhone(e){
+function copyPhone(e) {
     $(e).select()
     document.execCommand("copy");
 }

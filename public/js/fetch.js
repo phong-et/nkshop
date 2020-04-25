@@ -1,4 +1,4 @@
-$().ready(function(){
+$().ready(function () {
     $('#btnFetchLastId').click(function () {
         fetchLastProductId()
     })
@@ -25,7 +25,7 @@ $().ready(function(){
     //         }
     //     })
     // })
-    
+
     $('#btnFetchNewProducts').click(function () {
         let btnFetchNewProduct = $(this),
             spiner = btnFetchNewProduct.children(),
@@ -33,7 +33,7 @@ $().ready(function(){
             pageRange = txtListId.val().split(','),
             listId = genListId(parseInt(pageRange[0]), parseInt(pageRange[1])),
             data = { listId: JSON.stringify(listId), acceptedMinPrice: $('#txtAcceptedMinPrice').val() }
-    
+
         spiner.prop('class', 'fas fa-sync fa-spin')
         $.ajax({
             url: '/products/add/',
@@ -61,7 +61,11 @@ function fetchLastProductId() {
         type: 'GET',
         success: function (productId) {
             try {
-                $('#txtListId').val(productId)
+                $('#txtListId').val(`${productId},${+productId + 20}`)
+                $('#txtListId').val(`${productId},${+productId + 20}`)
+                $('#cbId').prop('checked', true).change()
+                $('#txtId').val(productId)
+                setTimeout(() => $('#btnSearch').trigger('click'), 15000)
             } catch (e) {
                 log(e)
             }
