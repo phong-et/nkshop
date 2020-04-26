@@ -56,3 +56,15 @@
     [27151]
     [27096]
     http://prntscr.com/s2yxe8 mongodb transaction error
+
+# Export data mongodb
+mongoexport --db nkshop --collection products --out products.json
+mongoimport --db nkshop --collection products ^
+    --authenticationDatabase admin --username <user> --password <password> ^
+    --drop --file ~\downloads\products.json
+
+    mongoimport --db nkshop --collection reviews ^
+    --drop --file storage/downloads/nkshop/data/reviews.json
+
+$ mongod -dbpath /storage/downloads/data
+mongo 
