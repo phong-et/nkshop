@@ -129,7 +129,7 @@ $().ready(function () {
 
     $('#cbId').change(function () {
         if (this.checked)
-            $('input[id!=cbId]').prop('checked', false).change() \
+            $('input[id!=cbId]').prop('checked', false).change() // \ 
         $('#cbRenderProduct').prop('checked', true)
     })
 

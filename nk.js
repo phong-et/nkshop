@@ -112,16 +112,16 @@ function findCoverUrl(jsonProduct) {
     try {
         for (let i = jsonProduct.photos.length - 1; i >= 0; i--) {
             let e = jsonProduct.photos[i]
-            //log(e.data.dimensions.small.url)
+            //log(e.data.dimensions.small)
             if (e.type === 'cover') {
                 //log('cover: %s', e.data.dimensions.small.url)
-                return e.data.dimensions.small.url
+                return e.data.dimensions.small.url || null
             }
-
         }
         return null
     } catch (error) {
         log(error)
+        return null
     }
 }
 function downloadCoverProduct(coverUrl) {
@@ -138,9 +138,12 @@ function downloadCoverProduct(coverUrl) {
     }
 }
 function isExistedCover(coverUrl) {
-    let coverName = coverUrl.substring(coverUrl.lastIndexOf('/') + 1),
-        dir = __dirname + cfg.coverFolder
-    return fs.existsSync(dir + coverName)
+    if (coverUrl) {
+        let coverName = coverUrl.substring(coverUrl.lastIndexOf('/') + 1),
+            dir = __dirname + cfg.coverFolder
+        return fs.existsSync(dir + coverName)
+    }
+    return null
 }
 
 async function fetchProducts(url, productIds) {

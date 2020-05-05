@@ -33,6 +33,7 @@ function fetchProductsByCTByPageRange(cityId, orderBy, fromPage, toPage, product
     log(error)
   }
 }
+
 async function fetchProductsDetailByListId(url, productIdList, acceptedMinPrice) {
   try {
     for (let i = 0; i < productIdList.length; i++) {
@@ -150,8 +151,9 @@ router.get('/review/update/:productId', async function (req, res) {
       await ProductDetail.updateRatingCount(productId, jsonProduct, totalReviewIds.length)
       //if (isFetchImageProduct) nk.fetchImagesOfProduct(jsonProduct)
       //if (jsonProduct.price >= cfg.minPriceFetchImage && isFetchImageProduct) await nk.fetchImagesOfProduct(jsonProduct)
-      let coverUrl = nk.findCoverUrl(jsonProduct)
-      if (!nk.isExistedCover(coverUrl)) nk.downloadCoverProduct(coverUrl)
+      let coverUrl = nk.findCoverUrl(jsonProduct), coverName = ""
+      if (coverUrl && !nk.isExistedCover(coverUrl)) nk.downloadCoverProduct(coverUrl)
+      if (coverUrl) coverName = 'covers/' + coverUrl.substring(coverUrl.lastIndexOf('/') + 1)
       log(`oldReviewIds : ${JSON.stringify(oldReviewIds)}`)
       log(`currentReviewIds: ${JSON.stringify(currentReviewIds)}`)
       log(`newReviewIds: ${JSON.stringify(newReviewIds)}`)
@@ -179,12 +181,11 @@ router.get('/review/update/:productId', async function (req, res) {
         if (filteredReviews.length > 0)
           await Review.insertMany(filteredReviews)
       }
-      let coverName = coverUrl.substring(coverUrl.lastIndexOf('/') + 1)
-      coverName = 'covers/' + coverName
+
       res.send({
         newReviewIds: newReviewIds,
         status: (jsonProduct.meta && jsonProduct.meta.onLeave) ? 3 : jsonProduct.status,
-        coverName
+        coverName: coverName
       })
     }
   } catch (error) {
