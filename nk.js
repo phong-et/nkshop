@@ -241,6 +241,26 @@ async function fetchReviewsOfProductSafe(url, productId, reviewIds) {
         log(error.message)
     }
 }
+// Fetch All Reivew with json and save image safe don't miss
+// Fixed http://prntscr.com/sibhxz
+async function fetchReviewsOfProductSafeWithJson(url, productId, reviewIds) {
+    try {
+        var reviews = []
+        for (let i = 0; i < reviewIds.length; i++) {
+            await delay(wait('review', i, reviewIds[i]))
+            let reviewJson = await fetchReviewOfProduct(url, reviewIds[i], productId)
+            await fetchImagesOfReview(reviewJson.data.review.photos, productId)
+            reviewJson.data.review["productId"] = productId
+            reviewJson.data.review["author"] = reviewJson.data.author
+            //log(reviewJson.data.review)
+            reviews.push(reviewJson.data.review)
+        }
+        return reviews
+    } catch (error) {
+        log('fetchReviewsOfProductSafeWithJson:')
+        log(error.message)
+    }
+}
 async function fetchReviewsOfProduct(url, productId, reviewPerPageNumber) {
     try {
         var options = {
@@ -417,6 +437,7 @@ module.exports = {
     fetchReviewsOfProduct: fetchReviewsOfProduct,
     fetchReviewIdsOfProduct: fetchReviewIdsOfProduct,
     fetchReviewsOfProductSafe: fetchReviewsOfProductSafe,
+    fetchReviewsOfProductSafeWithJson: fetchReviewsOfProductSafeWithJson,
 
     downloadCoverProduct: downloadCoverProduct,
     findCoverUrl: findCoverUrl,

@@ -118,7 +118,7 @@ router.get('/configurations', async function (_, res) {
 
 router.get('/review/update/:productId', async function (req, res) {
   log(`==> /products/review/update/${req.params.productId}`)
-  //let isFetchImageProduct = JSON.parse(req.query.isFetchImageProduct.toLowerCase()),
+  let isFetchImageProduct = JSON.parse(req.query.isFetchImageProduct.toLowerCase())
   //isFetchImageReview = JSON.parse(req.query.isFetchImageReview.toLowerCase())
   //log(`isFetchImageProduct = ${isFetchImageProduct}`)
   try {
@@ -150,7 +150,7 @@ router.get('/review/update/:productId', async function (req, res) {
       totalReviewIds = [...new Set(totalReviewIds)]
       await ProductDetail.updateRatingCount(productId, jsonProduct, totalReviewIds.length)
       //if (isFetchImageProduct) nk.fetchImagesOfProduct(jsonProduct)
-      //if (jsonProduct.price >= cfg.minPriceFetchImage && isFetchImageProduct) await nk.fetchImagesOfProduct(jsonProduct)
+      if (jsonProduct.price >= cfg.minPriceFetchImage && isFetchImageProduct) nk.fetchImagesOfProduct(jsonProduct)
       let coverUrl = nk.findCoverUrl(jsonProduct), coverName = ""
       if (coverUrl && !nk.isExistedCover(coverUrl)) nk.downloadCoverProduct(coverUrl)
       if (coverUrl) coverName = 'covers/' + coverUrl.substring(coverUrl.lastIndexOf('/') + 1)
@@ -159,21 +159,25 @@ router.get('/review/update/:productId', async function (req, res) {
       log(`newReviewIds: ${JSON.stringify(newReviewIds)}`)
       if (newReviewIds.length > 0) {
         log(`Update images & json ${newReviewIds.length} review`)
-        let reviews = await Promise.all(newReviewIds.map(async reviewId => {
-          try {
-            let review = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
-            //log(review.data)
-            //if (isFetchImageReview) nk.fetchImagesOfReview(review.data.review.photos, productId)
-            if (jsonProduct.price >= cfg.minPriceFetchImage)
-              await nk.fetchImagesOfReview(review.data.review.photos, productId)
-            review.data.review["productId"] = productId
-            // fixed missing out author field 3/2/2019 from (1/10/2019)
-            review.data.review["author"] = review.data.author
-            return review.data.review
-          } catch (error) {
-            log(error)
-          }
-        }))
+        ////////// DON'T SAFE ///////////////////////////
+        ////////// ERROR screen http://prntscr.com/sibhxz ///////
+        // let reviews = await Promise.all(newReviewIds.map(async reviewId => {
+        //   try {
+        //     let review = await nk.fetchReviewOfProduct(cfg.reviewUrl, reviewId, productId)
+        //     //log(review.data)
+        //     //if (isFetchImageReview) nk.fetchImagesOfReview(review.data.review.photos, productId)
+        //     if (jsonProduct.price >= cfg.minPriceFetchImage)
+        //       await nk.fetchImagesOfReview(review.data.review.photos, productId)
+        //     review.data.review["productId"] = productId
+        //     // fixed missing out author field 3/2/2019 from (1/10/2019)
+        //     review.data.review["author"] = review.data.author
+        //     return review.data.review
+        //   } catch (error) {
+        //     log(error)
+        //   }
+        // }))
+        /////////////////////////////// MORE SAFE //////////////////////////////
+        let reviews = await nk.fetchReviewsOfProductSafeWithJson(cfg.reviewUrl, productId, newReviewIds)
         let filteredReviews = reviews.filter(review => {
           if (review.timeStamp != undefined)
             return reviews

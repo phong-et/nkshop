@@ -56,6 +56,7 @@
     [27151]
     [27096]
     http://prntscr.com/s2yxe8 mongodb transaction error
+    31306 error cloudfire scaper
 
 # Export data mongodb
 mongoexport --db nkshop --collection products --out products.json
@@ -67,4 +68,8 @@ mongoimport --db nkshop --collection products ^
     --drop --file storage/downloads/nkshop/data/reviews.json
 
 $ mongod -dbpath /storage/downloads/data
-mongo 
+
+# Run service on android 
+- Mongodb server
+- Express web server
+-  
