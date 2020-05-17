@@ -243,13 +243,13 @@ async function fetchReviewsOfProductSafe(url, productId, reviewIds) {
 }
 // Fetch All Reivew with json and save image safe don't miss
 // Fixed http://prntscr.com/sibhxz
-async function fetchReviewsOfProductSafeWithJson(url, productId, reviewIds) {
+async function fetchReviewsOfProductSafeWithJson({ reviewUrl, productId, reviewIds, productPrice }) {
     try {
         var reviews = []
         for (let i = 0; i < reviewIds.length; i++) {
             await delay(wait('review', i, reviewIds[i]))
-            let reviewJson = await fetchReviewOfProduct(url, reviewIds[i], productId)
-            await fetchImagesOfReview(reviewJson.data.review.photos, productId)
+            let reviewJson = await fetchReviewOfProduct(reviewUrl, reviewIds[i], productId)
+            if (productPrice >= cfg.minPriceFetchImage) await fetchImagesOfReview(reviewJson.data.review.photos, productId)
             reviewJson.data.review["productId"] = productId
             reviewJson.data.review["author"] = reviewJson.data.author
             //log(reviewJson.data.review)

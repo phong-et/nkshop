@@ -177,7 +177,12 @@ router.get('/review/update/:productId', async function (req, res) {
         //   }
         // }))
         /////////////////////////////// MORE SAFE //////////////////////////////
-        let reviews = await nk.fetchReviewsOfProductSafeWithJson(cfg.reviewUrl, productId, newReviewIds)
+        let reviews = await nk.fetchReviewsOfProductSafeWithJson({
+          reviewUrl: cfg.reviewUrl,
+          productId: productId,
+          reviewIds: newReviewIds,
+          productPrice: jsonProduct.price
+        })
         let filteredReviews = reviews.filter(review => {
           if (review.timeStamp != undefined)
             return reviews
