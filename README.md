@@ -73,3 +73,15 @@ $ mongod -dbpath /storage/downloads/data
 - Mongodb server
 - Express web server
 -  
+
+# Note 
+[{
+    id:31921,
+    type:'ff',
+    url:'',
+    note:'cover ff',
+},{
+    id:31921,
+    type:'nwm',
+    note:'at review ',
+}]
