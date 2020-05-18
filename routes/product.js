@@ -150,7 +150,8 @@ router.get('/review/update/:productId', async function (req, res) {
       totalReviewIds = [...new Set(totalReviewIds)]
       await ProductDetail.updateRatingCount(productId, jsonProduct, totalReviewIds.length)
       //if (isFetchImageProduct) nk.fetchImagesOfProduct(jsonProduct)
-      if (jsonProduct.price >= cfg.minPriceFetchImage && isFetchImageProduct) nk.fetchImagesOfProduct(jsonProduct)
+      if (jsonProduct.price >= cfg.minPriceFetchImage && isFetchImageProduct)
+        nk.fetchImagesOfProduct(jsonProduct)
       let coverUrl = nk.findCoverUrl(jsonProduct), coverName = ""
       if (coverUrl && !nk.isExistedCover(coverUrl)) nk.downloadCoverProduct(coverUrl)
       if (coverUrl) coverName = 'covers/' + coverUrl.substring(coverUrl.lastIndexOf('/') + 1)
@@ -183,6 +184,7 @@ router.get('/review/update/:productId', async function (req, res) {
           reviewIds: newReviewIds,
           productPrice: jsonProduct.price
         })
+        /////////// SAVE DB ///////////
         let filteredReviews = reviews.filter(review => {
           if (review.timeStamp != undefined)
             return reviews

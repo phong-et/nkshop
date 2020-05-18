@@ -187,15 +187,15 @@ $().ready(function () {
         datePicker.datepicker(options).datepicker("setDate", 'now')
     })
 
-    $('#ddlPrice, #ddlPriceFrom, #ddlPriceTo').change(function () {
-        if (this.value <= 300) {
-            $('#cbIsFetchImageReview').prop('checked', false)
-            $('#cbIsFetchImageProduct').prop('checked', false)
-        } else {
-            $('#cbIsFetchImageReview').prop('checked', true)
-            $('#cbIsFetchImageProduct').prop('checked', true)
-        }
-    })
+    // $('#ddlPrice, #ddlPriceFrom, #ddlPriceTo').change(function () {
+    //     if (this.value <= 300) {
+    //         $('#cbIsFetchImageReview').prop('checked', false)
+    //         $('#cbIsFetchImageProduct').prop('checked', false)
+    //     } else {
+    //         $('#cbIsFetchImageReview').prop('checked', true)
+    //         $('#cbIsFetchImageProduct').prop('checked', true)
+    //     }
+    // })
 
 })
 // use for button update all product
@@ -684,10 +684,10 @@ function genChart(products, type) {
     }
     else if (type === 'age') {
         window.chart.data = _u.chain(products)
-            .groupBy(function (product) { return product.attributes["42"] })
-            .map((value, key) => {
-                return { name: new Date().getFullYear() - new Date(key * 1000).getFullYear() + `(${new Date(key * 1000).getFullYear()})`, y: value.length }
-            })
+            .groupBy(product => +product.attributes["42"])
+            .map((value, key) => ({ 
+                name: new Date().getFullYear() - new Date(key * 1000).getFullYear() + `(${new Date(key * 1000).getFullYear()})`, 
+                y: value.length }))
             .value()
         window.chart.cfg.titleX = `${window.chart.data.length} ${ddlGroupBy.text().toUpperCase()} (${globalConfiguration.chart.units.age})`
     }

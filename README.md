@@ -81,7 +81,11 @@ $ mongod -dbpath /storage/downloads/data
     url:'',
     note:'cover ff',
 },{
-    id:31921,
+    id: 32116 ,
     type:'nwm',
-    note:'at review ',
+    note:'product ff',
 }]
+
+# WhiteList 
+32124 
+32150 
