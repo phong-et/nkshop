@@ -260,6 +260,10 @@ function getQueryConditions() {
         if ($('#cbRegion').is(':checked'))
             query.push(`attributes['68'] == ${$('#ddlRegion option:selected').val()}`)
     }
+    if ($('#cbAgent').is(':checked')) {
+        query.push('author !== undefined')
+        query.push(`author.userId == ${$('#ddlAgent option:selected').val()}`)
+    }
     return query
 }
 
@@ -287,6 +291,7 @@ function config() {
         { cbCity: ['ddlCity'] },
         { cbRegion: ['ddlRegion'] },
         { cbStatus: ['ddlStatus'] },
+        { cbAgent: ['ddlAgent'] },
         { cbDistrict: ['ddlDisctrict'] },
         { cbName: ['lbName', 'txtName'] },
         { cbPhone: ['lbPhone', 'txtPhone'] },

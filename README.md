@@ -69,6 +69,8 @@ mongoimport --db nkshop --collection products ^
 
 $ mongod -dbpath /storage/downloads/data
 
+# Test Db 
+    ```db.getCollection('reviews').find({'$where':'this.timeStamp == null'})```
 # Run service on android 
 - Mongodb server
 - Express web server
