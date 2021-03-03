@@ -18,7 +18,7 @@
     "mongoose": "^5.9.2",
     "mongoose-sequence": "^5.2.2",
     "morgan": "^1.9.1",
-    "pug": "^2.0.4",
+    "pug": "^3.0.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
     "rimraf": "^3.0.2",
